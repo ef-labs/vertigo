@@ -37,6 +37,7 @@ public class InitialConnectionTargetBuilderImpl implements ConnectionTargetBuild
 
   @Override
   public ConnectionTargetComponentBuilder component(String name) {
+    this.connections.forEach(c -> c.getTarget().setComponent(name));
     return new ConnectionTargetComponentBuilderImpl(network, network.component(name), connections);
   }
 

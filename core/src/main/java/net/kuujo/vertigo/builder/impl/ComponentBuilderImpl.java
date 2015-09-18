@@ -25,6 +25,7 @@ import net.kuujo.vertigo.component.ComponentConfig;
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 public class ComponentBuilderImpl implements ComponentBuilder {
+
   private final NetworkBuilder network;
   final ComponentConfig component;
 
@@ -95,12 +96,12 @@ public class ComponentBuilderImpl implements ComponentBuilder {
 
   @Override
   public InputBuilder input() {
-    return null;
+    return new InputBuilderImpl(this);
   }
 
   @Override
   public OutputBuilder output() {
-    return null;
+    return new OutputBuilderImpl(this);
   }
 
   @Override

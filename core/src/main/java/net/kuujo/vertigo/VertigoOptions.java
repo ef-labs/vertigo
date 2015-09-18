@@ -15,7 +15,7 @@
  */
 package net.kuujo.vertigo;
 
-import io.vertx.codegen.annotations.Options;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.json.JsonObject;
 import net.kuujo.vertigo.util.Configs;
@@ -25,7 +25,7 @@ import net.kuujo.vertigo.util.Configs;
  *
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
-@Options
+@DataObject
 public class VertigoOptions extends VertxOptions {
   private String clusterAddress;
 

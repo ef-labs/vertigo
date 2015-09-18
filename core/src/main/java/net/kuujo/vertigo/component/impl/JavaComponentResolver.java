@@ -36,6 +36,9 @@ public class JavaComponentResolver implements ComponentResolver {
 
   @Override
   public ComponentConfig resolve(ComponentConfig component) {
+    if (component.getIdentifier() == null) {
+      return component;
+    }
     Class<?> clazz;
     try {
       clazz = Class.forName(component.getIdentifier());

@@ -48,9 +48,12 @@ public class ComponentConfigImpl implements ComponentConfig {
   private Network network;
 
   public ComponentConfigImpl() {
+    this.input = new InputConfigImpl();
+    this.output = new OutputConfigImpl();
   }
 
   public ComponentConfigImpl(String name) {
+    this();
     this.name = name;
   }
 

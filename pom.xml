@@ -19,17 +19,13 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <vertx.pullInDeps>false</vertx.pullInDeps>
-    <vertx.createFatJar>false</vertx.createFatJar>
 
-    <vertx.version>3.0.0-SNAPSHOT</vertx.version>
-    <codegen.version>1.0-SNAPSHOT</codegen.version>
-    <junit.version>4.11</junit.version>
+    <vertx.version>3.0.0</vertx.version>
+    <junit.version>4.12</junit.version>
 
     <maven.compiler.plugin.version>3.0</maven.compiler.plugin.version>
     <maven.resources.plugin.version>2.6</maven.resources.plugin.version>
     <maven.clean.plugin.version>2.5</maven.clean.plugin.version>
-    <maven.vertx.plugin.version>2.0.6-final</maven.vertx.plugin.version>
     <maven.surefire.plugin.version>2.14</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>2.14</maven.failsafe.plugin.version>
     <maven.surefire.report.plugin.version>2.14</maven.surefire.report.plugin.version>
@@ -84,48 +80,28 @@
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
-      <artifactId>codegen</artifactId>
-      <version>${codegen.version}</version>
+      <artifactId>vertx-codegen</artifactId>
+      <version>${vertx.version}</version>
       <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-core</artifactId>
+      <version>${vertx.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>io.vertx</groupId>
-        <artifactId>vertx-maven-plugin</artifactId>
-        <version>${maven.vertx.plugin.version}</version>
-        <dependencies>
-          <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-core</artifactId>
-            <version>${vertx.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>codegen</artifactId>
-            <version>${codegen.version}</version>
-            <optional>true</optional>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <id>PullInDeps</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>pullInDeps</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>

@@ -56,9 +56,9 @@ public class InputPortReferenceImpl<T> implements InputPortReference<T> {
   public InputPortReference<T> send(T message, Handler<AsyncResult<Void>> ackHandler) {
     vertx.eventBus().send(address, message, new DeliveryOptions().addHeader("port", name), result -> {
       if (result.succeeded()) {
-        Future.<Void>completedFuture().setHandler(ackHandler);
+        Future.<Void>succeededFuture().setHandler(ackHandler);
       } else {
-        Future.<Void>completedFuture(result.cause()).setHandler(ackHandler);
+        Future.<Void>failedFuture(result.cause()).setHandler(ackHandler);
       }
     });
     return this;
@@ -68,9 +68,9 @@ public class InputPortReferenceImpl<T> implements InputPortReference<T> {
   public InputPortReference<T> send(T message, MultiMap headers, Handler<AsyncResult<Void>> ackHandler) {
     vertx.eventBus().send(address, message, new DeliveryOptions().setHeaders(headers.add("port", name)), result -> {
       if (result.succeeded()) {
-        Future.<Void>completedFuture().setHandler(ackHandler);
+        Future.<Void>succeededFuture().setHandler(ackHandler);
       } else {
-        Future.<Void>completedFuture(result.cause()).setHandler(ackHandler);
+        Future.<Void>failedFuture(result.cause()).setHandler(ackHandler);
       }
     });
     return this;

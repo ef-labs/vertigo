@@ -52,12 +52,9 @@ public class VertigoFactoryImpl implements VertigoFactory {
 
   @Override
   public void vertigoAsync(VertigoOptions options, Handler<AsyncResult<Vertigo>> resultHandler) {
-    Vertx.vertxAsync(options, result -> {
-      if (result.failed()) {
-        Future.<Vertigo>completedFuture(result.cause()).setHandler(resultHandler);
-      } else {
-        Future.<Vertigo>completedFuture(new VertigoImpl(result.result(), options)).setHandler(resultHandler);
-      }
+    Vertx vertx = Vertx.vertx();
+    vertx.runOnContext(aVoid -> {
+      Future.<Vertigo>succeededFuture(new VertigoImpl(vertx, options)).setHandler(resultHandler);
     });
   }
 

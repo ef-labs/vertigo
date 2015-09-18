@@ -40,6 +40,7 @@ public class ConnectionSourceBuilderImpl implements ConnectionSourceBuilder {
   public ConnectionSourceComponentBuilder component(String name) {
     ConnectionConfig connection = network.network.createConnection(new ConnectionConfigImpl());
     connections.add(connection);
+    connection.getSource().setComponent(name);
     return new ConnectionSourceComponentBuilderImpl(network, network.component(name), connections, connection);
   }
 

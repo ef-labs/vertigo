@@ -36,6 +36,9 @@ public class OutputConfigImpl implements OutputConfig {
   private ComponentConfig component;
   private Map<String, OutputPortConfig> ports = new HashMap<>(10);
 
+  public OutputConfigImpl() {
+  }
+
   public OutputConfigImpl(JsonObject output) {
     for (String key : output.fieldNames()) {
       try {

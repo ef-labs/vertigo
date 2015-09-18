@@ -15,7 +15,7 @@
  */
 package net.kuujo.vertigo.cluster;
 
-import io.vertx.codegen.annotations.Options;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -28,7 +28,7 @@ import java.util.UUID;
  *
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
-@Options
+@DataObject
 public class ClusterOptions {
   private boolean clustered;
   private String clusterAddress = UUID.randomUUID().toString();

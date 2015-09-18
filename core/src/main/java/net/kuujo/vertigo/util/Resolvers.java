@@ -35,9 +35,9 @@ public final class Resolvers {
    * @return A list of resolvers ordered by weight.
    */
   @SuppressWarnings("unchecked")
-  public static <T extends ConfigResolver<?>> T[] loadOrderedResolvers(Class<T> type) {
+  public static <T extends ConfigResolver<?>> Iterable<T> loadOrderedResolvers(Class<T> type) {
     if (Resolvers.resolvers.containsKey(type)) {
-      return (T[]) Resolvers.resolvers.get(type).toArray();
+      return (Iterable<T>) Resolvers.resolvers.get(type);
     }
 
     // Get a list of resolvers.
@@ -51,8 +51,9 @@ public final class Resolvers {
     Collections.sort(resolvers, (a, b) -> {
       return a.weight() < b.weight() ? -1 : 1;
     });
+    resolvers = Collections.unmodifiableList(resolvers);
     Resolvers.resolvers.put(type, resolvers);
-    return (T[]) resolvers.toArray();
+    return resolvers;
   }
 
   /**
