@@ -16,6 +16,7 @@
 package net.kuujo.vertigo.impl;
 
 import io.vertx.core.*;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
 import net.kuujo.vertigo.ContextManager;
 import net.kuujo.vertigo.VertigoException;
@@ -49,18 +50,31 @@ public class LocalContextManager implements ContextManager {
 
   @Override
   public ContextManager deployNetwork(NetworkContext network, Handler<AsyncResult<Void>> doneHandler) {
+
+    // Add to local map to make it accessible from the component.start() methods
+    vertx.sharedData().<String, NetworkContext>getLocalMap(NETWORKS_KEY).put(network.name(), network);
+
     CountingCompletionHandler<Void> counter = new CountingCompletionHandler<Void>(network.components().size()).setHandler(result -> {
-      if (result.succeeded()) {
-        vertx.sharedData().<String, NetworkContext>getLocalMap(NETWORKS_KEY).put(network.name(), network);
+      if (result.failed()) {
+        vertx.sharedData().<String, NetworkContext>getLocalMap(NETWORKS_KEY).remove(network.name());
       }
       doneHandler.handle(result);
     });
 
     for (ComponentContext component : network.components()) {
-      DeploymentOptions options = new DeploymentOptions();
-      options.setConfig(component.config());
-      options.setWorker(component.worker());
-      options.setMultiThreaded(component.multiThreaded());
+
+      JsonObject config = new JsonObject()
+          .put("vertigo_component_id", component.name())
+          .put("vertigo_network_id", network.name());
+      if (component.config() != null) {
+        config.mergeIn(component.config());
+      }
+
+      DeploymentOptions options = new DeploymentOptions()
+          .setConfig(config)
+          .setWorker(component.worker())
+          .setMultiThreaded(component.multiThreaded());
+
       vertx.deployVerticle(component.main(), options, result -> {
         if (result.failed()) {
           counter.fail(result.cause());

@@ -40,6 +40,7 @@ import java.util.UUID;
 public class OutputConnectionImpl<T> implements OutputConnection<T>, Handler<Message<T>> {
   private static final String ACTION_HEADER = "action";
   private static final String PORT_HEADER = "port";
+  private static final String SOURCE_HEADER = "source";
   private static final String ID_HEADER = "name";
   private static final String INDEX_HEADER = "index";
   private static final String MESSAGE_ACTION = "message";
@@ -132,7 +133,7 @@ public class OutputConnectionImpl<T> implements OutputConnection<T>, Handler<Mes
       full = false;
       log.debug(String.format("%s - Connection to %s is drained", this, context.target()));
       if (drainHandler != null) {
-        drainHandler.handle((Void) null);
+        drainHandler.handle((Void)null);
       }
     }
   }
@@ -205,16 +206,18 @@ public class OutputConnectionImpl<T> implements OutputConnection<T>, Handler<Mes
       }
 
       // Set up the message headers.
-      DeliveryOptions options = new DeliveryOptions()
-        .addHeader(PORT_HEADER, context.target().port())
-        .addHeader(ID_HEADER, id)
-        .addHeader(INDEX_HEADER, String.valueOf(index));
+      DeliveryOptions options = new DeliveryOptions();
       if (headers == null) {
         headers = new CaseInsensitiveHeaders();
       }
-      headers.add(ACTION_HEADER, MESSAGE_ACTION);
-      headers.add(ID_HEADER, id);
-      headers.add(INDEX_HEADER, String.valueOf(index));
+      headers.add(ACTION_HEADER, MESSAGE_ACTION)
+          .add(ID_HEADER, id)
+          .add(INDEX_HEADER, String.valueOf(index))
+          .add(PORT_HEADER, context.target().port())
+          .add(SOURCE_HEADER, context.target().address()) // TODO: header is called source, but takes the address...
+          .add(ID_HEADER, id)
+          .add(INDEX_HEADER, String.valueOf(index));
+
       options.setHeaders(headers);
 
       if (log.isDebugEnabled()) {

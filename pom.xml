@@ -63,6 +63,7 @@
     <module>core</module>
     <module>cluster</module>
     <module>config</module>
+    <module>examples</module>
   </modules>
 
   <repositories>

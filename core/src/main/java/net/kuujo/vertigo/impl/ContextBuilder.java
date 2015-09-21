@@ -20,9 +20,10 @@ import net.kuujo.vertigo.component.ComponentContext;
 import net.kuujo.vertigo.io.InputContext;
 import net.kuujo.vertigo.io.OutputContext;
 import net.kuujo.vertigo.io.connection.*;
-import net.kuujo.vertigo.io.port.*;
 import net.kuujo.vertigo.io.port.InputPortConfig;
+import net.kuujo.vertigo.io.port.InputPortContext;
 import net.kuujo.vertigo.io.port.OutputPortConfig;
+import net.kuujo.vertigo.io.port.OutputPortContext;
 import net.kuujo.vertigo.network.Network;
 import net.kuujo.vertigo.network.NetworkContext;
 import net.kuujo.vertigo.spi.ComponentValidator;
@@ -81,41 +82,43 @@ public final class ContextBuilder {
       component.setReplicas(componentConfig.getReplicas());
       component.setResources(componentConfig.getResources());
 
+      ComponentContext cc = component.build();
+
       // Set up component input ports.
-      InputContext.Builder input = InputContext.builder();
+      InputContext.Builder input = InputContext.builder().setComponent(cc);
       for (InputPortConfig port : componentConfig.getInput().getPorts()) {
         // Validate the port configuration.
         Validators.validate(port, PortValidator.class);
 
         // Add the port to the input.
         input.addPort(InputPortContext.builder()
-          .setName(port.getName())
-          .setType(port.getType())
-          .setCodec(port.getCodec())
-          .setPersistent(port.isPersistent())
-          .setInput(input.build())
-          .build());
+            .setName(port.getName())
+            .setType(port.getType())
+            .setCodec(port.getCodec())
+            .setPersistent(port.isPersistent())
+            .setInput(input.build())
+            .build());
       }
       component.setInput(input.build());
 
       // Set up component output ports.
-      OutputContext.Builder output = OutputContext.builder();
+      OutputContext.Builder output = OutputContext.builder().setComponent(cc);
       for (OutputPortConfig port : componentConfig.getOutput().getPorts()) {
         // Validate the port configuration.
         Validators.validate(port, PortValidator.class);
 
         // Add the port to the output.
         output.addPort(OutputPortContext.builder()
-          .setName(port.getName())
-          .setType(port.getType())
-          .setCodec(port.getCodec())
-          .setPersistent(port.isPersistent())
-          .setOutput(output.build())
-          .build());
+            .setName(port.getName())
+            .setType(port.getType())
+            .setCodec(port.getCodec())
+            .setPersistent(port.isPersistent())
+            .setOutput(output.build())
+            .build());
       }
       component.setOutput(output.build());
 
-      components.put(componentConfig.getName(), component.build());
+      components.put(componentConfig.getName(), cc);
     }
 
     // Iterate through connections and create connection contexts.
@@ -142,39 +145,40 @@ public final class ContextBuilder {
 
         // Add the connection to the source's output port context.
         OutputPortContext.Builder output = OutputPortContext.builder(source.output().port(connection.getSource().getPort()))
-          .setName(connection.getSource().getPort())
-          .setType(sourceInfo.getOutput().getPort(connection.getSource().getPort()).getType());
+            .setName(connection.getSource().getPort())
+            .setType(sourceInfo.getOutput().getPort(connection.getSource().getPort()).getType());
 
         output.addConnection(OutputConnectionContext.builder()
-          .setSource(SourceContext.builder()
-            .setComponent(connection.getSource().getComponent())
-            .setPort(connection.getSource().getPort())
-            .setAddress(source.address())
-            .build())
-          .setTarget(TargetContext.builder()
-            .setComponent(connection.getTarget().getComponent())
-            .setPort(connection.getTarget().getPort())
-            .setAddress(target.address())
-            .build())
-          .setPort(output.build()).build());
+            .setSource(SourceContext.builder()
+                .setComponent(connection.getSource().getComponent())
+                .setPort(connection.getSource().getPort())
+                .setAddress(source.address())
+                .build())
+            .setTarget(TargetContext.builder()
+                .setComponent(connection.getTarget().getComponent())
+                .setPort(connection.getTarget().getPort())
+                .setAddress(target.address())
+                .build())
+            .setPort(output.build()).build());
 
         // Add the connection to the target's input port context.
         InputPortContext.Builder input = InputPortContext.builder(target.input().port(connection.getTarget().getPort()))
-          .setName(connection.getTarget().getPort())
-          .setType(targetInfo.getInput().getPort(connection.getTarget().getPort()).getType());
+            .setName(connection.getTarget().getPort())
+            .setType(targetInfo.getInput().getPort(connection.getTarget().getPort()).getType());
 
         input.addConnection(InputConnectionContext.builder()
-          .setSource(SourceContext.builder()
-            .setComponent(connection.getSource().getComponent())
-            .setPort(connection.getSource().getPort())
-            .setAddress(source.address())
-            .build())
-          .setTarget(TargetContext.builder()
-            .setComponent(connection.getTarget().getComponent())
-            .setPort(connection.getTarget().getPort())
-            .setAddress(target.address())
-            .build())
-          .build());
+            .setSource(SourceContext.builder()
+                .setComponent(connection.getSource().getComponent())
+                .setPort(connection.getSource().getPort())
+                .setAddress(source.address())
+                .build())
+            .setTarget(TargetContext.builder()
+                .setComponent(connection.getTarget().getComponent())
+                .setPort(connection.getTarget().getPort())
+                .setAddress(target.address())
+                .build())
+            .setPort(input.build())
+            .build());
       }
     }
 
