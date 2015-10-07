@@ -32,6 +32,7 @@ public abstract class BaseConnectionContextImpl<T extends ConnectionContext<T, U
   protected TargetContext target;
   protected boolean ordered;
   protected boolean atLeastOnce;
+  protected long sendTimeout;
   protected U port;
 
   @Override
@@ -52,6 +53,11 @@ public abstract class BaseConnectionContextImpl<T extends ConnectionContext<T, U
   @Override
   public boolean atLeastOnce() {
     return atLeastOnce;
+  }
+
+  @Override
+  public long sendTimeout() {
+    return sendTimeout;
   }
 
   @Override

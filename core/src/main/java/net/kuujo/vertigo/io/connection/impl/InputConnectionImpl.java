@@ -195,7 +195,7 @@ public class InputConnectionImpl<T> implements InputConnection<T>, Handler<Messa
   private void doMessage(final Message<T> message) {
     if (messageHandler != null) {
       String id = message.headers().get(ID_HEADER);
-      VertigoMessage<T> vertigoMessage = new VertigoMessageImpl<T>(id, message.body(), message.headers());
+      VertigoMessage<T> vertigoMessage = new VertigoMessageImpl<T>(id, message);
 
       if (log.isDebugEnabled()) {
         log.debug(String.format("%s - Received: Message[name=%s, value=%s]", this, id, message));

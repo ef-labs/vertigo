@@ -30,4 +30,12 @@ public interface ConnectionEndpointBuilder<T> {
    */
   T port(String port);
 
+  /**
+   * Sets how long to wait for acks before failing.
+   *
+   * @param timeout How long to wait for acks before failing.
+   * @return The connection info.
+   */
+  T sendTimeout(long timeout);
+
 }

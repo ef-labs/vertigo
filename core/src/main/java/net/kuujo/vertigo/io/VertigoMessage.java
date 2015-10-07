@@ -17,6 +17,8 @@
 package net.kuujo.vertigo.io;
 
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 
 /**
@@ -56,6 +58,11 @@ public interface VertigoMessage<T> {
   /**
    * Fails the message.
    */
-  void fail();
+  void fail(Throwable cause);
+
+  /**
+   * Convenience handler for automatically acking or failing chained sends.
+   */
+  void handle(AsyncResult<Void> result);
 
 }

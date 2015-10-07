@@ -18,12 +18,10 @@ package net.kuujo.vertigo.examples.wordcount;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import net.kuujo.vertigo.Vertigo;
 import net.kuujo.vertigo.builder.NetworkBuilder;
 import net.kuujo.vertigo.component.AbstractComponent;
-import net.kuujo.vertigo.io.ControllableOutput;
 import net.kuujo.vertigo.io.VertigoMessage;
 import net.kuujo.vertigo.io.port.OutputPort;
 import net.kuujo.vertigo.network.Network;
@@ -60,24 +58,24 @@ public class WordCountNetwork extends AbstractVerticle {
 
       OutputPort<String> port = component().output().<String>port("word");
 
-      if (port instanceof ControllableOutput) {
-        ControllableOutput<?, ?> controllableOutput = (ControllableOutput<?, ?>)port;
-
-        while (!controllableOutput.sendQueueFull()) {
-          port.send(words[random.nextInt(words.length - 1)]);
-        }
-        controllableOutput.drainHandler(aVoid -> {
-          doSend();
-        });
-
-      } else {
+//      if (port instanceof ControllableOutput) {
+//        ControllableOutput<?, ?> controllableOutput = (ControllableOutput<?, ?>)port;
+//
+//        while (!controllableOutput.sendQueueFull()) {
+//          port.send(words[random.nextInt(words.length - 1)]);
+//        }
+//        controllableOutput.drainHandler(aVoid -> {
+//          doSend();
+//        });
+//
+//      } else {
 
         // Just send 100 messages if not controllable
         for (int i = 0; i < 100; i++) {
           port.send(words[random.nextInt(words.length - 1)]);
         }
 
-      }
+//      }
 
     }
   }
@@ -128,11 +126,7 @@ public class WordCountNetwork extends AbstractVerticle {
       component()
           .output()
           .<JsonObject>port("count")
-          .send(msg, result -> {
-            if (result.succeeded()) {
-
-            }
-          });
+          .send(msg, message::handle);
 
     }
   }

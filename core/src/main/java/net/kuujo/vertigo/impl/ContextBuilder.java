@@ -159,6 +159,7 @@ public final class ContextBuilder {
                 .setPort(connection.getTarget().getPort())
                 .setAddress(target.address())
                 .build())
+            .setSendTimeout(connection.getSendTimeout())
             .setPort(output.build()).build());
 
         // Add the connection to the target's input port context.

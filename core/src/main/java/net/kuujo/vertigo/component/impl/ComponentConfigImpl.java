@@ -143,7 +143,7 @@ public class ComponentConfigImpl implements ComponentConfig {
 
   @Override
   public ComponentConfig setReplicas(int replication) {
-    this.replicas = replicas;
+    this.replicas = replication;
     return this;
   }
 

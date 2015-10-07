@@ -29,22 +29,22 @@ public class BasicConnectionValidator implements ConnectionValidator {
   @Override
   public void validate(ConnectionConfig connection) {
     if (connection.getSource() == null) {
-      throw new ValidationException("Connection source cannot be null");
+      throw new ValidationException(String.format("Connection source cannot be null (%s)", connection.toJson().toString()));
     }
     if (connection.getSource().getComponent() == null) {
-      throw new ValidationException("Connection source component cannot be null");
+      throw new ValidationException(String.format("Connection source component cannot be null (%s)", connection.toJson().toString()));
     }
     if (connection.getSource().getPort() == null) {
-      throw new ValidationException("Connection source port cannot be null");
+      throw new ValidationException(String.format("Connection source port cannot be null (%s)", connection.toJson().toString()));
     }
     if (connection.getTarget() == null) {
-      throw new ValidationException("Connection target cannot be null");
+      throw new ValidationException(String.format("Connection target cannot be null (%s)", connection.toJson().toString()));
     }
     if (connection.getTarget().getComponent() == null) {
-      throw new ValidationException("Connection target component cannot be null");
+      throw new ValidationException(String.format("Connection target component cannot be null (%s)", connection.toJson().toString()));
     }
     if (connection.getTarget().getPort() == null) {
-      throw new ValidationException("Connection target port cannot be null");
+      throw new ValidationException(String.format("Connection target port cannot be null (%s)", connection.toJson().toString()));
     }
   }
 

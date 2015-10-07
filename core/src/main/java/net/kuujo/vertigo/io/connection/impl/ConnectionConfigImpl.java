@@ -37,6 +37,7 @@ public class ConnectionConfigImpl implements ConnectionConfig {
   private TargetConfig target;
   private boolean ordered;
   private boolean atLeastOnce;
+  private long sendTimeout;
 
   public ConnectionConfigImpl() {
     this.source = new SourceConfigImpl();
@@ -104,6 +105,17 @@ public class ConnectionConfigImpl implements ConnectionConfig {
   }
 
   @Override
+  public ConnectionConfig setSendTimeout(long timeout) {
+    this.sendTimeout = timeout;
+    return this;
+  }
+
+  @Override
+  public long getSendTimeout() {
+    return sendTimeout;
+  }
+
+  @Override
   public void update(JsonObject connection) {
     if (connection.containsKey(CONNECTION_SOURCE)) {
       if (this.source == null) {
@@ -125,6 +137,9 @@ public class ConnectionConfigImpl implements ConnectionConfig {
     if (connection.containsKey(CONNECTION_AT_LEAST_ONCE)) {
       this.atLeastOnce = connection.getBoolean(CONNECTION_AT_LEAST_ONCE);
     }
+    if (connection.containsKey(CONNECTION_SEND_TIMEOUT)) {
+      this.sendTimeout = connection.getLong(CONNECTION_SEND_TIMEOUT);
+    }
   }
 
   @Override
@@ -134,6 +149,7 @@ public class ConnectionConfigImpl implements ConnectionConfig {
     json.put(CONNECTION_TARGET, target != null ? target.toJson() : null);
     json.put(CONNECTION_ORDERED, ordered);
     json.put(CONNECTION_AT_LEAST_ONCE, atLeastOnce);
+    json.put(CONNECTION_SEND_TIMEOUT, sendTimeout);
     return json;
   }
 

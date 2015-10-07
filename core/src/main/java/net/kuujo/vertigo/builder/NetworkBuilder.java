@@ -17,6 +17,7 @@ package net.kuujo.vertigo.builder;
 
 import io.vertx.codegen.annotations.VertxGen;
 import net.kuujo.vertigo.network.Network;
+import net.kuujo.vertigo.network.ValidationException;
 
 /**
  * Network builder.
@@ -33,5 +34,12 @@ public interface NetworkBuilder extends Builder<Network>, NetworkLikeBuilder<Net
    * @return The network builder.
    */
   NetworkBuilder name(String name);
+
+  /**
+   * Runs validation checks on the network.
+   *
+   * @throws ValidationException
+   */
+  NetworkBuilder validate();
 
 }

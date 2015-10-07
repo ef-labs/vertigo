@@ -95,6 +95,15 @@ public class ConnectionTargetComponentBuilderImpl implements ConnectionTargetCom
   public ConnectionTargetComponentBuilder port(String port) {
     for (ConnectionConfig connection : connections) {
       connection.getTarget().setPort(port);
+      network.component(connection.getTarget().getComponent()).input().port(port);
+    }
+    return this;
+  }
+
+  @Override
+  public ConnectionTargetComponentBuilder sendTimeout(long timeout) {
+    for (ConnectionConfig connection : connections) {
+      connection.setSendTimeout(timeout);
     }
     return this;
   }

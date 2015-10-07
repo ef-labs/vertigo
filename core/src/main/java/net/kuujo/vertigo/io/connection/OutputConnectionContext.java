@@ -92,6 +92,14 @@ public interface OutputConnectionContext extends ConnectionContext<OutputConnect
      * @return The output connection context builder.
      */
     Builder setPort(OutputPortContext port);
+
+    /**
+     * Sets the send timeout of the output port.
+     *
+     * @param timeout The send timeout of the output port.
+     * @return The output connection context builder.
+     */
+    Builder setSendTimeout(long timeout);
   }
 
 }

@@ -56,6 +56,12 @@ public interface ConnectionConfig extends TypeConfig {
   public static final String CONNECTION_AT_LEAST_ONCE = "at-least-once";
 
   /**
+   * <code>send-timeout</code> is a long indicating the send timeout when an ack handler is used
+   * before failing the ack handler.
+   */
+  public static final String CONNECTION_SEND_TIMEOUT = "send-timeout";
+
+  /**
    * Sets the connection source.
    *
    * @param source The connection source.
@@ -118,5 +124,21 @@ public interface ConnectionConfig extends TypeConfig {
    * @return Whether the connection is at least once.
    */
   boolean isAtLeastOnce();
+
+  /**
+   * Sets how long to wait for acks before failing.
+   *
+   * @param timeout How long to wait for acks before failing.
+   * @return The connection info.
+   */
+  @Fluent
+  ConnectionConfig setSendTimeout(long timeout);
+
+  /**
+   * Gets how long to wait for acks before failing.
+   *
+   * @return The connection info.
+   */
+  long getSendTimeout();
 
 }

@@ -29,10 +29,10 @@ public class BasicComponentValidator implements ComponentValidator {
   @Override
   public void validate(ComponentConfig component) {
     if (component.getName() == null) {
-      throw new ValidationException("Component name cannot be null");
+      throw new ValidationException(String.format("Component name cannot be null %s", component.toJson().toString()));
     }
     if (component.getIdentifier() == null) {
-      throw new ValidationException("Component identifier cannot be null");
+      throw new ValidationException(String.format("Component identifier cannot be null on %s", component.getName()));
     }
   }
 

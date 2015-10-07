@@ -15,6 +15,8 @@
  */
 package net.kuujo.vertigo.builder;
 
+import net.kuujo.vertigo.network.ValidationException;
+
 /**
  * Base type for configuration builders.
  *
@@ -26,6 +28,7 @@ public interface Builder<T> {
    * Builds the configuration.
    *
    * @return The built configuration.
+   * @throws ValidationException
    */
   T build();
 

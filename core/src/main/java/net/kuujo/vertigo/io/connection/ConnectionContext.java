@@ -63,4 +63,11 @@ public interface ConnectionContext<T extends ConnectionContext<T, U>, U extends 
    */
   U port();
 
+  /**
+   * Returns the connection's send timeout.
+   *
+   * @return The connection's send timeout.
+   */
+  long sendTimeout();
+
 }

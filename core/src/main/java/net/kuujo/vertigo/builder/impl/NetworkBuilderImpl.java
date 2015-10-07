@@ -19,10 +19,17 @@ import net.kuujo.vertigo.builder.ComponentBuilder;
 import net.kuujo.vertigo.builder.ConnectionSourceBuilder;
 import net.kuujo.vertigo.builder.ConnectionSourceComponentBuilder;
 import net.kuujo.vertigo.builder.NetworkBuilder;
+import net.kuujo.vertigo.component.ComponentConfig;
 import net.kuujo.vertigo.io.connection.ConnectionConfig;
 import net.kuujo.vertigo.io.connection.impl.ConnectionConfigImpl;
 import net.kuujo.vertigo.network.Network;
+import net.kuujo.vertigo.network.ValidationException;
 import net.kuujo.vertigo.network.impl.NetworkImpl;
+import net.kuujo.vertigo.spi.ComponentValidator;
+import net.kuujo.vertigo.spi.ConnectionValidator;
+import net.kuujo.vertigo.spi.NetworkValidator;
+import net.kuujo.vertigo.spi.PortValidator;
+import net.kuujo.vertigo.util.Validators;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,13 +74,43 @@ public class NetworkBuilderImpl implements NetworkBuilder {
 
   @Override
   public ConnectionSourceComponentBuilder connect(String component) {
-    ConnectionConfig connection = network.createConnection(new ConnectionConfigImpl());
-    return new ConnectionSourceBuilderImpl(this, new ArrayList<>(Arrays.asList(connection))).component(component);
+    return new ConnectionSourceBuilderImpl(this, new ArrayList<>()).component(component);
   }
 
   @Override
-  public Network build() {
+  public Network build() throws ValidationException {
+    validate();
     return network;
+  }
+
+  @Override
+  public NetworkBuilder validate() {
+
+    // Validate network
+    Validators.validate(network, NetworkValidator.class);
+
+    // Validate Components
+    network.getComponents().forEach(component -> {
+      Validators.validate(component, ComponentValidator.class);
+
+      // Validate component inputs
+      component.getInput().getPorts().forEach(port ->
+        Validators.validate(port, PortValidator.class)
+      );
+
+      // Validate component outputs
+      component.getOutput().getPorts().forEach(port ->
+        Validators.validate(port, PortValidator.class)
+      );
+
+    });
+
+    // Validate connections
+    network.getConnections().forEach(connection ->
+      Validators.validate(connection, ConnectionValidator.class)
+    );
+
+    return this;
   }
 
 }

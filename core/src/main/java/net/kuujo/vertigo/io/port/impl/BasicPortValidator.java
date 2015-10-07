@@ -29,10 +29,12 @@ public class BasicPortValidator implements PortValidator {
   @Override
   public void validate(PortConfig port) {
     if (port.getName() == null) {
-      throw new ValidationException("Port name cannot be null");
+      String componentName = port.getComponent() != null ? port.getComponent().getName() : "[no component]";
+      throw new ValidationException(String.format("Port name cannot be null %s on %s", port.toJson().toString(), componentName));
     }
     if (port.getType() == null) {
-      throw new ValidationException("Port type cannot be null");
+      String componentName = port.getComponent() != null ? port.getComponent().getName() : "[no component]";
+      throw new ValidationException(String.format("Port type cannot be null %s on %s", port.toJson().toString(), componentName));
     }
   }
 

@@ -16,7 +16,12 @@
 
 package net.kuujo.vertigo.io.impl;
 
+import io.vertx.core.AsyncResult;
 import io.vertx.core.MultiMap;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.eventbus.ReplyException;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import net.kuujo.vertigo.io.VertigoMessage;
 
 /**
@@ -25,17 +30,17 @@ import net.kuujo.vertigo.io.VertigoMessage;
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 public class VertigoMessageImpl<T> implements VertigoMessage<T> {
+  private Message<T> message;
   private String id;
   private T body;
   private MultiMap headers;
+  private boolean acked;
 
-  public VertigoMessageImpl() {
-  }
-
-  public VertigoMessageImpl(String id, T body, MultiMap headers) {
+  public VertigoMessageImpl(String id, Message<T> message) {
     this.id = id;
-    this.body = body;
-    this.headers = headers;
+    this.body = message.body();
+    this.headers = message.headers();
+    this.message = message;
   }
 
   @Override
@@ -55,10 +60,35 @@ public class VertigoMessageImpl<T> implements VertigoMessage<T> {
 
   @Override
   public void ack() {
+    if (!acked) {
+      acked = true;
+      message.reply(null);
+    }
   }
 
   @Override
-  public void fail() {
+  public void fail(Throwable cause) {
+    // TODO: Log cause?
+    if (!acked) {
+      if (cause instanceof ReplyException) {
+        ReplyException exception = (ReplyException) cause;
+        message.fail(exception.failureCode(), exception.getMessage());
+      }
+      else {
+        message.fail(-1, cause == null ? "Unknown error" : cause.getMessage());
+      }
+      acked = true;
+    }
+  }
+
+  @Override
+  public void handle(AsyncResult<Void> result) {
+    if (result.succeeded()) {
+      ack();
+    } else {
+      fail(result.cause());
+    }
   }
 
 }
+

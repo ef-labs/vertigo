@@ -35,7 +35,7 @@ import java.util.concurrent.CountDownLatch;
  *
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
-public class WordCountTest extends VertxTestBase implements Handler<Message<Void>> {
+public class WordCountTest extends VertxTestBase implements Handler<Message<String>> {
 
   private static String address = UUID.randomUUID().toString();
 
@@ -79,7 +79,8 @@ public class WordCountTest extends VertxTestBase implements Handler<Message<Void
   }
 
   @Override
-  public void handle(Message<Void> message) {
+  public void handle(Message<String> message) {
+    System.out.println(message.body());
     testComplete();
   }
 
@@ -99,6 +100,7 @@ public class WordCountTest extends VertxTestBase implements Handler<Message<Void
 
     /**
      * Something has happened, so handle it.
+     * Consider test complete when at least one word has appeared 10 times.
      *
      * @param message the event to handle
      */
@@ -109,9 +111,9 @@ public class WordCountTest extends VertxTestBase implements Handler<Message<Void
       int count = message.body().getInteger("count", 0);
       message.ack();
 
-      if (count >= 50 && !testComplete) {
+      if (count >= 10 && !testComplete) {
         testComplete = true;
-        vertx.eventBus().send(address, null);
+        vertx.eventBus().send(address, String.format("%s: %d", word, count));
       }
 
     }

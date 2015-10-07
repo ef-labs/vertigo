@@ -15,10 +15,7 @@
  */
 package net.kuujo.vertigo.io.connection.impl;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.MultiMap;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
@@ -57,7 +54,7 @@ public class OutputConnectionImpl<T> implements OutputConnection<T>, Handler<Mes
   private Handler<Void> drainHandler;
   private long currentMessage = 1;
   private final TreeMap<Long, JsonObject> messages = new TreeMap<>();
-  private final TreeMap<Long, Handler<AsyncResult<Void>>> ackHandlers = new TreeMap<>();
+  //private final TreeMap<Long, Handler<AsyncResult<Void>>> ackHandlers = new TreeMap<>();
   private boolean full;
   private boolean paused;
 
@@ -201,9 +198,13 @@ public class OutputConnectionImpl<T> implements OutputConnection<T>, Handler<Mes
       String id = UUID.randomUUID().toString();
       long index = currentMessage++;
 
-      if (ackHandler != null) {
-        ackHandlers.put(index, ackHandler);
-      }
+      /*
+      Commented out tracking of ackHandlers. Presumably these need to be kept around so new handlers can be created
+      if messages are resent.
+      // if (ackHandler != null) {
+      //   ackHandlers.put(index, ackHandler);
+      // }
+      */
 
       // Set up the message headers.
       DeliveryOptions options = new DeliveryOptions();
@@ -219,11 +220,25 @@ public class OutputConnectionImpl<T> implements OutputConnection<T>, Handler<Mes
           .add(INDEX_HEADER, String.valueOf(index));
 
       options.setHeaders(headers);
+      if (context.sendTimeout() > 0) {
+        options.setSendTimeout(context.sendTimeout());
+      }
 
       if (log.isDebugEnabled()) {
         log.debug(String.format("%s - Send: Message[name=%s, message=%s]", this, id, message));
       }
-      eventBus.send(context.target().address(), message, options);
+
+      if (ackHandler != null) {
+        eventBus.send(context.target().address(), message, options, r -> {
+          if (r.succeeded()) {
+            ackHandler.handle(Future.<Void>succeededFuture());
+          } else {
+            ackHandler.handle(Future.<Void>failedFuture(r.cause()));
+          }
+        });
+      } else {
+        eventBus.send(context.target().address(), message, options);
+      }
       checkFull();
     }
     return this;

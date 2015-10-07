@@ -77,6 +77,12 @@ public class OutputConnectionContextImpl extends BaseConnectionContextImpl<Outpu
     }
 
     @Override
+    public OutputConnectionContext.Builder setSendTimeout(long timeout) {
+      connection.sendTimeout = timeout;
+      return this;
+    }
+
+    @Override
     public OutputConnectionContextImpl build() {
       return connection;
     }
