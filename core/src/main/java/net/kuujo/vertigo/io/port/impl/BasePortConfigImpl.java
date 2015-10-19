@@ -131,7 +131,6 @@ abstract class BasePortConfigImpl<T extends PortConfig<T>> implements PortConfig
   @Override
   public JsonObject toJson() {
     JsonObject json = new JsonObject();
-    json.put(PORT_NAME, name);
     json.put(PORT_TYPE, type.getName());
     json.put(PORT_CODEC, codec != null ? codec.getName() : null);
     json.put(PORT_PERSISTENT, persistent);

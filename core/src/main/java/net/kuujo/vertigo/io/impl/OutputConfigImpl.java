@@ -40,13 +40,7 @@ public class OutputConfigImpl implements OutputConfig {
   }
 
   public OutputConfigImpl(JsonObject output) {
-    for (String key : output.fieldNames()) {
-      try {
-        ports.put(key, new OutputPortConfigImpl(key, Class.forName(output.getString(key))));
-      } catch (ClassNotFoundException e) {
-        throw new VertigoException(e);
-      }
-    }
+    update(output);
   }
 
   @Override
@@ -106,7 +100,7 @@ public class OutputConfigImpl implements OutputConfig {
   @Override
   public void update(JsonObject output) {
     for (String key : output.fieldNames()) {
-      ports.put(key, new OutputPortConfigImpl(output.put(PortConfig.PORT_NAME, key)));
+      ports.put(key, new OutputPortConfigImpl(output.getJsonObject(key)));
     }
   }
 

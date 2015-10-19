@@ -272,14 +272,14 @@ public class ComponentConfigImpl implements ComponentConfig {
     json.put(COMPONENT_STATEFUL, stateful);
     json.put(COMPONENT_REPLICAS, replicas);
     json.put(COMPONENT_RESOURCES, new JsonArray(Arrays.asList(resources.toArray(new String[resources.size()]))));
-    JsonArray input = new JsonArray();
+    JsonObject input = new JsonObject();
     for (InputPortConfig port : this.input.getPorts()) {
-      input.add(port.toJson());
+      input.put(port.getName(), port.toJson());
     }
     json.put(COMPONENT_INPUT, input);
-    JsonArray output = new JsonArray();
+    JsonObject output = new JsonObject();
     for (OutputPortConfig port : this.output.getPorts()) {
-      output.add(port.toJson());
+      output.put(port.getName(), port.toJson());
     }
     json.put(COMPONENT_OUTPUT, output);
     return json;
