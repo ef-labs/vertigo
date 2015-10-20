@@ -29,6 +29,7 @@ import net.kuujo.vertigo.spi.PortTypeResolver;
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 abstract class BasePortConfigImpl<T extends PortConfig<T>> implements PortConfig<T> {
+
   private static final PortTypeResolver resolver = ServiceHelper.loadFactory(PortTypeResolver.class);
   private ComponentConfig component;
   private String name;
@@ -115,6 +116,9 @@ abstract class BasePortConfigImpl<T extends PortConfig<T>> implements PortConfig
     if (type != null) {
       this.type = resolver.resolve(type);
     }
+    else {
+      this.type = Object.class;
+    }
     String codec = port.getString(PORT_CODEC);
     if (codec != null) {
       try {
@@ -131,9 +135,15 @@ abstract class BasePortConfigImpl<T extends PortConfig<T>> implements PortConfig
   @Override
   public JsonObject toJson() {
     JsonObject json = new JsonObject();
-    json.put(PORT_TYPE, type.getName());
-    json.put(PORT_CODEC, codec != null ? codec.getName() : null);
-    json.put(PORT_PERSISTENT, persistent);
+    if (type != null && type != Object.class) {
+      json.put(PORT_TYPE, type.getName());
+    }
+    if (codec != null) {
+      json.put(PORT_CODEC, codec.getName());
+    }
+    if (persistent) {
+      json.put(PORT_PERSISTENT, true);
+    }
     return json;
   }
 

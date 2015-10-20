@@ -99,7 +99,8 @@ public class InputConfigImpl implements InputConfig {
   @Override
   public void update(JsonObject output) {
     for (String key : output.fieldNames()) {
-      ports.put(key, new InputPortConfigImpl(output.getJsonObject(key)));
+      ports.put(key, new InputPortConfigImpl(output.getJsonObject(key))
+          .setName(key));
     }
   }
 

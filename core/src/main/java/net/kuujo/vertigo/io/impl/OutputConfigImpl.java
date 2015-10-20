@@ -100,7 +100,9 @@ public class OutputConfigImpl implements OutputConfig {
   @Override
   public void update(JsonObject output) {
     for (String key : output.fieldNames()) {
-      ports.put(key, new OutputPortConfigImpl(output.getJsonObject(key)));
+      ports.put(key,
+          new OutputPortConfigImpl(output.getJsonObject(key))
+              .setName(key));
     }
   }
 
