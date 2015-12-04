@@ -15,6 +15,8 @@
  */
 package net.kuujo.vertigo.io.connection;
 
+import io.vertx.core.Handler;
+import io.vertx.core.eventbus.Message;
 import net.kuujo.vertigo.io.ControllableInput;
 
 /**
@@ -35,5 +37,5 @@ import net.kuujo.vertigo.io.ControllableInput;
  *
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
-public interface InputConnection<T> extends Connection, ControllableInput<InputConnection<T>, T> {
+public interface InputConnection<T> extends Connection, ControllableInput<InputConnection<T>, T>, Handler<Message<T>> {
 }

@@ -16,6 +16,8 @@
 package net.kuujo.vertigo.io.port;
 
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.Handler;
+import io.vertx.core.eventbus.Message;
 import net.kuujo.vertigo.io.Output;
 
 /**
@@ -24,5 +26,5 @@ import net.kuujo.vertigo.io.Output;
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 @VertxGen
-public interface OutputPort<T> extends Port<OutputPort<T>>, Output<OutputPort<T>, T> {
+public interface OutputPort<T> extends Port<OutputPort<T>>, Output<OutputPort<T>, T>, Handler<Message<T>> {
 }

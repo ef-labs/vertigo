@@ -27,11 +27,9 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import net.kuujo.vertigo.component.ComponentContext;
 import net.kuujo.vertigo.component.ComponentInstance;
+import net.kuujo.vertigo.component.ComponentInstanceFactory;
 import net.kuujo.vertigo.io.InputCollector;
 import net.kuujo.vertigo.io.OutputCollector;
-import net.kuujo.vertigo.io.impl.InputCollectorImpl;
-import net.kuujo.vertigo.io.impl.OutputCollectorImpl;
-import net.kuujo.vertigo.util.CountingCompletionHandler;
 
 /**
  * Component partition implementation.
@@ -39,16 +37,16 @@ import net.kuujo.vertigo.util.CountingCompletionHandler;
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 public class ComponentInstanceImpl implements ComponentInstance, Handler<Message<Object>> {
-  private static final String ACTION_HEADER = "action";
-  private static final String MESSAGE_ACTION = "message";
-  private static final String ACK_ACTION = "ack";
-  private static final String FAIL_ACTION = "fail";
-  private static final String PAUSE_ACTION = "pause";
-  private static final String RESUME_ACTION = "resume";
+  protected static final String ACTION_HEADER = "action";
+  protected static final String MESSAGE_ACTION = "message";
+  protected static final String ACK_ACTION = "ack";
+  protected static final String FAIL_ACTION = "fail";
+  protected static final String PAUSE_ACTION = "pause";
+  protected static final String RESUME_ACTION = "resume";
   private final Vertx vertx;
   private final ComponentContext context;
-  private final InputCollectorImpl input;
-  private final OutputCollectorImpl output;
+  private final InputCollector input;
+  private final OutputCollector output;
   private final Logger logger;
   private JsonObject state;
   private Handler<JsonObject> checkpointHandler;
@@ -56,10 +54,14 @@ public class ComponentInstanceImpl implements ComponentInstance, Handler<Message
   private MessageConsumer<Object> consumer;
 
   public ComponentInstanceImpl(Vertx vertx, ComponentContext context) {
+    this(vertx, context, new ComponentInstanceFactoryImpl());
+  }
+
+  public ComponentInstanceImpl(Vertx vertx, ComponentContext context, ComponentInstanceFactory factory) {
     this.vertx = vertx;
     this.context = context;
-    this.input = new InputCollectorImpl(vertx, context.input());
-    this.output = new OutputCollectorImpl(vertx, context.output());
+    this.input = factory.createInputCollector(vertx, context.input());
+    this.output = factory.createOutputCollector(vertx, context.output());
     this.logger = LoggerFactory.getLogger(String.format("%s-%s", ComponentInstance.class.getName(), context.address()));
   }
 

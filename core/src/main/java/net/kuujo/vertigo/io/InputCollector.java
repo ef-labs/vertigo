@@ -16,6 +16,8 @@
 package net.kuujo.vertigo.io;
 
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.Handler;
+import io.vertx.core.eventbus.Message;
 import net.kuujo.vertigo.io.port.InputPort;
 
 import java.util.Collection;
@@ -29,7 +31,7 @@ import java.util.Collection;
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 @VertxGen
-public interface InputCollector {
+public interface InputCollector extends Handler<Message<Object>> {
 
   /**
    * Returns a collection of input ports.

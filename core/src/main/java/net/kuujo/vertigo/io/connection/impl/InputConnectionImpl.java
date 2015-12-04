@@ -24,10 +24,10 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import net.kuujo.vertigo.io.VertigoMessageFactory;
 import net.kuujo.vertigo.io.VertigoMessage;
 import net.kuujo.vertigo.io.connection.InputConnection;
 import net.kuujo.vertigo.io.connection.InputConnectionContext;
-import net.kuujo.vertigo.io.impl.VertigoMessageImpl;
 
 /**
  * Input connection implementation.
@@ -35,24 +35,25 @@ import net.kuujo.vertigo.io.impl.VertigoMessageImpl;
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 public class InputConnectionImpl<T> implements InputConnection<T>, Handler<Message<T>> {
-  private static final String ACTION_HEADER = "action";
-  private static final String ID_HEADER = "name";
-  private static final String INDEX_HEADER = "index";
-  private static final String MESSAGE_ACTION = "message";
-  private static final String ACK_ACTION = "ack";
-  private static final String FAIL_ACTION = "fail";
-  private static final String PAUSE_ACTION = "pause";
-  private static final String RESUME_ACTION = "resume";
+  protected static final String ACTION_HEADER = "action";
+  protected static final String ID_HEADER = "name";
+  protected static final String INDEX_HEADER = "index";
+  protected static final String MESSAGE_ACTION = "message";
+  protected static final String ACK_ACTION = "ack";
+  protected static final String FAIL_ACTION = "fail";
+  protected static final String PAUSE_ACTION = "pause";
+  protected static final String RESUME_ACTION = "resume";
   private static final long BATCH_SIZE = 1000;
   private static final long MAX_BATCH_TIME = 100;
   private final Logger log;
-  private final Vertx vertx;
-  private final EventBus eventBus;
-  private final InputConnectionContext context;
-  private final String inAddress;
-  private final String outAddress;
+  protected final Vertx vertx;
+  protected final EventBus eventBus;
+  protected final InputConnectionContext context;
+  protected final String inAddress;
+  protected final String outAddress;
+  protected final VertigoMessageFactory messageFactory;
   private MessageConsumer<T> consumer;
-  private Handler<VertigoMessage<T>> messageHandler;
+  protected Handler<VertigoMessage<T>> messageHandler;
   private long lastReceived;
   private long lastFeedbackTime;
   private long feedbackTimerID;
@@ -87,10 +88,11 @@ public class InputConnectionImpl<T> implements InputConnection<T>, Handler<Messa
     }
   };
 
-  public InputConnectionImpl(Vertx vertx, InputConnectionContext context) {
+  public InputConnectionImpl(Vertx vertx, InputConnectionContext context, VertigoMessageFactory messageFactory) {
     this.vertx = vertx;
     this.eventBus = vertx.eventBus();
     this.context = context;
+    this.messageFactory = messageFactory;
     this.inAddress = String.format("%s.in", context.port().input().component().address());
     this.outAddress = String.format("%s.out", context.port().input().component().address());
     this.log = LoggerFactory.getLogger(String.format("%s-%s", InputConnectionImpl.class.getName(), context.port().input().component().address()));
@@ -108,7 +110,7 @@ public class InputConnectionImpl<T> implements InputConnection<T>, Handler<Messa
   /**
    * Checks that the given index is valid.
    */
-  private boolean checkIndex(long index) {
+  protected boolean checkIndex(long index) {
     // Ensure that the given ID is a monotonically increasing ID.
     // If the ID is less than the last received ID then reset the
     // last received ID since the connection must have been reset.
@@ -129,7 +131,7 @@ public class InputConnectionImpl<T> implements InputConnection<T>, Handler<Messa
   /**
    * Sends an ack message for the current received count.
    */
-  private void ack() {
+  protected void ack() {
     // Send a message to the other side of the connection indicating the
     // last message that we received in order. This will allow it to
     // purge messages we've already received from its queue.
@@ -145,7 +147,7 @@ public class InputConnectionImpl<T> implements InputConnection<T>, Handler<Messa
   /**
    * Sends a fail message for the current received count.
    */
-  private void fail() {
+  protected void fail() {
     // Send a "fail" message indicating the last message we received in order.
     // This will cause the other side of the connection to resend messages
     // in order from that point on.
@@ -192,10 +194,10 @@ public class InputConnectionImpl<T> implements InputConnection<T>, Handler<Messa
    * Handles receiving a message.
    */
   @SuppressWarnings("unchecked")
-  private void doMessage(final Message<T> message) {
+  protected void doMessage(final Message<T> message) {
     if (messageHandler != null) {
       String id = message.headers().get(ID_HEADER);
-      VertigoMessage<T> vertigoMessage = new VertigoMessageImpl<T>(id, message);
+      VertigoMessage<T> vertigoMessage = messageFactory.<T>createVertigoMessage(id, message);
 
       if (log.isDebugEnabled()) {
         log.debug(String.format("%s - Received: Message[name=%s, value=%s]", this, id, message));

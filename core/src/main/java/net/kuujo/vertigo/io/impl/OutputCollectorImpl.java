@@ -20,11 +20,11 @@ import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import net.kuujo.vertigo.component.ComponentInstanceFactory;
 import net.kuujo.vertigo.io.OutputCollector;
 import net.kuujo.vertigo.io.OutputContext;
 import net.kuujo.vertigo.io.port.OutputPort;
 import net.kuujo.vertigo.io.port.OutputPortContext;
-import net.kuujo.vertigo.io.port.impl.OutputPortImpl;
 
 import java.util.*;
 
@@ -35,24 +35,25 @@ import java.util.*;
  */
 public class OutputCollectorImpl implements OutputCollector, Handler<Message<Object>> {
   private final Logger log;
-  private final Vertx vertx;
-  private OutputContext context;
-  private final Map<String, OutputPortImpl> ports = new HashMap<>();
+  protected final Vertx vertx;
+  protected OutputContext context;
+  protected final Map<String, OutputPort> ports = new HashMap<>();
 
-  public OutputCollectorImpl(Vertx vertx, OutputContext context) {
+  public OutputCollectorImpl(Vertx vertx, OutputContext context, ComponentInstanceFactory factory) {
     this.vertx = vertx;
     this.context = context;
     this.log = LoggerFactory.getLogger(String.format("%s-%s", OutputCollectorImpl.class.getName(), context.component().name()));
-    init();
+    init(factory);
   }
 
   /**
    * Initializes the output.
+   * @param factory
    */
-  private void init() {
+  private void init(ComponentInstanceFactory factory) {
     for (OutputPortContext output : context.ports()) {
       if (!ports.containsKey(output.name())) {
-        ports.put(output.name(), new OutputPortImpl(vertx, output));
+        ports.put(output.name(), factory.createOutputPort(vertx, output));
       }
     }
   }
@@ -62,7 +63,7 @@ public class OutputCollectorImpl implements OutputCollector, Handler<Message<Obj
   public void handle(Message<Object> message) {
     String portName = message.headers().get("port");
     if (portName != null) {
-      OutputPortImpl port = ports.get(portName);
+      OutputPort port = ports.get(portName);
       if (port != null) {
         port.handle(message);
       }
@@ -72,7 +73,7 @@ public class OutputCollectorImpl implements OutputCollector, Handler<Message<Obj
   @Override
   public Collection<OutputPort> ports() {
     List<OutputPort> ports = new ArrayList<>(this.ports.size());
-    for (OutputPortImpl port : this.ports.values()) {
+    for (OutputPort port : this.ports.values()) {
       ports.add(port);
     }
     return ports;

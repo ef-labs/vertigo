@@ -17,11 +17,11 @@ package net.kuujo.vertigo.component;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.ServiceHelper;
 import io.vertx.core.json.JsonObject;
 import net.kuujo.vertigo.ContextManager;
 import net.kuujo.vertigo.VertigoException;
 import net.kuujo.vertigo.VertigoOptions;
-import net.kuujo.vertigo.component.impl.ComponentInstanceImpl;
 import net.kuujo.vertigo.network.NetworkContext;
 
 /**
@@ -68,7 +68,8 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
           return;
         }
 
-        component = new ComponentInstanceImpl(vertx, cc);
+        ComponentInstanceFactory factory = ServiceHelper.loadFactory(ComponentInstanceFactory.class);
+        component = factory.createComponentInstance(vertx, cc);
         component.start(result2 -> {
           if (result2.succeeded()) {
             try {

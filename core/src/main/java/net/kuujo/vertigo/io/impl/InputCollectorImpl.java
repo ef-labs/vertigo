@@ -22,11 +22,11 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import net.kuujo.vertigo.component.ComponentInstanceFactory;
 import net.kuujo.vertigo.io.InputCollector;
 import net.kuujo.vertigo.io.InputContext;
 import net.kuujo.vertigo.io.port.InputPort;
 import net.kuujo.vertigo.io.port.InputPortContext;
-import net.kuujo.vertigo.io.port.impl.InputPortImpl;
 import net.kuujo.vertigo.util.TaskRunner;
 
 import java.util.*;
@@ -38,26 +38,27 @@ import java.util.*;
  */
 public class InputCollectorImpl implements InputCollector, Handler<Message<Object>> {
   private final Logger log;
-  private final Vertx vertx;
-  private InputContext context;
-  private final Map<String, InputPortImpl> ports = new HashMap<>();
+  protected final Vertx vertx;
+  protected InputContext context;
+  protected final Map<String, InputPort> ports = new HashMap<>();
   private final TaskRunner tasks = new TaskRunner();
   private MessageConsumer<Object> consumer;
 
-  public InputCollectorImpl(Vertx vertx, InputContext context) {
+  public InputCollectorImpl(Vertx vertx, InputContext context, ComponentInstanceFactory factory) {
     this.vertx = vertx;
     this.context = context;
     this.log = LoggerFactory.getLogger(String.format("%s-%s", InputCollectorImpl.class.getName(), context.component().name()));
-    init();
+    init(factory);
   }
 
   /**
    * Initializes the output.
+   * @param factory
    */
-  private void init() {
+  private void init(ComponentInstanceFactory factory) {
     for (InputPortContext input : context.ports()) {
       if (!ports.containsKey(input.name())) {
-        ports.put(input.name(), new InputPortImpl(vertx, input));
+        ports.put(input.name(), factory.createInputPort(vertx, input));
       }
     }
   }
@@ -72,7 +73,7 @@ public class InputCollectorImpl implements InputCollector, Handler<Message<Objec
   public void handle(Message<Object> message) {
     String portName = message.headers().get("port");
     if (portName != null) {
-      InputPortImpl port = ports.get(portName);
+      InputPort port = ports.get(portName);
       if (port != null) {
         port.handle(message);
       }
@@ -82,7 +83,7 @@ public class InputCollectorImpl implements InputCollector, Handler<Message<Objec
   @Override
   public Collection<InputPort> ports() {
     List<InputPort> ports = new ArrayList<>(this.ports.size());
-    for (InputPortImpl port : this.ports.values()) {
+    for (InputPort port : this.ports.values()) {
       ports.add(port);
     }
     return ports;

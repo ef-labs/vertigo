@@ -35,26 +35,26 @@ import java.util.UUID;
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 public class OutputConnectionImpl<T> implements OutputConnection<T>, Handler<Message<T>> {
-  private static final String ACTION_HEADER = "action";
-  private static final String PORT_HEADER = "port";
-  private static final String SOURCE_HEADER = "source";
-  private static final String ID_HEADER = "name";
-  private static final String INDEX_HEADER = "index";
-  private static final String MESSAGE_ACTION = "message";
-  private static final String ACK_ACTION = "ack";
-  private static final String FAIL_ACTION = "fail";
-  private static final String PAUSE_ACTION = "pause";
-  private static final String RESUME_ACTION = "resume";
-  private static final int DEFAULT_MAX_QUEUE_SIZE = 1000;
+  protected static final String ACTION_HEADER = "action";
+  protected static final String PORT_HEADER = "port";
+  protected static final String SOURCE_HEADER = "source";
+  protected static final String ID_HEADER = "name";
+  protected static final String INDEX_HEADER = "index";
+  protected static final String MESSAGE_ACTION = "message";
+  protected static final String ACK_ACTION = "ack";
+  protected static final String FAIL_ACTION = "fail";
+  protected static final String PAUSE_ACTION = "pause";
+  protected static final String RESUME_ACTION = "resume";
+  protected static final int DEFAULT_MAX_QUEUE_SIZE = 1000;
   private final Logger log;
-  private final Vertx vertx;
-  private final EventBus eventBus;
-  private final OutputConnectionContext context;
+  protected final Vertx vertx;
+  protected final EventBus eventBus;
+  protected final OutputConnectionContext context;
   private int maxQueueSize = DEFAULT_MAX_QUEUE_SIZE;
   private Handler<Void> drainHandler;
   private long currentMessage = 1;
   private final TreeMap<Long, JsonObject> messages = new TreeMap<>();
-  //private final TreeMap<Long, Handler<AsyncResult<Void>>> ackHandlers = new TreeMap<>();
+  //protected final TreeMap<Long, Handler<AsyncResult<Void>>> ackHandlers = new TreeMap<>();
   private boolean full;
   private boolean paused;
 
@@ -115,7 +115,7 @@ public class OutputConnectionImpl<T> implements OutputConnection<T>, Handler<Mes
   /**
    * Checks whether the connection is full.
    */
-  private void checkFull() {
+  protected void checkFull() {
     if (!full && messages.size() >= maxQueueSize) {
       full = true;
       log.debug(String.format("%s - Connection to %s is full", this, context.target()));
@@ -125,7 +125,7 @@ public class OutputConnectionImpl<T> implements OutputConnection<T>, Handler<Mes
   /**
    * Checks whether the connection has been drained.
    */
-  private void checkDrain() {
+  protected void checkDrain() {
     if (full && !paused && messages.size() < maxQueueSize / 2) {
       full = false;
       log.debug(String.format("%s - Connection to %s is drained", this, context.target()));
@@ -138,7 +138,7 @@ public class OutputConnectionImpl<T> implements OutputConnection<T>, Handler<Mes
   /**
    * Handles a batch ack.
    */
-  private void doAck(long id) {
+  protected void doAck(long id) {
     // The other side of the connection has sent a message indicating which
     // messages it has seen. We can clear any messages before the indicated ID.
     if (log.isDebugEnabled()) {
@@ -155,7 +155,7 @@ public class OutputConnectionImpl<T> implements OutputConnection<T>, Handler<Mes
   /**
    * Handles a batch fail.
    */
-  private void doFail(long id) {
+  protected void doFail(long id) {
     if (log.isDebugEnabled()) {
       log.debug(String.format("%s - Received resend request for messages starting at %d", this, id));
     }
@@ -173,7 +173,7 @@ public class OutputConnectionImpl<T> implements OutputConnection<T>, Handler<Mes
   /**
    * Handles a connection pause.
    */
-  private void doPause(long id) {
+  protected void doPause(long id) {
     log.debug(String.format("%s - Paused connection to %s", this, context.target()));
     paused = true;
   }
@@ -181,7 +181,7 @@ public class OutputConnectionImpl<T> implements OutputConnection<T>, Handler<Mes
   /**
    * Handles a connection resume.
    */
-  private void doResume(long id) {
+  protected void doResume(long id) {
     if (paused) {
       log.debug(String.format("%s - Resumed connection to %s", this, context.target()));
       paused = false;
@@ -192,7 +192,7 @@ public class OutputConnectionImpl<T> implements OutputConnection<T>, Handler<Mes
   /**
    * Sends a message.
    */
-  private OutputConnection<T> doSend(Object message, MultiMap headers, Handler<AsyncResult<Void>> ackHandler) {
+  protected OutputConnection<T> doSend(Object message, MultiMap headers, Handler<AsyncResult<Void>> ackHandler) {
     if (!paused) {
       // Generate a unique ID and monotonically increasing index for the message.
       String id = UUID.randomUUID().toString();

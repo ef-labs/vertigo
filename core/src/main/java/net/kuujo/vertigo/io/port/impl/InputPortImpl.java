@@ -21,11 +21,11 @@ import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import net.kuujo.vertigo.component.ComponentInstanceFactory;
 import net.kuujo.vertigo.io.ControllableInput;
 import net.kuujo.vertigo.io.VertigoMessage;
 import net.kuujo.vertigo.io.connection.InputConnection;
 import net.kuujo.vertigo.io.connection.InputConnectionContext;
-import net.kuujo.vertigo.io.connection.impl.InputConnectionImpl;
 import net.kuujo.vertigo.io.port.InputPort;
 import net.kuujo.vertigo.io.port.InputPortContext;
 import net.kuujo.vertigo.util.TaskRunner;
@@ -40,27 +40,28 @@ import java.util.Map;
  */
 public class InputPortImpl<T> implements InputPort<T>, ControllableInput<InputPort<T>, T>, Handler<Message<T>> {
   private static final Logger log = LoggerFactory.getLogger(InputPortImpl.class);
-  private final Vertx vertx;
-  private InputPortContext context;
-  private final Map<String, InputConnectionImpl<T>> connections = new HashMap<>();
+  protected final Vertx vertx;
+  protected InputPortContext context;
+  protected final Map<String, InputConnection<T>> connections = new HashMap<>();
   private final TaskRunner tasks = new TaskRunner();
   @SuppressWarnings("rawtypes")
   private Handler<VertigoMessage<T>> messageHandler;
   private boolean open;
   private boolean paused;
 
-  public InputPortImpl(Vertx vertx, InputPortContext context) {
+  public InputPortImpl(Vertx vertx, InputPortContext context, ComponentInstanceFactory factory) {
     this.vertx = vertx;
     this.context = context;
-    init();
+    init(factory);
   }
 
   /**
    * Initializes the output connections.
+   * @param factory
    */
-  private void init() {
+  private void init(ComponentInstanceFactory factory) {
     for (InputConnectionContext connection : context.connections()) {
-      connections.put(connection.target().address(), new InputConnectionImpl<T>(vertx, connection));
+      connections.put(connection.target().address(), factory.<T>createInputConnection(vertx, connection));
     }
   }
 
@@ -83,7 +84,7 @@ public class InputPortImpl<T> implements InputPort<T>, ControllableInput<InputPo
   public void handle(Message<T> message) {
     String source = message.headers().get("source");
     if (source != null) {
-      InputConnectionImpl<T> connection = connections.get(source);
+      InputConnection<T> connection = connections.get(source);
       if (connection != null) {
         connection.handle(message);
       }

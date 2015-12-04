@@ -22,9 +22,10 @@ import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import net.kuujo.vertigo.component.ComponentInstanceFactory;
 import net.kuujo.vertigo.io.ControllableOutput;
+import net.kuujo.vertigo.io.connection.OutputConnection;
 import net.kuujo.vertigo.io.connection.OutputConnectionContext;
-import net.kuujo.vertigo.io.connection.impl.OutputConnectionImpl;
 import net.kuujo.vertigo.io.port.OutputPort;
 import net.kuujo.vertigo.io.port.OutputPortContext;
 import net.kuujo.vertigo.util.Args;
@@ -41,24 +42,25 @@ import java.util.Map;
 public class OutputPortImpl<T> implements OutputPort<T>, ControllableOutput<OutputPort<T>, T>, Handler<Message<T>> {
   private static final Logger log = LoggerFactory.getLogger(OutputPortImpl.class);
   private static final int DEFAULT_SEND_QUEUE_MAX_SIZE = 10000;
-  private final Vertx vertx;
-  private OutputPortContext context;
-  private final Map<String, OutputConnectionImpl<T>> connections = new HashMap<>();
+  protected final Vertx vertx;
+  protected OutputPortContext context;
+  protected final Map<String, OutputConnection<T>> connections = new HashMap<>();
   private int maxQueueSize = DEFAULT_SEND_QUEUE_MAX_SIZE;
   private Handler<Void> drainHandler;
 
-  public OutputPortImpl(Vertx vertx, OutputPortContext context) {
+  public OutputPortImpl(Vertx vertx, OutputPortContext context, ComponentInstanceFactory factory) {
     this.vertx = vertx;
     this.context = context;
-    init();
+    init(factory);
   }
 
   /**
    * Initializes the output connections.
+   * @param factory
    */
-  private void init() {
+  private void init(ComponentInstanceFactory factory) {
     for (OutputConnectionContext connection : context.connections()) {
-      connections.put(connection.target().address(), new OutputConnectionImpl<>(vertx, connection));
+      connections.put(connection.target().address(), factory.<T>createOutputConnection(vertx, connection));
     }
   }
 
@@ -66,7 +68,7 @@ public class OutputPortImpl<T> implements OutputPort<T>, ControllableOutput<Outp
   public void handle(Message<T> message) {
     String source = message.headers().get("source");
     if (source != null) {
-      OutputConnectionImpl<T> connection = connections.get(source);
+      OutputConnection<T> connection = connections.get(source);
       if (connection != null) {
         connection.handle(message);
       }
@@ -92,7 +94,7 @@ public class OutputPortImpl<T> implements OutputPort<T>, ControllableOutput<Outp
   public OutputPort<T> setSendQueueMaxSize(int maxSize) {
     Args.checkPositive(maxSize, "max size must be a positive number");
     this.maxQueueSize = maxSize;
-    for (OutputConnectionImpl connection : connections.values()) {
+    for (OutputConnection<T> connection : connections.values()) {
       connection.setSendQueueMaxSize(maxQueueSize);
     }
     return this;
@@ -106,7 +108,7 @@ public class OutputPortImpl<T> implements OutputPort<T>, ControllableOutput<Outp
   @Override
   public int size() {
     int highest = 0;
-    for (OutputConnectionImpl connection : connections.values()) {
+    for (OutputConnection<T> connection : connections.values()) {
       highest = Math.max(highest, connection.size());
     }
     return highest;
@@ -114,7 +116,7 @@ public class OutputPortImpl<T> implements OutputPort<T>, ControllableOutput<Outp
 
   @Override
   public boolean sendQueueFull() {
-    for (OutputConnectionImpl stream : connections.values()) {
+    for (OutputConnection<T> stream : connections.values()) {
       if (stream.sendQueueFull()) {
         return true;
       }
@@ -125,7 +127,7 @@ public class OutputPortImpl<T> implements OutputPort<T>, ControllableOutput<Outp
   @Override
   public OutputPort<T> drainHandler(Handler<Void> handler) {
     this.drainHandler = handler;
-    for (OutputConnectionImpl connection : connections.values()) {
+    for (OutputConnection<T> connection : connections.values()) {
       connection.drainHandler(handler);
     }
     return this;
@@ -133,7 +135,7 @@ public class OutputPortImpl<T> implements OutputPort<T>, ControllableOutput<Outp
 
   @Override
   public OutputPort<T> send(T message) {
-    for (OutputConnectionImpl<T> connection : connections.values()) {
+    for (OutputConnection<T> connection : connections.values()) {
       connection.send(message);
     }
     return this;
@@ -141,7 +143,7 @@ public class OutputPortImpl<T> implements OutputPort<T>, ControllableOutput<Outp
 
   @Override
   public OutputPort<T> send(T message, MultiMap headers) {
-    for (OutputConnectionImpl<T> connection : connections.values()) {
+    for (OutputConnection<T> connection : connections.values()) {
       connection.send(message, headers);
     }
     return this;
@@ -151,7 +153,7 @@ public class OutputPortImpl<T> implements OutputPort<T>, ControllableOutput<Outp
   public OutputPort<T> send(T message, Handler<AsyncResult<Void>> ackHandler) {
     CountingCompletionHandler<Void> counter = new CountingCompletionHandler<>(connections.size());
     counter.setHandler(ackHandler);
-    for (OutputConnectionImpl<T> connection : connections.values()) {
+    for (OutputConnection<T> connection : connections.values()) {
       connection.send(message, counter);
     }
     return this;
@@ -161,7 +163,7 @@ public class OutputPortImpl<T> implements OutputPort<T>, ControllableOutput<Outp
   public OutputPort<T> send(T message, MultiMap headers, Handler<AsyncResult<Void>> ackHandler) {
     CountingCompletionHandler<Void> counter = new CountingCompletionHandler<>(connections.size());
     counter.setHandler(ackHandler);
-    for (OutputConnectionImpl<T> connection : connections.values()) {
+    for (OutputConnection<T> connection : connections.values()) {
       connection.send(message, headers, counter);
     }
     return this;
