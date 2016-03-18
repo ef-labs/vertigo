@@ -51,7 +51,7 @@ public interface Cluster {
    * Creates a new Vertigo cluster proxy.
    *
    * @param vertx The Vert.x instance.
-   * @paran address The cluster address.
+   * @param address The cluster address.
    * @return The Vertigo cluster proxy.
    */
   static Cluster createProxy(Vertx vertx, String address) {
