@@ -46,7 +46,7 @@ public class Execute_Ack_Timeout_Test extends VertigoTestBase {
           .output()
           .port("out")
           .send("Word", r -> {
-            if (r.failed() && r.cause().getMessage().equals("Timed out waiting for reply")) {
+            if (r.failed() && r.cause().getMessage().contains("Timed out")) {
               logger().info(component().context().name() + " failed: " + r.cause().getMessage());
               completeHandler.handle(Future.succeededFuture());
             } else {
