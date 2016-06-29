@@ -4,7 +4,7 @@
   <parent>
     <groupId>net.kuujo.vertigo</groupId>
     <artifactId>vertigo-parent</artifactId>
-    <version>1.0.0-EF-SNAPSHOT</version>
+    <version>1.0.0-EF</version>
   </parent>
 
   <artifactId>vertigo</artifactId>

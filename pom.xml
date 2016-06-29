@@ -5,7 +5,7 @@
   <groupId>net.kuujo.vertigo</groupId>
   <artifactId>vertigo-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.0-EF-SNAPSHOT</version>
+  <version>1.0.0-EF</version>
   <name>Vertigo</name>
   <description>A fault-tolerant distributed event processing framework for Vert.x.</description>
   <url>http://github.com/ef-labs/vertigo</url>
@@ -247,7 +247,7 @@
         </snapshotRepository>
         <repository>
           <id>etown-nexus-releases</id>
-          <url>https://nexus-bos.englishtown.com/service/local/staging/deploy/maven2</url>
+          <url>https://nexus-bos.englishtown.com/content/repositories/releases</url>
         </repository>
       </distributionManagement>
     </profile>
