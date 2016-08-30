@@ -20,14 +20,14 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import net.kuujo.vertigo.builder.NetworkBuilder;
-import net.kuujo.vertigo.io.VertigoMessage;
-import net.kuujo.vertigo.network.Network;
+import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.message.VertigoMessage;
 
 public class Execute_Fail_Test extends VertigoTestBase {
 
   @Override
-  protected Network createNetwork() {
-    NetworkBuilder builder = Network.builder();
+  protected NetworkConfig createNetwork() {
+    NetworkBuilder builder = NetworkConfig.builder();
     builder
         .connect("A").identifier(StartComponent.class.getName()).port("out")
         .to("B").identifier(TargetComponent.class.getName()).port("in");

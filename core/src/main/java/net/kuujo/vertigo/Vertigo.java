@@ -21,8 +21,8 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.ServiceHelper;
 import io.vertx.core.Vertx;
-import net.kuujo.vertigo.network.Network;
-import net.kuujo.vertigo.network.NetworkReference;
+import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.reference.NetworkReference;
 import net.kuujo.vertigo.spi.VertigoFactory;
 
 /**
@@ -108,7 +108,7 @@ public interface Vertigo {
    * @return The Vertigo instance.
    */
   @Fluent
-  Vertigo deployNetwork(Network network);
+  Vertigo deployNetwork(NetworkConfig network);
 
   /**
    * Deploys a network to an anonymous local-only cluster.<p>
@@ -127,7 +127,7 @@ public interface Vertigo {
    * @return The Vertigo instance.
    */
   @Fluent
-  Vertigo deployNetwork(Network network, Handler<AsyncResult<NetworkReference>> doneHandler);
+  Vertigo deployNetwork(NetworkConfig network, Handler<AsyncResult<NetworkReference>> doneHandler);
 
   /**
    * Undeploys a complete network.<p>

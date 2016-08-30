@@ -17,7 +17,7 @@ package net.kuujo.vertigo.builder.impl;
 
 import io.vertx.core.json.JsonObject;
 import net.kuujo.vertigo.builder.*;
-import net.kuujo.vertigo.io.connection.ConnectionConfig;
+import net.kuujo.vertigo.config.ConnectionConfig;
 
 import java.util.Collection;
 

@@ -23,8 +23,8 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.ServiceHelper;
 import io.vertx.core.Vertx;
-import net.kuujo.vertigo.network.Network;
-import net.kuujo.vertigo.network.NetworkReference;
+import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.reference.NetworkReference;
 import net.kuujo.vertigo.spi.ClusterFactory;
 
 /**
@@ -66,7 +66,7 @@ public interface Cluster {
    * @return The cluster instance.
    */
   @Fluent
-  Cluster deployNetwork(Network network, Handler<AsyncResult<NetworkReference>> doneHandler);
+  Cluster deployNetwork(NetworkConfig network, Handler<AsyncResult<NetworkReference>> doneHandler);
 
   /**
    * Undeploys a network from the cluster.
@@ -86,7 +86,7 @@ public interface Cluster {
    * @return The cluster instance.
    */
   @Fluent
-  Cluster undeployNetwork(Network network, Handler<AsyncResult<Void>> doneHandler);
+  Cluster undeployNetwork(NetworkConfig network, Handler<AsyncResult<Void>> doneHandler);
 
   /**
    * Starts the cluster instance.

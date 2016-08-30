@@ -17,8 +17,8 @@ package net.kuujo.vertigo.builder.impl;
 
 import net.kuujo.vertigo.builder.ConnectionSourceBuilder;
 import net.kuujo.vertigo.builder.ConnectionSourceComponentBuilder;
-import net.kuujo.vertigo.io.connection.ConnectionConfig;
-import net.kuujo.vertigo.io.connection.impl.ConnectionConfigImpl;
+import net.kuujo.vertigo.config.ConnectionConfig;
+import net.kuujo.vertigo.config.impl.ConnectionConfigImpl;
 
 import java.util.Collection;
 

@@ -21,8 +21,8 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.eventbus.Message;
 import net.kuujo.vertigo.builder.NetworkBuilder;
-import net.kuujo.vertigo.io.VertigoMessage;
-import net.kuujo.vertigo.network.Network;
+import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.message.VertigoMessage;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -31,8 +31,8 @@ public class Execute_Ack_NoHandler_Test extends VertigoTestBase {
   static CountDownLatch targetReceivedLatch = new CountDownLatch(1);
 
   @Override
-  protected Network createNetwork() {
-    NetworkBuilder builder = Network.builder();
+  protected NetworkConfig createNetwork() {
+    NetworkBuilder builder = NetworkConfig.builder();
     builder
         .connect("A").identifier(StartComponent.class.getName()).port("out")
         .to("B").identifier(TargetComponent.class.getName()).port("in");

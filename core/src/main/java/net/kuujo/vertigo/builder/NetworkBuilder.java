@@ -16,16 +16,16 @@
 package net.kuujo.vertigo.builder;
 
 import io.vertx.codegen.annotations.VertxGen;
-import net.kuujo.vertigo.network.Network;
-import net.kuujo.vertigo.network.ValidationException;
+import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.config.validators.ValidationException;
 
 /**
- * Network builder.
+ * NetworkConfig builder.
  *
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 @VertxGen
-public interface NetworkBuilder extends Builder<Network>, NetworkLikeBuilder<NetworkBuilder> {
+public interface NetworkBuilder extends Builder<NetworkConfig>, NetworkLikeBuilder<NetworkBuilder> {
 
   /**
    * Sets the unique network name.

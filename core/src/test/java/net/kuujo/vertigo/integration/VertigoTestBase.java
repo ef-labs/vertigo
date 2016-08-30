@@ -24,8 +24,8 @@ import io.vertx.core.logging.LoggerFactory;
 import io.vertx.test.core.VertxTestBase;
 import net.kuujo.vertigo.Vertigo;
 import net.kuujo.vertigo.component.AbstractComponent;
-import net.kuujo.vertigo.io.VertigoMessage;
-import net.kuujo.vertigo.network.Network;
+import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.message.VertigoMessage;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -40,13 +40,13 @@ public abstract class VertigoTestBase extends VertxTestBase {
   private static Logger logger = LoggerFactory.getLogger(VertigoTestBase.class.getName());
   protected static Void VOID = null;
 
-  protected abstract Network createNetwork();
+  protected abstract NetworkConfig createNetwork();
 
   @Override
   public void setUp() throws Exception {
     super.setUp();
 
-    Network network = createNetwork();
+    NetworkConfig network = createNetwork();
 
     // Deploy network
     CountDownLatch latch = new CountDownLatch(1);

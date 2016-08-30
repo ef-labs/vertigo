@@ -6,7 +6,7 @@ import io.vertx.test.core.VertxTestBase;
 import net.kuujo.vertigo.Vertigo;
 import net.kuujo.vertigo.builder.NetworkBuilder;
 import net.kuujo.vertigo.component.AbstractComponent;
-import net.kuujo.vertigo.network.Network;
+import net.kuujo.vertigo.config.NetworkConfig;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
@@ -20,11 +20,11 @@ public class Network_Deploy_Test extends VertxTestBase {
   public void setUp() throws Exception {
     super.setUp();
 
-    NetworkBuilder builder = Network.builder();
+    NetworkBuilder builder = NetworkConfig.builder();
     builder
         .connect("start").identifier(TestComponent.class.getName()).port("out")
         .to("end").identifier(TestComponent.class.getName()).port("in");
-    Network network = builder.build();
+    NetworkConfig network = builder.build();
 
     // Deploy network
     CountDownLatch latch = new CountDownLatch(1);

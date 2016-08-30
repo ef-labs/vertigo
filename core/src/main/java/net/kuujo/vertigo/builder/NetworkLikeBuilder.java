@@ -16,7 +16,7 @@
 package net.kuujo.vertigo.builder;
 
 /**
- * Network-like configuration builder.
+ * NetworkConfig-like configuration builder.
  *
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */

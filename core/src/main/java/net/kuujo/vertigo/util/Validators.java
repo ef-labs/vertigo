@@ -15,6 +15,7 @@
  */
 package net.kuujo.vertigo.util;
 
+import net.kuujo.vertigo.config.validators.ValidationException;
 import net.kuujo.vertigo.spi.ConfigValidator;
 
 import java.util.HashMap;
@@ -38,7 +39,7 @@ public final class Validators {
    * @param <T> The value type.
    * @param <U> The validator type.
    * @return The validated configuration value.
-   * @throws net.kuujo.vertigo.network.ValidationException if a validation error occurs.
+   * @throws ValidationException if a validation error occurs.
    */
   public static <T, U extends ConfigValidator<T>> T validate(T value, Class<U> type) {
     for (U validator : ServiceLoader.load(type)) {

@@ -15,7 +15,7 @@
  */
 package net.kuujo.vertigo.builder;
 
-import net.kuujo.vertigo.network.ValidationException;
+import net.kuujo.vertigo.config.validators.ValidationException;
 
 /**
  * Base type for configuration builders.

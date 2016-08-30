@@ -19,10 +19,14 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.ServiceHelper;
 import io.vertx.core.json.JsonObject;
-import net.kuujo.vertigo.ContextManager;
+import net.kuujo.vertigo.deployment.DeploymentManager;
 import net.kuujo.vertigo.VertigoException;
 import net.kuujo.vertigo.VertigoOptions;
-import net.kuujo.vertigo.network.NetworkContext;
+import net.kuujo.vertigo.context.ComponentContext;
+import net.kuujo.vertigo.context.NetworkContext;
+import net.kuujo.vertigo.spi.ComponentInstanceFactory;
+import net.kuujo.vertigo.instance.Component;
+import net.kuujo.vertigo.instance.ComponentInstance;
 
 /**
  * Abstract Java component.
@@ -51,7 +55,7 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
   @Override
   public void start(Future<Void> startFuture) throws Exception {
 
-    ContextManager manager = ContextManager.manager(vertx, new VertigoOptions());
+    DeploymentManager manager = DeploymentManager.manager(vertx, new VertigoOptions());
 
     // TODO: How are you supposed to create ComponentInstance?  From NetworkContext?
     JsonObject config = config();

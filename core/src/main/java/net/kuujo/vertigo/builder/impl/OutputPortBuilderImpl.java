@@ -20,7 +20,7 @@ import io.vertx.core.json.JsonObject;
 import net.kuujo.vertigo.builder.InputBuilder;
 import net.kuujo.vertigo.builder.OutputBuilder;
 import net.kuujo.vertigo.builder.OutputPortBuilder;
-import net.kuujo.vertigo.io.port.OutputPortConfig;
+import net.kuujo.vertigo.config.OutputPortConfig;
 
 /**
  * Output port builder implementation.

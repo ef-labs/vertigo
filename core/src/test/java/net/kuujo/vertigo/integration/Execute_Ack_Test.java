@@ -19,13 +19,13 @@ package net.kuujo.vertigo.integration;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import net.kuujo.vertigo.builder.NetworkBuilder;
-import net.kuujo.vertigo.network.Network;
+import net.kuujo.vertigo.config.NetworkConfig;
 
 public class Execute_Ack_Test extends VertigoTestBase {
 
   @Override
-  protected Network createNetwork() {
-    NetworkBuilder builder = Network.builder();
+  protected NetworkConfig createNetwork() {
+    NetworkBuilder builder = NetworkConfig.builder();
     builder
         .connect("A").identifier(StartComponent.class.getName()).port("out")
         .to("B").identifier(TargetComponent.class.getName()).port("in");

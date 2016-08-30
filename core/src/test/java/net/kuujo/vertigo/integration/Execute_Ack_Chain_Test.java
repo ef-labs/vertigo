@@ -20,22 +20,24 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.eventbus.Message;
 import net.kuujo.vertigo.builder.NetworkBuilder;
-import net.kuujo.vertigo.io.VertigoMessage;
-import net.kuujo.vertigo.network.Network;
+import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.message.VertigoMessage;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Execute_Ack_Chain_Test extends VertigoTestBase {
 
-  static int endCounter = 0;
+  static AtomicInteger endCounter = new AtomicInteger();
 
   @Override
   protected void startEventComplete(AsyncResult<Message<Object>> result) throws Throwable {
-    assertEquals(4, endCounter);
+    assertEquals(4, endCounter.intValue());
     super.startEventComplete(result);
   }
 
   @Override
-  protected Network createNetwork() {
-    NetworkBuilder builder = Network.builder();
+  protected NetworkConfig createNetwork() {
+    NetworkBuilder builder = NetworkConfig.builder();
     builder
         .component("start").identifier(StartComponent.class.getName())
         .component("middle-1").identifier(MiddleComponent.class.getName())
@@ -93,7 +95,7 @@ public class Execute_Ack_Chain_Test extends VertigoTestBase {
   public static class EndComponent extends InputComponentBase<String> {
     @Override
     public void handle(VertigoMessage<String> message) {
-      endCounter++;
+      endCounter.incrementAndGet();
       logger().info(component().context().name() + " received message " + message.body());
       message.ack();
     }

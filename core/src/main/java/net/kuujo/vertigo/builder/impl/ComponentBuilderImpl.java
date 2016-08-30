@@ -17,7 +17,7 @@ package net.kuujo.vertigo.builder.impl;
 
 import io.vertx.core.json.JsonObject;
 import net.kuujo.vertigo.builder.*;
-import net.kuujo.vertigo.component.ComponentConfig;
+import net.kuujo.vertigo.config.ComponentConfig;
 
 /**
  * Component builder implementation.

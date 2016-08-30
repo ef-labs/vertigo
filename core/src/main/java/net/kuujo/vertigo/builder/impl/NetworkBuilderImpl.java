@@ -19,9 +19,9 @@ import net.kuujo.vertigo.builder.ComponentBuilder;
 import net.kuujo.vertigo.builder.ConnectionSourceBuilder;
 import net.kuujo.vertigo.builder.ConnectionSourceComponentBuilder;
 import net.kuujo.vertigo.builder.NetworkBuilder;
-import net.kuujo.vertigo.network.Network;
-import net.kuujo.vertigo.network.ValidationException;
-import net.kuujo.vertigo.network.impl.NetworkImpl;
+import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.config.validators.ValidationException;
+import net.kuujo.vertigo.config.impl.NetworkImpl;
 import net.kuujo.vertigo.spi.ComponentValidator;
 import net.kuujo.vertigo.spi.ConnectionValidator;
 import net.kuujo.vertigo.spi.NetworkValidator;
@@ -32,12 +32,12 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Network builder implementation.
+ * NetworkConfig builder implementation.
  *
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 public class NetworkBuilderImpl implements NetworkBuilder {
-  final Network network;
+  final NetworkConfig network;
 
   public NetworkBuilderImpl() {
     this.network = new NetworkImpl();
@@ -74,7 +74,7 @@ public class NetworkBuilderImpl implements NetworkBuilder {
   }
 
   @Override
-  public Network build() throws ValidationException {
+  public NetworkConfig build() throws ValidationException {
     validate();
     return network;
   }

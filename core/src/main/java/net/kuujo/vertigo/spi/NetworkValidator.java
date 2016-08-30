@@ -15,12 +15,12 @@
  */
 package net.kuujo.vertigo.spi;
 
-import net.kuujo.vertigo.network.Network;
+import net.kuujo.vertigo.config.NetworkConfig;
 
 /**
- * Network validator.
+ * NetworkConfig validator.
  *
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
-public interface NetworkValidator extends ConfigValidator<Network> {
+public interface NetworkValidator extends ConfigValidator<NetworkConfig> {
 }
