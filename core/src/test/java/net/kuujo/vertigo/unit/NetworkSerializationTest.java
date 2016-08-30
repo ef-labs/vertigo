@@ -21,13 +21,13 @@ import net.kuujo.vertigo.builder.NetworkBuilder;
 import net.kuujo.vertigo.component.ComponentConfig;
 import net.kuujo.vertigo.io.connection.ConnectionConfig;
 import net.kuujo.vertigo.network.Network;
-import net.kuujo.vertigo.network.ValidationException;
 import org.junit.Test;
 
 import java.io.InputStream;
 import java.util.Scanner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class NetworkSerializationTest {
 

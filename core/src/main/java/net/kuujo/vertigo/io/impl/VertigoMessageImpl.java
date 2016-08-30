@@ -20,8 +20,6 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.MultiMap;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.ReplyException;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 import net.kuujo.vertigo.io.VertigoMessage;
 
 /**

@@ -16,11 +16,9 @@
 package net.kuujo.vertigo.io.impl;
 
 import io.vertx.core.json.JsonObject;
-import net.kuujo.vertigo.VertigoException;
 import net.kuujo.vertigo.component.ComponentConfig;
 import net.kuujo.vertigo.io.OutputConfig;
 import net.kuujo.vertigo.io.port.OutputPortConfig;
-import net.kuujo.vertigo.io.port.PortConfig;
 import net.kuujo.vertigo.io.port.impl.OutputPortConfigImpl;
 
 import java.util.Collection;

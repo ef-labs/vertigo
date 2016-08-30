@@ -19,9 +19,6 @@ import net.kuujo.vertigo.builder.ComponentBuilder;
 import net.kuujo.vertigo.builder.ConnectionSourceBuilder;
 import net.kuujo.vertigo.builder.ConnectionSourceComponentBuilder;
 import net.kuujo.vertigo.builder.NetworkBuilder;
-import net.kuujo.vertigo.component.ComponentConfig;
-import net.kuujo.vertigo.io.connection.ConnectionConfig;
-import net.kuujo.vertigo.io.connection.impl.ConnectionConfigImpl;
 import net.kuujo.vertigo.network.Network;
 import net.kuujo.vertigo.network.ValidationException;
 import net.kuujo.vertigo.network.impl.NetworkImpl;
@@ -32,7 +29,6 @@ import net.kuujo.vertigo.spi.PortValidator;
 import net.kuujo.vertigo.util.Validators;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.UUID;
 
 /**

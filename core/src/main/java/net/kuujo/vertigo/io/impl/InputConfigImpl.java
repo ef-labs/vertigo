@@ -19,7 +19,6 @@ import io.vertx.core.json.JsonObject;
 import net.kuujo.vertigo.component.ComponentConfig;
 import net.kuujo.vertigo.io.InputConfig;
 import net.kuujo.vertigo.io.port.InputPortConfig;
-import net.kuujo.vertigo.io.port.PortConfig;
 import net.kuujo.vertigo.io.port.impl.InputPortConfigImpl;
 
 import java.util.Collection;

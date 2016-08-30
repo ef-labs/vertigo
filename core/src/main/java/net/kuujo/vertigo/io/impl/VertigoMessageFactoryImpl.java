@@ -1,7 +1,8 @@
 package net.kuujo.vertigo.io.impl;
 
 import io.vertx.core.eventbus.Message;
-import net.kuujo.vertigo.io.*;
+import net.kuujo.vertigo.io.VertigoMessage;
+import net.kuujo.vertigo.io.VertigoMessageFactory;
 
 /**
  * Default ComponentInstanceFactory.

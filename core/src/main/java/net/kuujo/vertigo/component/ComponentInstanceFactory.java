@@ -1,8 +1,10 @@
 package net.kuujo.vertigo.component;
 
 import io.vertx.core.Vertx;
-import io.vertx.core.eventbus.Message;
-import net.kuujo.vertigo.io.*;
+import net.kuujo.vertigo.io.InputCollector;
+import net.kuujo.vertigo.io.InputContext;
+import net.kuujo.vertigo.io.OutputCollector;
+import net.kuujo.vertigo.io.OutputContext;
 import net.kuujo.vertigo.io.connection.InputConnection;
 import net.kuujo.vertigo.io.connection.InputConnectionContext;
 import net.kuujo.vertigo.io.connection.OutputConnection;

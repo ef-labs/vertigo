@@ -16,9 +16,7 @@
 package net.kuujo.vertigo.io.port;
 
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.Handler;
 import net.kuujo.vertigo.io.Input;
-import net.kuujo.vertigo.io.VertigoMessage;
 
 /**
  * Output port reference.

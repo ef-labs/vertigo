@@ -5,7 +5,6 @@ import io.vertx.core.Vertx;
 import net.kuujo.vertigo.component.ComponentContext;
 import net.kuujo.vertigo.component.ComponentInstance;
 import net.kuujo.vertigo.component.ComponentInstanceFactory;
-import net.kuujo.vertigo.io.VertigoMessageFactory;
 import net.kuujo.vertigo.io.*;
 import net.kuujo.vertigo.io.connection.InputConnection;
 import net.kuujo.vertigo.io.connection.InputConnectionContext;

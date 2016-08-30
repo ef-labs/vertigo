@@ -19,12 +19,9 @@ package net.kuujo.vertigo.integration;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.eventbus.Message;
 import net.kuujo.vertigo.builder.NetworkBuilder;
 import net.kuujo.vertigo.io.VertigoMessage;
 import net.kuujo.vertigo.network.Network;
-
-import java.util.concurrent.CountDownLatch;
 
 public class Execute_Fail_Test extends VertigoTestBase {
 

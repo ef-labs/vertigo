@@ -18,7 +18,6 @@ package net.kuujo.vertigo.io.port;
 import io.vertx.core.eventbus.MessageCodec;
 import net.kuujo.vertigo.TypeContext;
 import net.kuujo.vertigo.io.connection.ConnectionContext;
-import net.kuujo.vertigo.io.connection.InputConnectionContext;
 
 import java.util.Collection;
 

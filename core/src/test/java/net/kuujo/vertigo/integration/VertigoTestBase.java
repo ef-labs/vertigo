@@ -30,7 +30,6 @@ import org.junit.Test;
 
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
 
 /**
  * Provides simplified base classes for simple network integration tests.

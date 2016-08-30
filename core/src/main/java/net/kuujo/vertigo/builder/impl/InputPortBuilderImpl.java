@@ -17,7 +17,9 @@ package net.kuujo.vertigo.builder.impl;
 
 import io.vertx.core.eventbus.MessageCodec;
 import io.vertx.core.json.JsonObject;
-import net.kuujo.vertigo.builder.*;
+import net.kuujo.vertigo.builder.InputBuilder;
+import net.kuujo.vertigo.builder.InputPortBuilder;
+import net.kuujo.vertigo.builder.OutputBuilder;
 import net.kuujo.vertigo.io.port.InputPortConfig;
 
 /**
