@@ -31,9 +31,18 @@ import java.io.Serializable;
 public interface Component extends Verticle, Serializable {
 
   /**
+   * Returns the component instance (which has the input and output objects.
+   *
+   * @return The component instance.
+   */
+  ComponentInstance component();
+
+  /**
    * Returns the component's name in the network.
    */
-  String name();
+  default String name() {
+    return component().context().name();
+  }
 
   /**
    * Returns the component context.
@@ -43,7 +52,9 @@ public interface Component extends Verticle, Serializable {
    *
    * @return The component context.
    */
-  ComponentContext context();
+  default ComponentContext context() {
+      return component().context();
+    }
 
   /**
    * Returns the component's {@link InputCollector}. This is the element of the
@@ -51,7 +62,9 @@ public interface Component extends Verticle, Serializable {
    *
    * @return The components {@link InputCollector}.
    */
-  InputCollector input();
+  default InputCollector input() {
+    return component().input();
+  }
 
   /**
    * Returns the component's {@link OutputCollector}. This is the element of the
@@ -59,6 +72,8 @@ public interface Component extends Verticle, Serializable {
    *
    * @return The component's {@link OutputCollector}.
    */
-  OutputCollector output();
+  default OutputCollector output() {
+    return component().output();
+  }
 
 }

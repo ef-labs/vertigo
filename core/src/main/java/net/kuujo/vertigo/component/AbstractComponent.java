@@ -118,23 +118,8 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
   }
 
   @Override
-  public ComponentContext context() {
-    return component.context();
-  }
-
-  @Override
-  public InputCollector input() {
-    return component.input();
-  }
-
-  @Override
-  public OutputCollector output() {
-    return component.output();
-  }
-
-  @Override
-  public String name() {
-    return component.context().name();
+  public ComponentInstance component() {
+    return component;
   }
 
 }
