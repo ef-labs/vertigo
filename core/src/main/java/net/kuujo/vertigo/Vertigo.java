@@ -21,7 +21,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.ServiceHelper;
 import io.vertx.core.Vertx;
-import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.reference.NetworkReference;
 import net.kuujo.vertigo.spi.VertigoFactory;
 
@@ -77,7 +77,7 @@ public interface Vertigo {
    * Asynchronously creates a new Vertigo instance.
    *
    * @param options The Vertigo options.
-   * @param resultHandler An asynchronous handler to be called once complete.
+   * @param resultHandler An asynchronous handler to be called once completed.
    */
   static void vertigoAsync(VertigoOptions options, Handler<AsyncResult<Vertigo>> resultHandler) {
     factory.vertigoAsync(options, resultHandler);
@@ -130,7 +130,7 @@ public interface Vertigo {
   Vertigo deployNetwork(NetworkConfig network, Handler<AsyncResult<NetworkReference>> doneHandler);
 
   /**
-   * Undeploys a complete network.<p>
+   * Undeploys a completed network.<p>
    *
    * This method does not require a network configuration for undeployment. Vertigo
    * will load the configuration from the fault-tolerant data store and undeploy
@@ -144,7 +144,7 @@ public interface Vertigo {
   Vertigo undeployNetwork(String id);
 
   /**
-   * Undeploys a complete network.<p>
+   * Undeploys a completed network.<p>
    *
    * This method does not require a network configuration for undeployment. Vertigo
    * will load the configuration from the fault-tolerant data store and undeploy

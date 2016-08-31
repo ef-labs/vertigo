@@ -37,7 +37,7 @@ public interface Openable<T> {
   /**
    * Opens the object.
    *
-   * @param doneHandler An asynchronous handler to be called once complete.
+   * @param doneHandler An asynchronous handler to be called once completed.
    * @return The opened object.
    */
   T open(Handler<AsyncResult<Void>> doneHandler);

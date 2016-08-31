@@ -5,7 +5,7 @@
   <groupId>net.kuujo.vertigo</groupId>
   <artifactId>vertigo-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.1-EF-SNAPSHOT</version>
+  <version>1.1.0-EF-SNAPSHOT</version>
   <name>Vertigo</name>
   <description>A fault-tolerant distributed event processing framework for Vert.x.</description>
   <url>http://github.com/ef-labs/vertigo</url>

@@ -25,7 +25,6 @@ import net.kuujo.vertigo.VertigoOptions;
 import net.kuujo.vertigo.context.ComponentContext;
 import net.kuujo.vertigo.context.NetworkContext;
 import net.kuujo.vertigo.spi.ComponentInstanceFactory;
-import net.kuujo.vertigo.instance.Component;
 import net.kuujo.vertigo.instance.ComponentInstance;
 
 /**
@@ -47,9 +46,9 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
    * Start the verticle.<p>
    * This is called by Vert.x when the verticle instance is deployed. Don't call it yourself.<p>
    * If your verticle does things in it's startup which take some time then you can override this method
-   * and call the startFuture some time later when start up is complete.
+   * and call the startFuture some time later when start up is completed.
    *
-   * @param startFuture a future which should be called when verticle start-up is complete.
+   * @param startFuture a future which should be called when verticle start-up is completed.
    * @throws Exception
    */
   @Override
@@ -96,9 +95,9 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
    * Stop the verticle.<p>
    * This is called by Vert.x when the verticle instance is un-deployed. Don't call it yourself.<p>
    * If your verticle does things in it's shut-down which take some time then you can override this method
-   * and call the stopFuture some time later when clean-up is complete.
+   * and call the stopFuture some time later when clean-up is completed.
    *
-   * @param stopFuture a future which should be called when verticle clean-up is complete.
+   * @param stopFuture a future which should be called when verticle clean-up is completed.
    * @throws Exception
    */
   @Override

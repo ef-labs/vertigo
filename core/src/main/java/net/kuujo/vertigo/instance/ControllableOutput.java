@@ -66,6 +66,6 @@ public interface ControllableOutput<T extends Output<T, U>, U> extends Output<T,
    *        new messages.
    * @return The send stream.
    */
-  T drainHandler(Handler<Void> handler);
+  T drainedHandler(Handler<Void> handler);
 
 }

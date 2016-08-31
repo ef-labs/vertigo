@@ -15,7 +15,7 @@
  */
 package net.kuujo.vertigo.spi;
 
-import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.network.NetworkConfig;
 
 /**
  * NetworkConfig configuration resolver.

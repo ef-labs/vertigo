@@ -15,7 +15,7 @@
  */
 package net.kuujo.vertigo.spi;
 
-import net.kuujo.vertigo.config.ComponentConfig;
+import net.kuujo.vertigo.network.ComponentConfig;
 
 /**
  * Component validator.

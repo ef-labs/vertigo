@@ -15,7 +15,7 @@
  */
 package net.kuujo.vertigo.util;
 
-import net.kuujo.vertigo.config.validators.ValidationException;
+import net.kuujo.vertigo.network.validators.ValidationException;
 import net.kuujo.vertigo.spi.ConfigValidator;
 
 import java.util.HashMap;

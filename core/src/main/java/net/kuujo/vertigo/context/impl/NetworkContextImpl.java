@@ -17,7 +17,7 @@
 package net.kuujo.vertigo.context.impl;
 
 import net.kuujo.vertigo.context.ComponentContext;
-import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.context.NetworkContext;
 import net.kuujo.vertigo.util.Args;
 

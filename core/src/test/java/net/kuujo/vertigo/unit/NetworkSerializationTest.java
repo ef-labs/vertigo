@@ -17,10 +17,10 @@ package net.kuujo.vertigo.unit;
  */
 
 import io.vertx.core.json.JsonObject;
-import net.kuujo.vertigo.builder.NetworkBuilder;
-import net.kuujo.vertigo.config.ComponentConfig;
-import net.kuujo.vertigo.config.ConnectionConfig;
-import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.network.builder.NetworkBuilder;
+import net.kuujo.vertigo.network.ComponentConfig;
+import net.kuujo.vertigo.network.ConnectionConfig;
+import net.kuujo.vertigo.network.NetworkConfig;
 import org.junit.Test;
 
 import java.io.InputStream;

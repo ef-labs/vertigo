@@ -125,10 +125,10 @@ public class OutputPortImpl<T> implements OutputPort<T>, ControllableOutput<Outp
   }
 
   @Override
-  public OutputPort<T> drainHandler(Handler<Void> handler) {
+  public OutputPort<T> drainedHandler(Handler<Void> handler) {
     this.drainHandler = handler;
     for (OutputConnection<T> connection : connections.values()) {
-      connection.drainHandler(handler);
+      connection.drainedHandler(handler);
     }
     return this;
   }

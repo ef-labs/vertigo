@@ -54,7 +54,7 @@ public class ComponentInstanceImpl implements ComponentInstance, Handler<Message
   private MessageConsumer<Object> consumer;
 
   public ComponentInstanceImpl(Vertx vertx, ComponentContext context) {
-    this(vertx, context, new ComponentInstanceFactoryImpl());
+    this(vertx, context, new ControlledComponentInstanceFactory());
   }
 
   public ComponentInstanceImpl(Vertx vertx, ComponentContext context, ComponentInstanceFactory factory) {

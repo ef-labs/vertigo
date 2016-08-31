@@ -21,4 +21,5 @@ public interface ComponentInstanceFactory {
     OutputPort createOutputPort(Vertx vertx, OutputPortContext output);
     <T> InputConnection<T> createInputConnection(Vertx vertx, InputConnectionContext connection);
     <T> OutputConnection<T> createOutputConnection(Vertx vertx, OutputConnectionContext connection);
+    <T> InputConnection<T> createExternalInputConnection(Vertx vertx, InputPortContext input);
 }

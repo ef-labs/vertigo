@@ -39,6 +39,9 @@ import java.util.Map;
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 public class InputPortImpl<T> implements InputPort<T>, ControllableInput<InputPort<T>, T>, Handler<Message<T>> {
+
+  protected static final String ID_HEADER = "name";
+
   private static final Logger log = LoggerFactory.getLogger(InputPortImpl.class);
   protected final Vertx vertx;
   protected InputPortContext context;
@@ -48,6 +51,7 @@ public class InputPortImpl<T> implements InputPort<T>, ControllableInput<InputPo
   private Handler<VertigoMessage<T>> messageHandler;
   private boolean open;
   private boolean paused;
+  private InputConnection<T> stubConnection;
 
   public InputPortImpl(Vertx vertx, InputPortContext context, ComponentInstanceFactory factory) {
     this.vertx = vertx;
@@ -63,6 +67,7 @@ public class InputPortImpl<T> implements InputPort<T>, ControllableInput<InputPo
     for (InputConnectionContext connection : context.connections()) {
       connections.put(connection.target().address(), factory.<T>createInputConnection(vertx, connection));
     }
+    stubConnection = factory.<T>createExternalInputConnection(vertx, context);
   }
 
   @Override
@@ -87,6 +92,11 @@ public class InputPortImpl<T> implements InputPort<T>, ControllableInput<InputPo
       InputConnection<T> connection = connections.get(source);
       if (connection != null) {
         connection.handle(message);
+      }
+    }
+    else {
+      if (stubConnection != null) {
+        stubConnection.handle(message);
       }
     }
   }
@@ -118,6 +128,7 @@ public class InputPortImpl<T> implements InputPort<T>, ControllableInput<InputPo
     for (InputConnection<T> connection : connections.values()) {
       connection.handler(messageHandler);
     }
+    stubConnection.handler(handler);
     return this;
   }
 

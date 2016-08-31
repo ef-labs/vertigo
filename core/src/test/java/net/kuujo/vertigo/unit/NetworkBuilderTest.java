@@ -16,11 +16,11 @@ package net.kuujo.vertigo.unit;
  * limitations under the License.
  */
 
-import net.kuujo.vertigo.builder.NetworkBuilder;
-import net.kuujo.vertigo.config.ComponentConfig;
-import net.kuujo.vertigo.config.ConnectionConfig;
-import net.kuujo.vertigo.config.NetworkConfig;
-import net.kuujo.vertigo.config.validators.ValidationException;
+import net.kuujo.vertigo.network.builder.NetworkBuilder;
+import net.kuujo.vertigo.network.ComponentConfig;
+import net.kuujo.vertigo.network.ConnectionConfig;
+import net.kuujo.vertigo.network.NetworkConfig;
+import net.kuujo.vertigo.network.validators.ValidationException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

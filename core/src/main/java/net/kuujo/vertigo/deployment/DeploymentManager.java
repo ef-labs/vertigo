@@ -63,7 +63,7 @@ public interface DeploymentManager {
    * Undeploys a network.
    *
    * @param network The network to undeploy.
-   * @param doneHandler An asynchronous handler to be called once complete.
+   * @param doneHandler An asynchronous handler to be called once completed.
    * @return The context manager.
    */
   DeploymentManager undeployNetwork(NetworkContext network, Handler<AsyncResult<Void>> doneHandler);

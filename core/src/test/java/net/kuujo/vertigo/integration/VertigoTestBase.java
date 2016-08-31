@@ -16,19 +16,16 @@ package net.kuujo.vertigo.integration;
  * limitations under the License.
  */
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.eventbus.Message;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.test.core.VertxTestBase;
 import net.kuujo.vertigo.Vertigo;
-import net.kuujo.vertigo.component.AbstractComponent;
-import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.component.SimpleAbstractComponent;
+import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.message.VertigoMessage;
-import org.junit.Test;
+import net.kuujo.vertigo.reference.NetworkReference;
+import net.kuujo.vertigo.util.CountingCompletionHandler;
 
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -36,9 +33,9 @@ import java.util.concurrent.CountDownLatch;
  */
 public abstract class VertigoTestBase extends VertxTestBase {
 
-  static String startAddress = UUID.randomUUID().toString();
   private static Logger logger = LoggerFactory.getLogger(VertigoTestBase.class.getName());
   protected static Void VOID = null;
+  private NetworkReference networkReference;
 
   protected abstract NetworkConfig createNetwork();
 
@@ -57,6 +54,9 @@ public abstract class VertigoTestBase extends VertxTestBase {
         if (result.failed()) {
           fail(result.cause().getMessage());
         }
+        else {
+          this.networkReference = result.result();
+        }
         latch.countDown();
       });
     });
@@ -65,77 +65,15 @@ public abstract class VertigoTestBase extends VertxTestBase {
 
   }
 
-  @Test
-  public void test() throws Exception {
-    sendStartSignal();
-    await();
-  }
-
-  protected void sendStartSignal() {
-
-    // Send start event
-    vertx.eventBus().send(startAddress, VOID, r -> {
-          try {
-            startEventComplete(r);
-          } catch (Throwable e) {
-            fail(e.getMessage());
-          }
-        }
-    );
-  }
-
-  protected void startEventComplete(AsyncResult<Message<Object>> result) throws Throwable {
-    if (result.succeeded()) {
-      logger().info("Test complete: " + this.getClass().getSimpleName());
-      testComplete();
-    }
-    else {
-      logger().info("Test failed: " + this.getClass().getSimpleName());
-      fail(result.cause().getMessage());
-    }
-  }
-
   protected static Logger logger() {
     return logger;
   }
 
-  public abstract static class StartComponentBase extends AbstractComponent implements Handler<Message<Void>> {
-
-    @Override
-    public void start() throws Exception {
-      vertx.eventBus().consumer(startAddress, this);
-    }
-
-    @Override
-    public void handle(Message<Void> event) {
-      logger().info(component().context().name() + " received start event.");
-      testStart(r -> {
-        if (r.succeeded()) {
-          event.reply(VOID);
-        } else {
-          event.fail(-1, r.cause().getMessage());
-        }
-      });
-    }
-
-    protected abstract void testStart(Handler<AsyncResult<Void>> completeHandler);
-
+  public NetworkReference getNetworkReference() {
+    return networkReference;
   }
 
-  @SuppressWarnings("unchecked")
-  public abstract static class InputComponentBase<M> extends AbstractComponent implements Handler<VertigoMessage<M>> {
-
-    @Override
-    public void start() throws Exception {
-      component()
-          .input()
-          .ports()
-          .forEach(port -> port.handler(this));
-    }
-
-  }
-
-  public static class AutoAckingComponent extends InputComponentBase<Object> {
+  public static class AutoAckingComponent extends SimpleAbstractComponent<Object> {
     @Override
     public void handle(VertigoMessage<Object> event) {
       logger().info(component().context().name() + " received message " + event.body() + ", acking.");
@@ -143,4 +81,36 @@ public abstract class VertigoTestBase extends VertxTestBase {
     }
   }
 
+  public static class AutoForwardingComponent extends SimpleAbstractComponent<String> {
+
+    @Override
+    public void handle(VertigoMessage<String> message) {
+
+      logger().info(component().context().name() + " received message " + message.body());
+
+      // Transform message
+      String trace = message.body() + " > " + component().context().name();
+
+      if (component().output().ports().size() > 0) {
+
+        CountingCompletionHandler<Void> counter = new CountingCompletionHandler<Void>(component().output().ports().size())
+            .setHandler(message::handle);
+
+        component()
+            .output()
+            .ports()
+            .forEach(outputPort -> {
+              component()
+                  .output()
+                  .port(outputPort.name())
+                  .send(trace, counter);
+            });
+      }
+      else {
+        message.ack();
+
+      }
+
+    }
+  }
 }

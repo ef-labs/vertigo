@@ -18,6 +18,8 @@ package net.kuujo.vertigo.reference.impl;
 import io.vertx.core.Vertx;
 import net.kuujo.vertigo.reference.ComponentReference;
 import net.kuujo.vertigo.context.NetworkContext;
+import net.kuujo.vertigo.reference.NetworkInputReference;
+import net.kuujo.vertigo.reference.NetworkOutputReference;
 import net.kuujo.vertigo.reference.NetworkReference;
 
 /**
@@ -37,6 +39,16 @@ public class NetworkReferenceImpl implements NetworkReference {
   @Override
   public ComponentReference component(String id) {
     return new ComponentReferenceImpl(vertx, context.component(id));
+  }
+
+  @Override
+  public <T> NetworkOutputReference<T> output() {
+    return new NetworkOutputReferenceImpl<>(vertx, context);
+  }
+
+  @Override
+  public <T> NetworkInputReference<T> input() {
+    return new NetworkInputReferenceImpl<T>(vertx, context);
   }
 
 }

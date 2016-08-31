@@ -64,7 +64,7 @@ public interface VertigoFactory {
    * Asynchronously creates a new Vertigo instance.
    *
    * @param options The Vertigo options.
-   * @param resultHandler An asynchronous handler to be called once complete.
+   * @param resultHandler An asynchronous handler to be called once completed.
    */
   void vertigoAsync(VertigoOptions options, Handler<AsyncResult<Vertigo>> resultHandler);
 

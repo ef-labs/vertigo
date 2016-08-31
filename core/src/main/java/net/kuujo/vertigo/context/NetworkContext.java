@@ -16,13 +16,13 @@
 package net.kuujo.vertigo.context;
 
 import io.vertx.codegen.annotations.VertxGen;
-import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.context.impl.NetworkContextImpl;
 
 import java.util.Collection;
 
 /**
- * A network context which contains information regarding the complete structure of a
+ * A network context which contains information regarding the completed structure of a
  * deployed network.<p>
  *
  * NetworkConfig contexts are immutable as they are constructed after a network

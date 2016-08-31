@@ -15,8 +15,8 @@
  */
 package net.kuujo.vertigo.context;
 
-import net.kuujo.vertigo.config.*;
-import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.network.*;
+import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.spi.ComponentValidator;
 import net.kuujo.vertigo.spi.ConnectionValidator;
 import net.kuujo.vertigo.spi.NetworkValidator;
@@ -127,12 +127,19 @@ public final class ContextBuilder {
       ComponentContext source = components.get(connection.getSource().getComponent());
       ComponentContext target = components.get(connection.getTarget().getComponent());
 
+      String sourceAddress = connection.getSource().getIsNetwork()
+          ? network.getName()
+          : source.address();
+
+      String targetAddress = connection.getTarget().getIsNetwork()
+          ? network.getName()
+          : target.address();
+
       // Only add connections if both components are currently in the network configuration.
       // If a component is added to the configuration later then the context will need to
       // be rebuilt.
-      if (source != null && target != null) {
+      if (source != null) {
         ComponentConfig sourceInfo = network.getComponent(source.name());
-        ComponentConfig targetInfo = network.getComponent(target.name());
 
         // Add the connection to the source's output port context.
         OutputPortContext.Builder output = OutputPortContext.builder(source.output().port(connection.getSource().getPort()))
@@ -143,17 +150,21 @@ public final class ContextBuilder {
             .setSource(SourceContext.builder()
                 .setComponent(connection.getSource().getComponent())
                 .setPort(connection.getSource().getPort())
-                .setAddress(source.address())
+                .setAddress(sourceAddress)
                 .build())
             .setTarget(TargetContext.builder()
                 .setComponent(connection.getTarget().getComponent())
                 .setPort(connection.getTarget().getPort())
-                .setAddress(target.address())
+                .setAddress(targetAddress)
                 .build())
             .setSendTimeout(connection.getSendTimeout())
             .setPort(output.build()).build());
+      }
 
-        // Add the connection to the target's input port context.
+      if (target != null) {
+        ComponentConfig targetInfo = network.getComponent(target.name());
+
+      // Add the connection to the target's input port context.
         InputPortContext.Builder input = InputPortContext.builder(target.input().port(connection.getTarget().getPort()))
             .setName(connection.getTarget().getPort())
             .setType(targetInfo.getInput().getPort(connection.getTarget().getPort()).getType());
@@ -162,12 +173,12 @@ public final class ContextBuilder {
             .setSource(SourceContext.builder()
                 .setComponent(connection.getSource().getComponent())
                 .setPort(connection.getSource().getPort())
-                .setAddress(source.address())
+                .setAddress(sourceAddress)
                 .build())
             .setTarget(TargetContext.builder()
                 .setComponent(connection.getTarget().getComponent())
                 .setPort(connection.getTarget().getPort())
-                .setAddress(target.address())
+                .setAddress(targetAddress)
                 .build())
             .setPort(input.build())
             .build());

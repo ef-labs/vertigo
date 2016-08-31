@@ -22,7 +22,7 @@ import io.vertx.core.Vertx;
 import net.kuujo.vertigo.deployment.DeploymentManager;
 import net.kuujo.vertigo.Vertigo;
 import net.kuujo.vertigo.VertigoOptions;
-import net.kuujo.vertigo.config.NetworkConfig;
+import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.context.ContextBuilder;
 import net.kuujo.vertigo.context.NetworkContext;
 import net.kuujo.vertigo.reference.NetworkReference;

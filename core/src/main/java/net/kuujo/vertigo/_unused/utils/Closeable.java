@@ -35,7 +35,7 @@ public interface Closeable<T> {
   /**
    * Closes the object.
    *
-   * @param doneHandler An asynchronous handler to be called once complete.
+   * @param doneHandler An asynchronous handler to be called once completed.
    */
   void close(Handler<AsyncResult<Void>> doneHandler);
 

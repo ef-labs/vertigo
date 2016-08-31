@@ -33,7 +33,7 @@ public class OutputPortReferenceImpl<T> implements OutputPortReference<T> {
 
   public OutputPortReferenceImpl(Vertx vertx, String address, String name) {
     this.vertx = vertx;
-    this.address = address;
+    this.address = address + "." + name;
     this.name = name;
   }
 
