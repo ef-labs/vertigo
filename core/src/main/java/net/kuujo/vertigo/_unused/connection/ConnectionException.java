@@ -23,7 +23,7 @@ import net.kuujo.vertigo.VertigoException;
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 @SuppressWarnings("serial")
-public class ConnectionException extends VertigoException {
+class ConnectionException extends VertigoException {
 
   public ConnectionException(String message) {
     super(message);

@@ -25,7 +25,7 @@ import io.vertx.core.Handler;
  *
  * @param <T> The openable type.
  */
-public interface Openable<T> {
+interface Openable<T> {
 
   /**
    * Opens the object.

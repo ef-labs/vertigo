@@ -23,7 +23,7 @@ import net.kuujo.vertigo.VertigoException;
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 @SuppressWarnings("serial")
-public class MalformedNetworkException extends VertigoException {
+class MalformedNetworkException extends VertigoException {
 
   public MalformedNetworkException(String message) {
     super(message);

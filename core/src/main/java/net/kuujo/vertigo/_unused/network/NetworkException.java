@@ -23,7 +23,7 @@ import net.kuujo.vertigo.VertigoException;
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 @SuppressWarnings("serial")
-public class NetworkException extends VertigoException {
+class NetworkException extends VertigoException {
 
   public NetworkException(String message) {
     super(message);
