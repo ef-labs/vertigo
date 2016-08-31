@@ -47,22 +47,18 @@ public class ComponentInstanceImpl implements ComponentInstance, Handler<Message
   private final ComponentContext context;
   private final InputCollector input;
   private final OutputCollector output;
-  private final Logger logger;
-  private JsonObject state;
-  private Handler<JsonObject> checkpointHandler;
-  private Handler<JsonObject> recoverHandler;
+//  private final Logger logger;
+//  private JsonObject state;
+//  private Handler<JsonObject> checkpointHandler;
+//  private Handler<JsonObject> recoverHandler;
   private MessageConsumer<Object> consumer;
-
-  public ComponentInstanceImpl(Vertx vertx, ComponentContext context) {
-    this(vertx, context, new ControlledComponentInstanceFactory());
-  }
 
   public ComponentInstanceImpl(Vertx vertx, ComponentContext context, ComponentInstanceFactory factory) {
     this.vertx = vertx;
     this.context = context;
     this.input = factory.createInputCollector(vertx, context.input());
     this.output = factory.createOutputCollector(vertx, context.output());
-    this.logger = LoggerFactory.getLogger(String.format("%s-%s", ComponentInstance.class.getName(), context.address()));
+//    this.logger = LoggerFactory.getLogger(String.format("%s-%s", ComponentInstance.class.getName(), context.address()));
   }
 
   @Override
@@ -85,10 +81,10 @@ public class ComponentInstanceImpl implements ComponentInstance, Handler<Message
     return output;
   }
 
-  @Override
-  public Logger logger() {
-    return logger;
-  }
+//  @Override
+//  public Logger logger() {
+//    return logger;
+//  }
 
   @Override
   public void handle(Message<Object> message) {
@@ -112,22 +108,22 @@ public class ComponentInstanceImpl implements ComponentInstance, Handler<Message
     }
   }
 
-  @Override
-  public JsonObject state() {
-    return state;
-  }
-
-  @Override
-  public ComponentInstance checkpoint(Handler<JsonObject> handler) {
-    checkpointHandler = handler;
-    return this;
-  }
-
-  @Override
-  public ComponentInstance recover(Handler<JsonObject> handler) {
-    recoverHandler = handler;
-    return this;
-  }
+//  @Override
+//  public JsonObject state() {
+//    return state;
+//  }
+//
+//  @Override
+//  public ComponentInstance checkpoint(Handler<JsonObject> handler) {
+//    checkpointHandler = handler;
+//    return this;
+//  }
+//
+//  @Override
+//  public ComponentInstance recover(Handler<JsonObject> handler) {
+//    recoverHandler = handler;
+//    return this;
+//  }
 
   @Override
   public ComponentInstance start() {

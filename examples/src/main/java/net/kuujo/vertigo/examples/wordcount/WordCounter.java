@@ -1,12 +1,12 @@
 package net.kuujo.vertigo.examples.wordcount;
 
-import net.kuujo.vertigo.component.SimpleAbstractComponent;
+import net.kuujo.vertigo.component.MessageHandlerComponent;
 import net.kuujo.vertigo.message.VertigoMessage;
 
 /**
  * Vertigo component which counts incoming words and sends out the latest word count.
  */
-public class WordCounter extends SimpleAbstractComponent<String> {
+public class WordCounter extends MessageHandlerComponent<String> {
 
   private Integer count = 0;
 

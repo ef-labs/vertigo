@@ -1,6 +1,6 @@
 package net.kuujo.vertigo.examples.wordcount;
 
-import net.kuujo.vertigo.component.SimpleAbstractComponent;
+import net.kuujo.vertigo.component.MessageHandlerComponent;
 import net.kuujo.vertigo.message.VertigoMessage;
 import net.kuujo.vertigo.util.AckAggregator;
 
@@ -8,7 +8,7 @@ import net.kuujo.vertigo.util.AckAggregator;
  * Vertigo component which splits incoming strings into words.
  * The words are then forwarded as individual messages.
  */
-public class WordMapper extends SimpleAbstractComponent<String> {
+public class WordMapper extends MessageHandlerComponent<String> {
 
   @Override
   public void handle(VertigoMessage<String> message) {

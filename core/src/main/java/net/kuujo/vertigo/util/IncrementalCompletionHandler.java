@@ -22,7 +22,7 @@ import io.vertx.core.Handler;
 /**
  * An incremental version of the counting completion handler.
  *
- * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
+ * @author <a href="http://github.com/ef-labs">Magnus Koch</a>
  */
 public class IncrementalCompletionHandler<T> {
   private int count;

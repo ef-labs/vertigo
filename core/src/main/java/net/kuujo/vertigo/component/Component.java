@@ -16,7 +16,10 @@
 package net.kuujo.vertigo.component;
 
 import io.vertx.core.Verticle;
+import net.kuujo.vertigo.context.ComponentContext;
 import net.kuujo.vertigo.instance.ComponentInstance;
+import net.kuujo.vertigo.instance.InputCollector;
+import net.kuujo.vertigo.instance.OutputCollector;
 
 import java.io.Serializable;
 
@@ -27,6 +30,35 @@ import java.io.Serializable;
  */
 public interface Component extends Verticle, Serializable {
 
-  ComponentInstance component();
+  /**
+   * Returns the component's name in the network.
+   */
+  String name();
+
+  /**
+   * Returns the component context.
+   *
+   * The component context can be used to retrieve useful information about an
+   * entire network.
+   *
+   * @return The component context.
+   */
+  ComponentContext context();
+
+  /**
+   * Returns the component's {@link InputCollector}. This is the element of the
+   * component which provides an interface for receiving messages from other components.
+   *
+   * @return The components {@link InputCollector}.
+   */
+  InputCollector input();
+
+  /**
+   * Returns the component's {@link OutputCollector}. This is the element of the
+   * component which provides an interface for sending messages to other components.
+   *
+   * @return The component's {@link OutputCollector}.
+   */
+  OutputCollector output();
 
 }

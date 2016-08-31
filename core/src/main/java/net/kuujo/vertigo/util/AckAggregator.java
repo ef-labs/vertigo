@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 /**
  * Purely for syntactic sugar when handling branching in vertigo components.
  *
- * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
+ * @author <a href="http://github.com/ef-labs">Magnus Koch</a>
  */
 public class AckAggregator extends IncrementalCompletionHandler<Void> {
 }

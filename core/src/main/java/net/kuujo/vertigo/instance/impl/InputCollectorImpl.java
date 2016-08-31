@@ -37,17 +37,18 @@ import java.util.*;
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 public class InputCollectorImpl implements InputCollector, Handler<Message<Object>> {
-  private final Logger log;
+  private final Logger logger;
   protected final Vertx vertx;
   protected InputContext context;
   protected final Map<String, InputPort> ports = new HashMap<>();
   private final TaskRunner tasks = new TaskRunner();
   private MessageConsumer<Object> consumer;
+  private ComponentInstanceFactory factory;
 
   public InputCollectorImpl(Vertx vertx, InputContext context, ComponentInstanceFactory factory) {
     this.vertx = vertx;
     this.context = context;
-    this.log = LoggerFactory.getLogger(String.format("%s-%s", InputCollectorImpl.class.getName(), context.component().name()));
+    this.logger = LoggerFactory.getLogger(String.format("%s-%s", InputCollectorImpl.class.getName(), context.component().name()));
     init(factory);
   }
 
@@ -56,6 +57,7 @@ public class InputCollectorImpl implements InputCollector, Handler<Message<Objec
    * @param factory
    */
   private void init(ComponentInstanceFactory factory) {
+    this.factory = factory;
     for (InputPortContext input : context.ports()) {
       if (!ports.containsKey(input.name())) {
         ports.put(input.name(), factory.createInputPort(vertx, input));
@@ -92,6 +94,25 @@ public class InputCollectorImpl implements InputCollector, Handler<Message<Objec
   @Override
   @SuppressWarnings("unchecked")
   public <T> InputPort<T> port(String name) {
+    if (!ports.containsKey(name)) {
+      // Create stub port
+      InputPortContext portContext = InputPortContext
+          .builder()
+          .setInput(context)
+          .setName(name)
+          .build();
+
+      ports.put(name, factory.createInputPort(vertx, portContext));
+
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            String.format(
+                "Dynamically created input port %s on component %s at address %s. The port has no connections.",
+                name,
+                context.component().name(),
+                context.component().address()));
+      }
+    }
     return ports.get(name);
   }
 

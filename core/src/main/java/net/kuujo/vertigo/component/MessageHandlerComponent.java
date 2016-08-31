@@ -31,26 +31,20 @@ import net.kuujo.vertigo.message.VertigoMessage;
 import net.kuujo.vertigo.spi.ComponentInstanceFactory;
 
 /**
- * Abstract Java component.
+ * Abstract Java component which automatically registers all defined input ports to itself.
  *
- * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
+ * @author <a href="http://github.com/ef-labs">Magnus Koch</a>
  */
-public abstract class SimpleAbstractComponent<T> extends AbstractComponent implements Handler<VertigoMessage<T>> {
-
-  public OutputCollector output() {
-    return component().output();
-  }
+public abstract class MessageHandlerComponent<T> extends AbstractComponent implements Handler<VertigoMessage<T>> {
 
   @Override
   public void start() throws Exception {
 
     // Register all input ports automatically
-    component()
-        .input()
+    input()
         .ports()
         .forEach(port -> {
-          component()
-              .input()
+          input()
               .<T>port(port.name())
               .handler(this);
         });

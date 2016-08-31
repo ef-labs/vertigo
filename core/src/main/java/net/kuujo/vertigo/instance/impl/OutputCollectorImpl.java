@@ -34,15 +34,17 @@ import java.util.*;
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 public class OutputCollectorImpl implements OutputCollector, Handler<Message<Object>> {
-  private final Logger log;
+
+  private Logger logger;
   protected final Vertx vertx;
   protected OutputContext context;
   protected final Map<String, OutputPort> ports = new HashMap<>();
+  private ComponentInstanceFactory factory;
 
   public OutputCollectorImpl(Vertx vertx, OutputContext context, ComponentInstanceFactory factory) {
     this.vertx = vertx;
     this.context = context;
-    this.log = LoggerFactory.getLogger(String.format("%s-%s", OutputCollectorImpl.class.getName(), context.component().name()));
+    this.logger = LoggerFactory.getLogger(String.format("%s-%s", OutputCollectorImpl.class.getName(), context.component().name()));
     init(factory);
   }
 
@@ -51,6 +53,7 @@ public class OutputCollectorImpl implements OutputCollector, Handler<Message<Obj
    * @param factory
    */
   private void init(ComponentInstanceFactory factory) {
+    this.factory = factory;
     for (OutputPortContext output : context.ports()) {
       if (!ports.containsKey(output.name())) {
         ports.put(output.name(), factory.createOutputPort(vertx, output));
@@ -82,6 +85,23 @@ public class OutputCollectorImpl implements OutputCollector, Handler<Message<Obj
   @Override
   @SuppressWarnings("unchecked")
   public <T> OutputPort<T> port(String name) {
+    if (!ports.containsKey(name)) {
+      // Create stub port
+      OutputPortContext portContext = OutputPortContext
+          .builder()
+          .setOutput(context)
+          .setName(name)
+          .build();
+      ports.put(name, factory.createOutputPort(vertx, portContext));
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            String.format(
+                "Dynamically created output port %s on component %s at address %s. The port has no connections.",
+                name,
+                context.component().name(),
+                context.component().address()));
+      }
+    }
     return ports.get(name);
   }
 

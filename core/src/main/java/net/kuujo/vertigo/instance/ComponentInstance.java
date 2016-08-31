@@ -32,7 +32,7 @@ import net.kuujo.vertigo.context.ComponentContext;
  *
  * Components receive messages on input ports and send messages on output
  * ports, but component-to-component relationships are defined externally
- * to the component implementation in the {@link net.kuujo.vertigo.builder.NetworkBuilder}. This means
+ * to the component implementation in the {@link net.kuujo.vertigo.network.builder.NetworkBuilder}. This means
  * that when a message is sent to an output port, the component doesn't
  * know where the message will go. Instead, Vertigo handles message routing
  * internally, abstracting relationship details from component implementations.<p>
@@ -80,39 +80,39 @@ public interface ComponentInstance {
    */
   OutputCollector output();
 
-  /**
-   * Returns the partition logger. This is a special logger that references the
-   * Vertigo component partition and can allow for fine grained control of logging
-   * within Vertigo components.
-   *
-   * @return The logger for the component partition.
-   */
-  Logger logger();
+//  /**
+//   * Returns the partition logger. This is a special logger that references the
+//   * Vertigo component partition and can allow for fine grained control of logging
+//   * within Vertigo components.
+//   *
+//   * @return The logger for the component partition.
+//   */
+//  Logger logger();
 
-  /**
-   * Returns the component state.
-   *
-   * @return The component state.
-   */
-  JsonObject state();
-
-  /**
-   * Performs a checkpoint of the component state.
-   *
-   * @param handler A handler to be called with the component state.
-   * @return The component instance.
-   */
-  @Fluent
-  ComponentInstance checkpoint(Handler<JsonObject> handler);
-
-  /**
-   * Recovers the component state.
-   *
-   * @param handler A handler to be called with the component state.
-   * @return The component instance.
-   */
-  @Fluent
-  ComponentInstance recover(Handler<JsonObject> handler);
+//  /**
+//   * Returns the component state.
+//   *
+//   * @return The component state.
+//   */
+//  JsonObject state();
+//
+//  /**
+//   * Performs a checkpoint of the component state.
+//   *
+//   * @param handler A handler to be called with the component state.
+//   * @return The component instance.
+//   */
+//  @Fluent
+//  ComponentInstance checkpoint(Handler<JsonObject> handler);
+//
+//  /**
+//   * Recovers the component state.
+//   *
+//   * @param handler A handler to be called with the component state.
+//   * @return The component instance.
+//   */
+//  @Fluent
+//  ComponentInstance recover(Handler<JsonObject> handler);
 
   /**
    * Starts the component.

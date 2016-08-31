@@ -73,7 +73,7 @@ public class Deployment_Undeploy_Test extends VertxTestBase {
     String name;
     @Override
     public void start() throws Exception {
-      name = component().context().address();
+      name = context().address();
       logger().info(name + ": starting.");
       deploymentCounter.incrementAndGet();
     }

@@ -20,7 +20,7 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.test.core.VertxTestBase;
 import net.kuujo.vertigo.Vertigo;
-import net.kuujo.vertigo.component.SimpleAbstractComponent;
+import net.kuujo.vertigo.component.MessageHandlerComponent;
 import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.message.VertigoMessage;
 import net.kuujo.vertigo.reference.NetworkReference;
@@ -73,35 +73,33 @@ public abstract class VertigoTestBase extends VertxTestBase {
     return networkReference;
   }
 
-  public static class AutoAckingComponent extends SimpleAbstractComponent<Object> {
+  public static class AutoAckingComponent extends MessageHandlerComponent<Object> {
     @Override
     public void handle(VertigoMessage<Object> event) {
-      logger().info(component().context().name() + " received message " + event.body() + ", acking.");
+      logger().info(context().name() + " received message " + event.body() + ", acking.");
       event.ack();
     }
   }
 
-  public static class AutoForwardingComponent extends SimpleAbstractComponent<String> {
+  public static class AutoForwardingComponent extends MessageHandlerComponent<String> {
 
     @Override
     public void handle(VertigoMessage<String> message) {
 
-      logger().info(component().context().name() + " received message " + message.body());
+      logger().info(context().name() + " received message " + message.body());
 
       // Transform message
-      String trace = message.body() + " > " + component().context().name();
+      String trace = message.body() + " > " + context().name();
 
-      if (component().output().ports().size() > 0) {
+      if (output().ports().size() > 0) {
 
-        CountingCompletionHandler<Void> counter = new CountingCompletionHandler<Void>(component().output().ports().size())
+        CountingCompletionHandler<Void> counter = new CountingCompletionHandler<Void>(output().ports().size())
             .setHandler(message::handle);
 
-        component()
-            .output()
+        output()
             .ports()
             .forEach(outputPort -> {
-              component()
-                  .output()
+              output()
                   .port(outputPort.name())
                   .send(trace, counter);
             });

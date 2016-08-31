@@ -24,6 +24,8 @@ import net.kuujo.vertigo.VertigoException;
 import net.kuujo.vertigo.VertigoOptions;
 import net.kuujo.vertigo.context.ComponentContext;
 import net.kuujo.vertigo.context.NetworkContext;
+import net.kuujo.vertigo.instance.InputCollector;
+import net.kuujo.vertigo.instance.OutputCollector;
 import net.kuujo.vertigo.spi.ComponentInstanceFactory;
 import net.kuujo.vertigo.instance.ComponentInstance;
 
@@ -36,11 +38,6 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
 
   private ComponentInstance component;
   private NetworkContext network;
-
-  @Override
-  public ComponentInstance component() {
-    return component;
-  }
 
   /**
    * Start the verticle.<p>
@@ -119,4 +116,25 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
     }
 
   }
+
+  @Override
+  public ComponentContext context() {
+    return component.context();
+  }
+
+  @Override
+  public InputCollector input() {
+    return component.input();
+  }
+
+  @Override
+  public OutputCollector output() {
+    return component.output();
+  }
+
+  @Override
+  public String name() {
+    return component.context().name();
+  }
+
 }

@@ -18,7 +18,7 @@ package net.kuujo.vertigo.integration;
 
 import net.kuujo.vertigo.VertigoException;
 import net.kuujo.vertigo.network.builder.NetworkBuilder;
-import net.kuujo.vertigo.component.SimpleAbstractComponent;
+import net.kuujo.vertigo.component.MessageHandlerComponent;
 import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.message.VertigoMessage;
 import net.kuujo.vertigo.reference.NetworkReference;
@@ -91,19 +91,18 @@ public class Forward_Fail_Test extends VertigoTestBase {
   }
 
   @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-  public static class ForwardingComponent extends SimpleAbstractComponent<String> {
+  public static class ForwardingComponent extends MessageHandlerComponent<String> {
 
     @Override
     public void handle(VertigoMessage<String> event) {
-      logger().info(this.component().context().name() + " forwarding");
-      component()
-          .output()
+      logger().info(name() + " forwarding");
+      output()
           .port("out")
           .send(event.body(), event::handle);
     }
   }
 
-  public static class TargetComponent extends SimpleAbstractComponent<String> {
+  public static class TargetComponent extends MessageHandlerComponent<String> {
 
     @Override
     public void handle(VertigoMessage<String> event) {

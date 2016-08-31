@@ -17,7 +17,7 @@ package net.kuujo.vertigo.integration;
  */
 
 import net.kuujo.vertigo.network.builder.NetworkBuilder;
-import net.kuujo.vertigo.component.SimpleAbstractComponent;
+import net.kuujo.vertigo.component.MessageHandlerComponent;
 import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.message.VertigoMessage;
 import net.kuujo.vertigo.reference.NetworkReference;
@@ -70,18 +70,17 @@ public class Forward_Sync_Ack_Test extends VertigoTestBase {
   }
 
   @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-  public static class StartComponent extends SimpleAbstractComponent<String> {
+  public static class StartComponent extends MessageHandlerComponent<String> {
 
     @Override
     public void handle(VertigoMessage<String> event) {
-      component()
-          .output()
+      output()
           .port("out")
           .send(event.body(), event::handle);
     }
   }
 
-  public static class TargetComponent extends SimpleAbstractComponent<String> {
+  public static class TargetComponent extends MessageHandlerComponent<String> {
 
     @Override
     public void handle(VertigoMessage<String> event) {
