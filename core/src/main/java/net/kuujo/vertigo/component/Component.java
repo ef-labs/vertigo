@@ -56,24 +56,4 @@ public interface Component extends Verticle, Serializable {
       return component().context();
     }
 
-  /**
-   * Returns the component's {@link InputCollector}. This is the element of the
-   * component which provides an interface for receiving messages from other components.
-   *
-   * @return The components {@link InputCollector}.
-   */
-  default InputCollector input() {
-    return component().input();
-  }
-
-  /**
-   * Returns the component's {@link OutputCollector}. This is the element of the
-   * component which provides an interface for sending messages to other components.
-   *
-   * @return The component's {@link OutputCollector}.
-   */
-  default OutputCollector output() {
-    return component().output();
-  }
-
 }

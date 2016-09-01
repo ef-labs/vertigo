@@ -26,6 +26,7 @@ import net.kuujo.vertigo.context.ComponentContext;
 import net.kuujo.vertigo.context.NetworkContext;
 import net.kuujo.vertigo.deployment.DeploymentManager;
 import net.kuujo.vertigo.instance.ComponentInstance;
+import net.kuujo.vertigo.instance.InputCollector;
 import net.kuujo.vertigo.instance.OutputCollector;
 import net.kuujo.vertigo.message.VertigoMessage;
 import net.kuujo.vertigo.spi.ComponentInstanceFactory;
@@ -37,8 +38,28 @@ import net.kuujo.vertigo.spi.ComponentInstanceFactory;
  */
 public abstract class MessageHandlerComponent<T> extends AbstractComponent implements Handler<VertigoMessage<T>> {
 
+  /**
+   * Returns the component's {@link InputCollector}. This is the element of the
+   * component which provides an interface for receiving messages from other components.
+   *
+   * @return The components {@link InputCollector}.
+   */
+  public InputCollector input() {
+    return component().input();
+  }
+
+  /**
+   * Returns the component's {@link OutputCollector}. This is the element of the
+   * component which provides an interface for sending messages to other components.
+   *
+   * @return The component's {@link OutputCollector}.
+   */
+  public OutputCollector output() {
+    return component().output();
+  }
+
   @Override
-  public void start() throws Exception {
+  protected void initComponent() {
 
     // Register all input ports automatically
     input()

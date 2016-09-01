@@ -36,7 +36,6 @@ public class ComponentContextImpl extends BaseContextImpl<ComponentContext> impl
   private String id;
   private String address;
   private String main;
-//  private Component component;
   private JsonObject config;
   private boolean worker;
   private boolean multiThreaded;
@@ -61,11 +60,6 @@ public class ComponentContextImpl extends BaseContextImpl<ComponentContext> impl
   public String main() {
     return main;
   }
-
-//  @Override
-//  public Component component() {
-//    return component;
-//  }
 
   @Override
   public JsonObject config() {

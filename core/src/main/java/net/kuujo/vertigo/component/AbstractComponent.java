@@ -75,7 +75,9 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
         component.start(result2 -> {
           if (result2.succeeded()) {
             try {
-              AbstractComponent.super.start(startFuture);
+              start();
+              initComponent();
+              startFuture.complete();
             } catch (Exception e) {
               startFuture.fail(e);
             }
@@ -91,10 +93,9 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
   }
 
   /**
-   * TODO: stuff
-   * @param names
+   * Override this method to register input port handlers and other initialization work.
    */
-  protected void component(List<String> names){
+  protected void initComponent(){
   };
 
   /**

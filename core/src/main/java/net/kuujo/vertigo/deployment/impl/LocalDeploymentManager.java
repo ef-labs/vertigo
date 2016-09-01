@@ -18,6 +18,7 @@ package net.kuujo.vertigo.deployment.impl;
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
+import io.vertx.core.spi.VerticleFactory;
 import net.kuujo.vertigo.deployment.DeploymentManager;
 import net.kuujo.vertigo.VertigoException;
 import net.kuujo.vertigo.context.ComponentContext;
