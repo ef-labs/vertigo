@@ -16,20 +16,20 @@
 package net.kuujo.vertigo.cluster.impl;
 
 import io.vertx.core.Vertx;
-import net.kuujo.vertigo.ContextManager;
+import net.kuujo.vertigo.deployment.DeploymentManager;
 import net.kuujo.vertigo.VertigoOptions;
-import net.kuujo.vertigo.spi.ContextManagerFactory;
+import net.kuujo.vertigo.spi.DeploymentManagerFactory;
 
 /**
  * Cluster context manager factory implementation.
  *
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
-public class ClusterContextManagerFactory implements ContextManagerFactory {
+public class ClusterContextManagerFactory implements DeploymentManagerFactory {
 
   @Override
-  public ContextManager createContextManager(Vertx vertx, VertigoOptions options) {
-    return new ClusterContextManager(vertx, options.getClusterAddress());
+  public DeploymentManager createContextManager(Vertx vertx, VertigoOptions options) {
+    return new ClusterDeploymentManager(vertx, options.getClusterAddress());
   }
 
 }

@@ -17,7 +17,7 @@ package net.kuujo.vertigo.impl;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import net.kuujo.vertigo.component.ComponentConfig;
+import net.kuujo.vertigo.network.ComponentConfig;
 import net.kuujo.vertigo.spi.ComponentResolver;
 
 /**

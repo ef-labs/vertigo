@@ -17,7 +17,7 @@ package net.kuujo.vertigo.impl;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import net.kuujo.vertigo.network.Network;
+import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.spi.NetworkResolver;
 
 /**
@@ -34,7 +34,7 @@ public class TypesafeNetworkResolver extends AbstractResolver implements Network
   }
 
   @Override
-  public Network resolve(Network network) {
+  public NetworkConfig resolve(NetworkConfig network) {
     Config config = ConfigFactory.parseResourcesAnySyntax(network.getName())
       .withFallback(ConfigFactory.parseResourcesAnySyntax(NETWORK_DEFAULTS)).resolve();
     network.update(configObjectToJson(config));

@@ -23,8 +23,8 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.ServiceHelper;
 import io.vertx.core.Vertx;
-import net.kuujo.vertigo.network.Network;
-import net.kuujo.vertigo.network.NetworkReference;
+import net.kuujo.vertigo.network.NetworkConfig;
+import net.kuujo.vertigo.reference.NetworkReference;
 import net.kuujo.vertigo.spi.ClusterFactory;
 
 /**
@@ -66,13 +66,13 @@ public interface Cluster {
    * @return The cluster instance.
    */
   @Fluent
-  Cluster deployNetwork(Network network, Handler<AsyncResult<NetworkReference>> doneHandler);
+  Cluster deployNetwork(NetworkConfig network, Handler<AsyncResult<NetworkReference>> doneHandler);
 
   /**
    * Undeploys a network from the cluster.
    *
    * @param id The unique ID of the network to undeploy.
-   * @param doneHandler An asynchronous handler to be called once complete.
+   * @param doneHandler An asynchronous handler to be called once completed.
    * @return The cluster instance.
    */
   @Fluent
@@ -82,16 +82,16 @@ public interface Cluster {
    * Undeploys a network from the cluster.
    *
    * @param network The network to undeploy.
-   * @param doneHandler An asynchronous handler to be called once complete.
+   * @param doneHandler An asynchronous handler to be called once completed.
    * @return The cluster instance.
    */
   @Fluent
-  Cluster undeployNetwork(Network network, Handler<AsyncResult<Void>> doneHandler);
+  Cluster undeployNetwork(NetworkConfig network, Handler<AsyncResult<Void>> doneHandler);
 
   /**
    * Starts the cluster instance.
    *
-   * @param doneHandler An asynchronous handler to be called once complete.
+   * @param doneHandler An asynchronous handler to be called once completed.
    */
   @ProxyIgnore
   void start(Handler<AsyncResult<Void>> doneHandler);
@@ -99,7 +99,7 @@ public interface Cluster {
   /**
    * Stops the cluster instance.
    *
-   * @param doneHandler An asynchronous handler to be called once complete.
+   * @param doneHandler An asynchronous handler to be called once completed.
    */
   @ProxyIgnore
   void stop(Handler<AsyncResult<Void>> doneHandler);

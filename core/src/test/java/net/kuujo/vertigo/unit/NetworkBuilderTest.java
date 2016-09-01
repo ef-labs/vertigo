@@ -16,11 +16,11 @@ package net.kuujo.vertigo.unit;
  * limitations under the License.
  */
 
-import net.kuujo.vertigo.builder.NetworkBuilder;
-import net.kuujo.vertigo.component.ComponentConfig;
-import net.kuujo.vertigo.io.connection.ConnectionConfig;
-import net.kuujo.vertigo.network.Network;
-import net.kuujo.vertigo.network.ValidationException;
+import net.kuujo.vertigo.network.builder.NetworkBuilder;
+import net.kuujo.vertigo.network.ComponentConfig;
+import net.kuujo.vertigo.network.ConnectionConfig;
+import net.kuujo.vertigo.network.NetworkConfig;
+import net.kuujo.vertigo.network.validators.ValidationException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -33,7 +33,7 @@ public class NetworkBuilderTest {
   public void networkBuilder_Create_Test() {
 
       // Build the network using "verbose" flow syntax
-    NetworkBuilder builder = Network.builder()
+    NetworkBuilder builder = NetworkConfig.builder()
             .name("network-1");
 
     builder.component()
@@ -55,7 +55,7 @@ public class NetworkBuilderTest {
             .port("in");
 
       // Verify the result
-    Network network = builder.build();
+    NetworkConfig network = builder.build();
 
     ComponentConfig sender = network.getComponent("sender");
     assertNotNull(sender);
@@ -82,7 +82,7 @@ public class NetworkBuilderTest {
     public void networkBuilder_ShortHand_Test1() {
 
       // Build the network using "shorthand" flow syntax
-      NetworkBuilder builder = Network.builder("network-1");
+      NetworkBuilder builder = NetworkConfig.builder("network-1");
 
       builder.component("sender")
           .identifier(STUB_IDENTIFIER)
@@ -100,7 +100,7 @@ public class NetworkBuilderTest {
           .port("in");
 
       // Verify the result
-      Network network = builder.build();
+      NetworkConfig network = builder.build();
 
       ComponentConfig sender = network.getComponent("sender");
       assertNotNull(sender);
@@ -127,7 +127,7 @@ public class NetworkBuilderTest {
     public void networkBuilder_ShortHand_Test2() {
 
       // Build the network entirely through connection flow syntax
-      NetworkBuilder builder = Network.builder()
+      NetworkBuilder builder = NetworkConfig.builder()
           .name("network-1");
 
       builder.connect("sender")
@@ -138,7 +138,7 @@ public class NetworkBuilderTest {
           .port("in");
 
       // Verify the result
-      Network network = builder.build();
+      NetworkConfig network = builder.build();
 
       ComponentConfig sender = network.getComponent("sender");
       assertNotNull(sender);
@@ -165,7 +165,7 @@ public class NetworkBuilderTest {
     public void networkBuilder_Connections_And_Test() {
 
       // Build the network using the and() method.
-      NetworkBuilder builder = Network.builder()
+      NetworkBuilder builder = NetworkConfig.builder()
           .name("network-1");
 
       builder.connect()
@@ -175,7 +175,7 @@ public class NetworkBuilderTest {
           .and("receiver2").port("in2").identifier(STUB_IDENTIFIER);
 
       // Verify the result
-      Network network = builder.build();
+      NetworkConfig network = builder.build();
 
       assertEquals(4, network.getConnections().size());
 
@@ -211,20 +211,20 @@ public class NetworkBuilderTest {
 
     @Test
     public void networkBuilder_Validate_Empty_Components_Test() {
-      NetworkBuilder builder = Network.builder();
+      NetworkBuilder builder = NetworkConfig.builder();
 
       try {
         builder.validate();
       }
       catch (ValidationException e) {
-        assertEquals("Network components cannot be empty", e.getMessage());
+        assertEquals("NetworkConfig components cannot be empty", e.getMessage());
       }
 
     }
 
     @Test
     public void networkBuilder_Validate_Empty_Connections_Test() {
-      NetworkBuilder builder = Network.builder();
+      NetworkBuilder builder = NetworkConfig.builder();
       builder.component("sender")
           .identifier(STUB_IDENTIFIER);
 
@@ -232,14 +232,14 @@ public class NetworkBuilderTest {
         builder.validate();
       }
       catch (ValidationException e) {
-        assertEquals("Network connections cannot be empty", e.getMessage());
+        assertEquals("NetworkConfig connections cannot be empty", e.getMessage());
       }
 
     }
 
     @Test
     public void networkBuilder_Validate_Broken_Connection_Test() {
-      NetworkBuilder builder = Network.builder();
+      NetworkBuilder builder = NetworkConfig.builder();
 
       builder.connect("sender")
           .identifier(STUB_IDENTIFIER)
@@ -258,7 +258,7 @@ public class NetworkBuilderTest {
 
     @Test
     public void networkBuilder_Validate_Broken_Component_Test() {
-      NetworkBuilder builder = Network.builder();
+      NetworkBuilder builder = NetworkConfig.builder();
 
       // Components missing identifiers
       builder.connect("sender")
@@ -277,7 +277,7 @@ public class NetworkBuilderTest {
 
     @Test
     public void networkBuilder_Validate_Test() {
-      NetworkBuilder builder = Network.builder();
+      NetworkBuilder builder = NetworkConfig.builder();
 
       builder.connect("sender")
           .identifier(STUB_IDENTIFIER)
@@ -292,7 +292,7 @@ public class NetworkBuilderTest {
 
   @Test
   public void networkBuilder_Timeout_Test() {
-    NetworkBuilder builder = Network.builder();
+    NetworkBuilder builder = NetworkConfig.builder();
 
     builder.connect("sender")
         .identifier(STUB_IDENTIFIER)
@@ -302,7 +302,7 @@ public class NetworkBuilderTest {
         .port("in")
         .sendTimeout(1000);
 
-    Network network = builder.build();
+    NetworkConfig network = builder.build();
 
     ConnectionConfig connection = (ConnectionConfig)network.getConnections().toArray()[0];
     assertEquals(1000, connection.getSendTimeout());

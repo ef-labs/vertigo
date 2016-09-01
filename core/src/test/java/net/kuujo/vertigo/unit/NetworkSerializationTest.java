@@ -17,17 +17,17 @@ package net.kuujo.vertigo.unit;
  */
 
 import io.vertx.core.json.JsonObject;
-import net.kuujo.vertigo.builder.NetworkBuilder;
-import net.kuujo.vertigo.component.ComponentConfig;
-import net.kuujo.vertigo.io.connection.ConnectionConfig;
-import net.kuujo.vertigo.network.Network;
-import net.kuujo.vertigo.network.ValidationException;
+import net.kuujo.vertigo.network.builder.NetworkBuilder;
+import net.kuujo.vertigo.network.ComponentConfig;
+import net.kuujo.vertigo.network.ConnectionConfig;
+import net.kuujo.vertigo.network.NetworkConfig;
 import org.junit.Test;
 
 import java.io.InputStream;
 import java.util.Scanner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class NetworkSerializationTest {
 
@@ -37,7 +37,7 @@ public class NetworkSerializationTest {
   public void networkBuilder_Serialize_Deserialize_Test() {
 
     // Build the network using "shorthand" flow syntax
-    NetworkBuilder builder = Network.builder("network-1");
+    NetworkBuilder builder = NetworkConfig.builder("network-1");
 
     builder.component("sender")
         .identifier(STUB_IDENTIFIER)
@@ -57,7 +57,7 @@ public class NetworkSerializationTest {
     // Verify the result
     JsonObject json = builder.build().toJson();
 
-    Network network = Network.network(json);
+    NetworkConfig network = NetworkConfig.network(json);
 
     ComponentConfig sender = network.getComponent("sender");
     assertNotNull(sender);
@@ -88,7 +88,7 @@ public class NetworkSerializationTest {
     JsonObject networkJson = new JsonObject(networkString);
 
     // Build the network
-    Network network = Network.network(networkJson);
+    NetworkConfig network = NetworkConfig.network(networkJson);
 
     // Verify the result
     ComponentConfig sender = network.getComponent("A");

@@ -15,12 +15,12 @@
  */
 package net.kuujo.vertigo.spi;
 
-import net.kuujo.vertigo.network.Network;
+import net.kuujo.vertigo.network.NetworkConfig;
 
 /**
- * Network configuration resolver.
+ * NetworkConfig configuration resolver.
  *
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
-public interface NetworkResolver extends ConfigResolver<Network> {
+public interface NetworkResolver extends ConfigResolver<NetworkConfig> {
 }

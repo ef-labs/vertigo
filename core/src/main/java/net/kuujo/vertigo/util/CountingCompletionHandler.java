@@ -36,6 +36,11 @@ public class CountingCompletionHandler<T> implements Handler<AsyncResult<T>> {
     this.required = required;
   }
 
+  public CountingCompletionHandler(int required, Handler<AsyncResult<T>> handler) {
+    this.required = required;
+    this.doneHandler = handler;
+  }
+
   @Override
   public void handle(AsyncResult<T> result) {
     if (result.failed()) {

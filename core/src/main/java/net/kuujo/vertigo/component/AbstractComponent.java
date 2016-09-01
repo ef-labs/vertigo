@@ -19,10 +19,17 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.ServiceHelper;
 import io.vertx.core.json.JsonObject;
-import net.kuujo.vertigo.ContextManager;
+import net.kuujo.vertigo.deployment.DeploymentManager;
 import net.kuujo.vertigo.VertigoException;
 import net.kuujo.vertigo.VertigoOptions;
-import net.kuujo.vertigo.network.NetworkContext;
+import net.kuujo.vertigo.context.ComponentContext;
+import net.kuujo.vertigo.context.NetworkContext;
+import net.kuujo.vertigo.instance.InputCollector;
+import net.kuujo.vertigo.instance.OutputCollector;
+import net.kuujo.vertigo.spi.ComponentInstanceFactory;
+import net.kuujo.vertigo.instance.ComponentInstance;
+
+import java.util.List;
 
 /**
  * Abstract Java component.
@@ -34,24 +41,19 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
   private ComponentInstance component;
   private NetworkContext network;
 
-  @Override
-  public ComponentInstance component() {
-    return component;
-  }
-
   /**
    * Start the verticle.<p>
    * This is called by Vert.x when the verticle instance is deployed. Don't call it yourself.<p>
    * If your verticle does things in it's startup which take some time then you can override this method
-   * and call the startFuture some time later when start up is complete.
+   * and call the startFuture some time later when start up is completed.
    *
-   * @param startFuture a future which should be called when verticle start-up is complete.
+   * @param startFuture a future which should be called when verticle start-up is completed.
    * @throws Exception
    */
   @Override
   public void start(Future<Void> startFuture) throws Exception {
 
-    ContextManager manager = ContextManager.manager(vertx, new VertigoOptions());
+    DeploymentManager manager = DeploymentManager.manager(vertx, new VertigoOptions());
 
     // TODO: How are you supposed to create ComponentInstance?  From NetworkContext?
     JsonObject config = config();
@@ -73,7 +75,9 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
         component.start(result2 -> {
           if (result2.succeeded()) {
             try {
-              AbstractComponent.super.start(startFuture);
+              start();
+              initComponent();
+              startFuture.complete();
             } catch (Exception e) {
               startFuture.fail(e);
             }
@@ -89,12 +93,18 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
   }
 
   /**
+   * Override this method to register input port handlers and other initialization work.
+   */
+  protected void initComponent(){
+  };
+
+  /**
    * Stop the verticle.<p>
    * This is called by Vert.x when the verticle instance is un-deployed. Don't call it yourself.<p>
    * If your verticle does things in it's shut-down which take some time then you can override this method
-   * and call the stopFuture some time later when clean-up is complete.
+   * and call the stopFuture some time later when clean-up is completed.
    *
-   * @param stopFuture a future which should be called when verticle clean-up is complete.
+   * @param stopFuture a future which should be called when verticle clean-up is completed.
    * @throws Exception
    */
   @Override
@@ -116,4 +126,10 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
     }
 
   }
+
+  @Override
+  public ComponentInstance component() {
+    return component;
+  }
+
 }

@@ -19,13 +19,14 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import net.kuujo.vertigo.ContextManager;
+import net.kuujo.vertigo.deployment.DeploymentManager;
 import net.kuujo.vertigo.Vertigo;
 import net.kuujo.vertigo.VertigoOptions;
-import net.kuujo.vertigo.network.Network;
-import net.kuujo.vertigo.network.NetworkContext;
-import net.kuujo.vertigo.network.NetworkReference;
-import net.kuujo.vertigo.network.impl.NetworkReferenceImpl;
+import net.kuujo.vertigo.network.NetworkConfig;
+import net.kuujo.vertigo.context.ContextBuilder;
+import net.kuujo.vertigo.context.NetworkContext;
+import net.kuujo.vertigo.reference.NetworkReference;
+import net.kuujo.vertigo.reference.impl.NetworkReferenceImpl;
 
 /**
  * Vertigo implementation.
@@ -35,12 +36,12 @@ import net.kuujo.vertigo.network.impl.NetworkReferenceImpl;
 public class VertigoImpl implements Vertigo {
   private final Vertx vertx;
   private final VertigoOptions options;
-  private final ContextManager manager;
+  private final DeploymentManager manager;
 
   public VertigoImpl(Vertx vertx, VertigoOptions options) {
     this.vertx = vertx;
     this.options = options;
-    this.manager = ContextManager.manager(vertx, options);
+    this.manager = DeploymentManager.manager(vertx, options);
   }
 
   @Override
@@ -56,12 +57,12 @@ public class VertigoImpl implements Vertigo {
   }
 
   @Override
-  public Vertigo deployNetwork(Network network) {
+  public Vertigo deployNetwork(NetworkConfig network) {
     return deployNetwork(network, null);
   }
 
   @Override
-  public Vertigo deployNetwork(Network network, Handler<AsyncResult<NetworkReference>> doneHandler) {
+  public Vertigo deployNetwork(NetworkConfig network, Handler<AsyncResult<NetworkReference>> doneHandler) {
     NetworkContext context = ContextBuilder.buildContext(network);
     manager.deployNetwork(context, result -> {
       if (result.failed()) {

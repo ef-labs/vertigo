@@ -16,186 +16,101 @@
 package net.kuujo.vertigo.examples.integration.wordcount;
 
 
-import io.vertx.core.Handler;
-import io.vertx.core.eventbus.Message;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import io.vertx.test.core.VertxTestBase;
 import net.kuujo.vertigo.Vertigo;
-import net.kuujo.vertigo.builder.NetworkBuilder;
-import net.kuujo.vertigo.component.AbstractComponent;
 import net.kuujo.vertigo.examples.wordcount.WordCountNetwork;
-import net.kuujo.vertigo.io.VertigoMessage;
+import net.kuujo.vertigo.network.NetworkConfig;
+import net.kuujo.vertigo.reference.NetworkReference;
 import org.junit.Test;
 
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Word count network tests.
  *
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
-public class WordCountTest extends VertxTestBase implements Handler<Message<String>> {
+public class WordCountTest extends VertxTestBase {
 
-  private static String address = UUID.randomUUID().toString();
+  private static Logger logger = LoggerFactory.getLogger(WordCountTest.class);
+
+  private String resultAddress = UUID.randomUUID().toString();
+  private NetworkReference network;
 
   @Override
   public void setUp() throws Exception {
     super.setUp();
 
-    NetworkBuilder builder = WordCountNetwork.networkBuilder();
+    NetworkConfig networkConfig = WordCountNetwork.build(resultAddress);
 
-    builder.component("done")
-        .identifier(DoneComponent.class.getName())
-        .input()
-        .port("count");
-
-    builder.connect()
-        .component("word-counter")
-        .port("count")
-        .to("done")
-        .port("count");
-
-    vertx.eventBus().consumer(address, this);
-
-    CountDownLatch latch = new CountDownLatch(1);
-
+    // Deploy network
+    CompletableFuture<Void> future = new CompletableFuture<>();
     vertx.runOnContext(aVoid -> {
       Vertigo vertigo = Vertigo.vertigo(vertx);
-      vertigo.deployNetwork(builder.build(), result -> {
+      vertigo.deployNetwork(networkConfig, result -> {
         if (result.failed()) {
           fail(result.cause().getMessage());
         }
-        latch.countDown();
+        this.network = result.result();
+        future.complete(null);
       });
     });
 
-    latch.await();
+    future.join();
   }
 
   @Test
-  public void test() throws Exception {
+  public void loremIpsumTest() throws Exception {
+    AtomicInteger highestCount = new AtomicInteger();
+
+    // Add output handler to track highest count
+    vertx.eventBus()
+        .consumer(resultAddress, event -> {
+          Integer count = (Integer)event.body();
+          highestCount.accumulateAndGet(count, Math::max);
+        });
+
+    network
+        .input()
+        .port("input")
+        .send("Lorem ipsum dolor sit amet, consectetur adipiscing elit", event -> {
+          assertTrue(event.succeeded());
+          logger.info("Send complete.");
+
+          // Wait a bit to allow event bus to drain
+          vertx.setTimer(50, id -> {
+            assertEquals(8, highestCount.get());
+            logger.info("Test complete: " + highestCount.get());
+            testComplete();
+          });
+
+        });
+
     await();
   }
 
-  @Override
-  public void handle(Message<String> message) {
-    System.out.println(message.body());
-    testComplete();
+  @Test
+  public void emptyStringTest() throws Exception {
+
+    // Add output handler to track highest count
+    vertx.eventBus()
+        .consumer(resultAddress, event -> {
+          fail("No word count expected from empty string.");
+        });
+
+    network
+        .input()
+        .port("input")
+        .send("", event -> {
+          assertTrue(event.succeeded());
+          vertx.setTimer(50, id -> testComplete());
+        });
+
+    await();
   }
-
-  public static class DoneComponent extends AbstractComponent implements Handler<VertigoMessage<JsonObject>> {
-
-    private boolean testComplete = false;
-
-    @Override
-    public void start() throws Exception {
-
-      component()
-          .input()
-          .<JsonObject>port("count")
-          .handler(this);
-
-    }
-
-    /**
-     * Something has happened, so handle it.
-     * Consider test complete when at least one word has appeared 10 times.
-     *
-     * @param message the event to handle
-     */
-    @Override
-    public void handle(VertigoMessage<JsonObject> message) {
-
-      String word = message.body().getString("word");
-      int count = message.body().getInteger("count", 0);
-      message.ack();
-
-      if (count >= 10 && !testComplete) {
-        testComplete = true;
-        vertx.eventBus().send(address, String.format("%s: %d", word, count));
-      }
-
-    }
-
-  }
-
-  //  public static class WordTester extends ComponentVerticle {
-//    @Override
-//    public void start() {
-//      input.port("in").messageHandler(new Handler<String>() {
-//        @Override
-//        public void handle(String message) {
-//          assertNotNull(message);
-//          testComplete();
-//        }
-//      });
-//    }
-//  }
-
-//  @Test
-//  public void testRandomWordFeeder() {
-//    final Vertigo vertigo = new Vertigo(this);
-//    vertigo.deployCluster(UUID.randomUUID().toString(), new Handler<AsyncResult<Cluster>>() {
-//      @Override
-//      public void handle(AsyncResult<Cluster> result) {
-//        assertTrue(result.succeeded());
-//        NetworkConfig network = vertigo.createNetwork("test");
-//        network.addVerticle("feeder", WordCountNetwork.WordFeeder.class.getName());
-//        network.addVerticle("tester", WordTester.class.getName());
-//        network.createConnection("feeder", "word", "tester", "in");
-//        result.result().deployNetwork(network, new Handler<AsyncResult<ActiveNetwork>>() {
-//          @Override
-//          public void handle(AsyncResult<ActiveNetwork> result) {
-//            assertTrue(result.succeeded());
-//          }
-//        });
-//      }
-//    });
-//  }
-
-//  public static class CountTester extends ComponentVerticle {
-//    private int count;
-//    @Override
-//    public void start() {
-//      output.port("out").send("foo");
-//      count++;
-//      input.port("in").messageHandler(new Handler<JsonObject>() {
-//        @Override
-//        public void handle(JsonObject message) {
-//          assertEquals("foo", message.getString("word"));
-//          assertTrue(message.getInteger("count") == count);
-//          if (count == 10) {
-//            testComplete();
-//          } else {
-//            output.port("out").send("foo");
-//            count++;
-//          }
-//        }
-//      });
-//    }
-//  }
-
-//  @Test
-//  public void testWordCounter() {
-//    final Vertigo vertigo = new Vertigo(this);
-//    vertigo.deployCluster(UUID.randomUUID().toString(), new Handler<AsyncResult<Cluster>>() {
-//      @Override
-//      public void handle(AsyncResult<Cluster> result) {
-//        assertTrue(result.succeeded());
-//        NetworkConfig network = vertigo.createNetwork("test");
-//        network.addVerticle("counter", WordCountNetwork.WordCounter.class.getName());
-//        network.addVerticle("tester", CountTester.class.getName());
-//        network.createConnection("counter", "count", "tester", "in");
-//        network.createConnection("tester", "out", "counter", "word");
-//        result.result().deployNetwork(network, new Handler<AsyncResult<ActiveNetwork>>() {
-//          @Override
-//          public void handle(AsyncResult<ActiveNetwork> result) {
-//            assertTrue(result.succeeded());
-//          }
-//        });
-//      }
-//    });
-//  }
 
 }

@@ -15,7 +15,7 @@
  */
 package net.kuujo.vertigo.spi;
 
-import net.kuujo.vertigo.io.connection.ConnectionConfig;
+import net.kuujo.vertigo.network.ConnectionConfig;
 
 /**
  * Connection validator.
