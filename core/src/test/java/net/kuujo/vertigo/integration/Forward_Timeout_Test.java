@@ -23,11 +23,12 @@ import net.kuujo.vertigo.message.VertigoMessage;
 import net.kuujo.vertigo.reference.NetworkReference;
 import org.junit.Test;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class Forward_Timeout_Test extends VertigoTestBase {
-  static CountDownLatch targetReceivedLatch;
+  static CompletableFuture<Void> targetReceived;
 
   @Override
   protected NetworkConfig createNetwork() {
@@ -58,42 +59,40 @@ public class Forward_Timeout_Test extends VertigoTestBase {
   @Test
   public void timeoutTest() throws InterruptedException {
     NetworkReference network = getNetworkReference();
-    targetReceivedLatch = new CountDownLatch(1);
-    CountDownLatch sendCompleteLatch = new CountDownLatch(1);
+    targetReceived = new CompletableFuture<>();
+    CompletableFuture<Void> sendCompleted = new CompletableFuture<>();
 
     network
         .component("B").input().port("in")
         .send("Word", message -> {
           assertTrue(message.failed());
           logger().info("Send failed: " + message.cause().getMessage());
-          sendCompleteLatch.countDown();
-          assertEquals(1, targetReceivedLatch.getCount());
+          sendCompleted.complete(null);
+          assertFalse(targetReceived.isDone());
         });
 
-    boolean result = sendCompleteLatch.await(10, TimeUnit.SECONDS)
-        && targetReceivedLatch.await(10, TimeUnit.SECONDS);
-    assertTrue(result);
+    CompletableFuture.allOf(sendCompleted, targetReceived).join();
+    testComplete();
 
   }
 
   @Test
   public void chainedTimeoutTest() throws InterruptedException {
     NetworkReference network = getNetworkReference();
-    targetReceivedLatch = new CountDownLatch(1);
-    CountDownLatch sendCompleteLatch = new CountDownLatch(1);
+    targetReceived = new CompletableFuture<>();
+    CompletableFuture<Void> sendCompleted = new CompletableFuture<>();
 
     network
         .component("A").input().port("in")
         .send("Word", message -> {
           assertTrue(message.failed());
           logger().info("Send failed: " + message.cause().getMessage());
-          sendCompleteLatch.countDown();
-          assertEquals(1, targetReceivedLatch.getCount());
+          sendCompleted.complete(null);
+          assertFalse(targetReceived.isDone());
         });
 
-    boolean result = sendCompleteLatch.await(10, TimeUnit.SECONDS)
-        && targetReceivedLatch.await(10, TimeUnit.SECONDS);
-    assertTrue(result);
+    CompletableFuture.allOf(sendCompleted, targetReceived).join();
+    testComplete();
 
   }
 
@@ -117,7 +116,7 @@ public class Forward_Timeout_Test extends VertigoTestBase {
       vertx.setTimer(100, id ->
       {
         logger().info(name() + " acking");
-        targetReceivedLatch.countDown();
+        targetReceived.complete(null);
         event.ack();
       });
     }

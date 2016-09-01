@@ -24,8 +24,8 @@ import io.vertx.codegen.annotations.VertxGen;
  */
 @VertxGen
 public interface ConnectionTargetBuilder extends ConnectionBuilder<ConnectionTargetComponentBuilder> {
-  /**
-   * Creates a blank connection that can be listened to from outside the network.
-   */
-  ConnectionTargetComponentBuilder network();
+//  /**
+//   * Creates a blank connection that can be listened to from outside the network.
+//   */
+//  ConnectionTargetComponentBuilder network();
 }

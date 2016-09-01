@@ -16,17 +16,21 @@ package net.kuujo.vertigo.integration;
  * limitations under the License.
  */
 
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.test.core.VertxTestBase;
 import net.kuujo.vertigo.Vertigo;
+import net.kuujo.vertigo.VertigoException;
 import net.kuujo.vertigo.component.MessageHandlerComponent;
 import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.message.VertigoMessage;
 import net.kuujo.vertigo.reference.NetworkReference;
 import net.kuujo.vertigo.util.CountingCompletionHandler;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Provides simplified base classes for simple network integration tests.
@@ -46,7 +50,7 @@ public abstract class VertigoTestBase extends VertxTestBase {
     NetworkConfig network = createNetwork();
 
     // Deploy network
-    CountDownLatch latch = new CountDownLatch(1);
+    CompletableFuture<Void> future = new CompletableFuture<>();
 
     vertx.runOnContext(aVoid -> {
       Vertigo vertigo = Vertigo.vertigo(vertx);
@@ -57,11 +61,11 @@ public abstract class VertigoTestBase extends VertxTestBase {
         else {
           this.networkReference = result.result();
         }
-        latch.countDown();
+        future.complete(null);
       });
     });
 
-    latch.await();
+    future.join();
 
   }
 
@@ -111,4 +115,41 @@ public abstract class VertigoTestBase extends VertxTestBase {
 
     }
   }
+
+  public static class EventBusForwardingComponent extends MessageHandlerComponent<Object> {
+
+    private String forwardingAddress;
+
+    @Override
+    public void init(Vertx vertx, Context context) {
+      super.init(vertx, context);
+    }
+
+    @Override
+    public void start() throws Exception {
+      super.start();
+      forwardingAddress = this.context().config().getString("target");
+      if (forwardingAddress == null) {
+        throw new VertigoException(String.format("%s %s is missing a configuration value for 'target'",
+            this.getClass().getName(),
+            this.name()
+        ));
+      }
+    }
+
+    @Override
+    public void handle(VertigoMessage<Object> event) {
+      logger().info(context().name() + " received message " + event.body() + ", forwarding and acking.");
+      vertx.eventBus()
+          .send(forwardingAddress, event.body());
+      event.ack();
+    }
+
+    public static JsonObject config(String address) {
+      return new JsonObject()
+          .put("target", address);
+    }
+
+  }
+
 }

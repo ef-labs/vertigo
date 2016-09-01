@@ -9,7 +9,7 @@ import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.network.builder.NetworkBuilder;
 import org.junit.Test;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Deployment_Undeploy_Test extends VertxTestBase {
@@ -29,7 +29,7 @@ public class Deployment_Undeploy_Test extends VertxTestBase {
     NetworkConfig network = builder.build();
 
     // Deploy network
-    CountDownLatch latch = new CountDownLatch(1);
+    CompletableFuture<Void> future = new CompletableFuture<>();
 
     vertx.runOnContext(aVoid -> {
       Vertigo vertigo = Vertigo.vertigo(vertx);
@@ -37,26 +37,26 @@ public class Deployment_Undeploy_Test extends VertxTestBase {
         if (result.failed()) {
           fail(result.cause().getMessage());
         }
-        latch.countDown();
+        future.complete(null);
       });
     });
 
-    latch.await();
+    future.join();
   }
 
   @Test
   public void test() throws Exception {
-    CountDownLatch undeployNetworkLatch = new CountDownLatch(1);
+    CompletableFuture<Void> future = new CompletableFuture<>();
     vertx.runOnContext(aVoid -> {
       Vertigo vertigo = Vertigo.vertigo(vertx);
       vertigo.undeployNetwork("Network_Undeploy_Test", result -> {
         if (result.failed()) {
           fail(result.cause().getMessage());
         }
-        undeployNetworkLatch.countDown();
+        future.complete(null);
       });
     });
-    undeployNetworkLatch.await();
+    future.join();
 
     assertEquals(2, deploymentCounter.get());
     assertEquals(2, undeploymentCounter.get());

@@ -41,9 +41,9 @@ public class InitialConnectionTargetBuilderImpl implements ConnectionTargetBuild
     return new ConnectionTargetComponentBuilderImpl(network, network.component(name), connections);
   }
 
-  @Override
-  public ConnectionTargetComponentBuilder network() {
-    this.connections.forEach(c -> c.getTarget().setIsNetwork(true));
-    return new ConnectionTargetComponentBuilderImpl(network, null, connections);
-  }
+//  @Override
+//  public ConnectionTargetComponentBuilder network() {
+//    this.connections.forEach(c -> c.getTarget().setIsNetwork(true));
+//    return new ConnectionTargetComponentBuilderImpl(network, null, connections);
+//  }
 }

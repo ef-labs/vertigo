@@ -16,6 +16,8 @@
 package net.kuujo.vertigo.examples.integration.wordcount;
 
 
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import io.vertx.test.core.VertxTestBase;
 import net.kuujo.vertigo.Vertigo;
 import net.kuujo.vertigo.examples.wordcount.WordCountNetwork;
@@ -23,7 +25,8 @@ import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.reference.NetworkReference;
 import org.junit.Test;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -33,16 +36,19 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class WordCountTest extends VertxTestBase {
 
+  private static Logger logger = LoggerFactory.getLogger(WordCountTest.class);
+
+  private String resultAddress = UUID.randomUUID().toString();
   private NetworkReference network;
 
   @Override
   public void setUp() throws Exception {
     super.setUp();
 
-    NetworkConfig networkConfig = WordCountNetwork.build();
+    NetworkConfig networkConfig = WordCountNetwork.build(resultAddress);
 
     // Deploy network
-    CountDownLatch latch = new CountDownLatch(1);
+    CompletableFuture<Void> future = new CompletableFuture<>();
     vertx.runOnContext(aVoid -> {
       Vertigo vertigo = Vertigo.vertigo(vertx);
       vertigo.deployNetwork(networkConfig, result -> {
@@ -50,11 +56,11 @@ public class WordCountTest extends VertxTestBase {
           fail(result.cause().getMessage());
         }
         this.network = result.result();
-        latch.countDown();
+        future.complete(null);
       });
     });
 
-    latch.await();
+    future.join();
   }
 
   @Test
@@ -62,20 +68,26 @@ public class WordCountTest extends VertxTestBase {
     AtomicInteger highestCount = new AtomicInteger();
 
     // Add output handler to track highest count
-    network
-        .<Integer>output()
-        .handler(message -> {
-          Integer count = message.body();
+    vertx.eventBus()
+        .consumer(resultAddress, event -> {
+          Integer count = (Integer)event.body();
           highestCount.accumulateAndGet(count, Math::max);
-          message.ack();
         });
 
     network
         .input()
+        .port("input")
         .send("Lorem ipsum dolor sit amet, consectetur adipiscing elit", event -> {
           assertTrue(event.succeeded());
-          assertEquals(8, highestCount.get());
-          testComplete();
+          logger.info("Send complete.");
+
+          // Wait a bit to allow event bus to drain
+          vertx.setTimer(50, id -> {
+            assertEquals(8, highestCount.get());
+            logger.info("Test complete: " + highestCount.get());
+            testComplete();
+          });
+
         });
 
     await();
@@ -83,21 +95,19 @@ public class WordCountTest extends VertxTestBase {
 
   @Test
   public void emptyStringTest() throws Exception {
-    AtomicInteger highestCount = new AtomicInteger();
 
     // Add output handler to track highest count
-    network
-        .<Integer>output()
-        .handler(message -> {
+    vertx.eventBus()
+        .consumer(resultAddress, event -> {
           fail("No word count expected from empty string.");
         });
 
     network
         .input()
+        .port("input")
         .send("", event -> {
           assertTrue(event.succeeded());
-          assertEquals(0, highestCount.get());
-          testComplete();
+          vertx.setTimer(50, id -> testComplete());
         });
 
     await();

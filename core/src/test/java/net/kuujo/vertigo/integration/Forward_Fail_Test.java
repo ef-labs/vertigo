@@ -24,7 +24,7 @@ import net.kuujo.vertigo.message.VertigoMessage;
 import net.kuujo.vertigo.reference.NetworkReference;
 import org.junit.Test;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public class Forward_Fail_Test extends VertigoTestBase {
@@ -56,7 +56,7 @@ public class Forward_Fail_Test extends VertigoTestBase {
 
   @Test
   public void failTest() throws InterruptedException {
-    CountDownLatch sendCompleteLatch = new CountDownLatch(1);
+    CompletableFuture<Void> future = new CompletableFuture<>();
     NetworkReference network = getNetworkReference();
 
     network
@@ -64,29 +64,29 @@ public class Forward_Fail_Test extends VertigoTestBase {
         .send("Word", message -> {
           assertTrue(message.failed());
           logger().info("Send failed: " + message.cause().getMessage());
-          sendCompleteLatch.countDown();
+          testComplete();
+          future.complete(null);
         });
 
-    boolean result = sendCompleteLatch.await(10, TimeUnit.SECONDS);
-    assertTrue(result);
+    future.join();
 
   }
 
   @Test
   public void chainedFailTest() throws InterruptedException {
-    NetworkReference network = getNetworkReference();
-    CountDownLatch sendCompleteLatch = new CountDownLatch(1);
+    CompletableFuture<Void> future = new CompletableFuture<>();
 
+    NetworkReference network = getNetworkReference();
     network
         .component("A").input().port("in")
         .send("Word", message -> {
           assertTrue(message.failed());
           logger().info("Send failed: " + message.cause().getMessage());
-          sendCompleteLatch.countDown();
+          testComplete();
+          future.complete(null);
         });
 
-    boolean result = sendCompleteLatch.await(10, TimeUnit.SECONDS);
-    assertTrue(result);
+    future.join();
 
   }
 

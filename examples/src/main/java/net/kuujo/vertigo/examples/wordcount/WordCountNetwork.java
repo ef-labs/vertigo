@@ -1,5 +1,6 @@
 package net.kuujo.vertigo.examples.wordcount;
 
+import io.vertx.core.json.JsonObject;
 import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.network.builder.NetworkBuilder;
 
@@ -8,12 +9,14 @@ import net.kuujo.vertigo.network.builder.NetworkBuilder;
  */
 public class WordCountNetwork {
 
-  public static NetworkConfig build() {
+  public static NetworkConfig build(String resultAddress) {
     NetworkBuilder builder = NetworkConfig.builder();
 
     // Connect network input to word mapper
     builder
-        .connect().network()
+        .connect()
+        .network()
+        .port("input")
         .to("mapper")
         .identifier(WordMapper.class.getName())
         .port("input");
@@ -23,15 +26,11 @@ public class WordCountNetwork {
         .connect("mapper").port("words")
         .to("counter")
         .identifier(WordCounter.class.getName())
+        .config(new JsonObject().put("result_address", resultAddress))
         .port("input");
 
-    // Connect counter to network output
-    builder
-        .connect("counter")
-        .port("count")
-        .to().network();
-
     return builder.build();
+
   }
 
 }

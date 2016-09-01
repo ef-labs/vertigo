@@ -46,9 +46,18 @@ public abstract class MessageHandlerComponent<T> extends AbstractComponent imple
         .forEach(port -> {
           input()
               .<T>port(port.name())
-              .handler(this);
+              .handler(this::safeHandle);
         });
 
+  }
+
+  protected void safeHandle(VertigoMessage<T> message) {
+    try {
+      handle(message);
+    }
+    catch (Throwable cause) {
+      message.fail(cause);
+    }
   }
 
 }

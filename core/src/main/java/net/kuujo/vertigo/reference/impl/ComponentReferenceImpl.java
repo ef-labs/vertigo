@@ -40,9 +40,9 @@ public class ComponentReferenceImpl implements ComponentReference {
     return new InputReferenceImpl(vertx, context.address());
   }
 
-  @Override
-  public OutputReference output() {
-    return new OutputReferenceImpl(vertx, context.address());
-  }
+//  @Override
+//  public OutputReference output() {
+//    return new OutputReferenceImpl(vertx, context.address());
+//  }
 
 }

@@ -4,7 +4,7 @@ import net.kuujo.vertigo.component.MessageHandlerComponent;
 import net.kuujo.vertigo.message.VertigoMessage;
 
 /**
- * Vertigo component which counts incoming words and sends out the latest word count.
+ * Vertigo component which counts incoming words and sends out the latest word count to a known event bus address.
  */
 public class WordCounter extends MessageHandlerComponent<String> {
 
@@ -14,13 +14,17 @@ public class WordCounter extends MessageHandlerComponent<String> {
   public void handle(VertigoMessage<String> message) {
     if (message.body().length() > 0) {
       count++;
-      output()
-          .port("count")
-          .send(count, message::handle);
+
+      String resultAddress = context()
+          .config()
+          .getString("result_address");
+
+      vertx
+          .eventBus()
+          .send(resultAddress, count);
+
     }
-    else {
-      message.ack();
-    }
+    message.ack();
   }
 
 }

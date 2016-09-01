@@ -30,24 +30,23 @@ public class BasicConnectionValidator implements ConnectionValidator {
     if (connection.getSource() == null) {
       throw new ValidationException(String.format("Connection source cannot be null (%s)", connection.toJson().toString()));
     }
-    if (!connection.getSource().getIsNetwork()) {
-      if (connection.getSource().getComponent() == null) {
-        throw new ValidationException(String.format("Connection source component cannot be null (%s)", connection.toJson().toString()));
-      }
-      if (connection.getSource().getPort() == null) {
-        throw new ValidationException(String.format("Connection source port cannot be null (%s)", connection.toJson().toString()));
-      }
+    if (!connection.getSource().getIsNetwork() && connection.getSource().getComponent() == null) {
+        throw new ValidationException(String.format("Connection source component or network cannot be null (%s)", connection.toJson().toString()));
+    }
+    if (connection.getSource().getPort() == null) {
+      throw new ValidationException(String.format("Connection source port cannot be null (%s)", connection.toJson().toString()));
     }
     if (connection.getTarget() == null) {
       throw new ValidationException(String.format("Connection target cannot be null (%s)", connection.toJson().toString()));
     }
-    if (!connection.getTarget().getIsNetwork()) {
-      if (connection.getTarget().getComponent() == null) {
-        throw new ValidationException(String.format("Connection target component cannot be null (%s)", connection.toJson().toString()));
-      }
-      if (connection.getTarget().getPort() == null) {
-        throw new ValidationException(String.format("Connection target port cannot be null (%s)", connection.toJson().toString()));
-      }
+    if (connection.getTarget().getIsNetwork()) {
+      throw new ValidationException(String.format("Network cannot be a target (%s)", connection.toJson().toString()));
+    }
+    if (connection.getTarget().getComponent() == null) {
+      throw new ValidationException(String.format("Connection target component cannot be null (%s)", connection.toJson().toString()));
+    }
+    if (connection.getTarget().getPort() == null) {
+      throw new ValidationException(String.format("Connection target port cannot be null (%s)", connection.toJson().toString()));
     }
   }
 

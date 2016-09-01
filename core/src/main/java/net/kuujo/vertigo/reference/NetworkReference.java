@@ -33,13 +33,13 @@ public interface NetworkReference {
    */
   ComponentReference component(String id);
 
-  /**
-   * Returns an output port that receives all messages connected from components to the network.
-   * If multiple components are connected, all messages will be received.
-   * @param <T>
-   * @return
-   */
-  <T> NetworkOutputReference<T> output();
+//  /**
+//   * Returns an output port that receives all messages connected from components to the network.
+//   * If multiple components are connected, all messages will be received.
+//   * @param <T>
+//   * @return
+//   */
+//  <T> NetworkOutputReference<T> output();
 
   /**
    * Returns an input port that can be used to send messages to components that are connected to the network.
@@ -47,6 +47,6 @@ public interface NetworkReference {
    * @param <T>
    * @return
    */
-  <T> NetworkInputReference<T> input();
+  <T> InputReference input();
 
 }

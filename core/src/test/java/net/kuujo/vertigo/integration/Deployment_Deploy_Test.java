@@ -9,16 +9,15 @@ import net.kuujo.vertigo.component.AbstractComponent;
 import net.kuujo.vertigo.network.NetworkConfig;
 import org.junit.Test;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CompletableFuture;
 
 public class Deployment_Deploy_Test extends VertxTestBase {
 
   private static Logger logger = LoggerFactory.getLogger(VertigoTestBase.class.getName());
-  protected static CountDownLatch deploymentCounter;
+  protected static CompletableFuture<Void> componentDeployed;
 
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  @Test
+  public void test() throws Exception {
 
     NetworkBuilder builder = NetworkConfig.builder();
     builder
@@ -27,8 +26,8 @@ public class Deployment_Deploy_Test extends VertxTestBase {
     NetworkConfig network = builder.build();
 
     // Deploy network
-    CountDownLatch latch = new CountDownLatch(1);
-    deploymentCounter = new CountDownLatch(2);
+    CompletableFuture<Void> networkDeployedFuture = new CompletableFuture<>();
+    componentDeployed = new CompletableFuture<>();
 
     vertx.runOnContext(aVoid -> {
       Vertigo vertigo = Vertigo.vertigo(vertx);
@@ -36,16 +35,13 @@ public class Deployment_Deploy_Test extends VertxTestBase {
         if (result.failed()) {
           fail(result.cause().getMessage());
         }
-        latch.countDown();
+        networkDeployedFuture.complete(null);
       });
     });
 
-    latch.await();
-  }
+    componentDeployed.join();
+    networkDeployedFuture.join();
 
-  @Test
-  public void test() throws Exception {
-    deploymentCounter.await();
     testComplete();
   }
 
@@ -56,7 +52,7 @@ public class Deployment_Deploy_Test extends VertxTestBase {
   public static class TestComponent extends AbstractComponent {
     @Override
     public void start() throws Exception {
-      deploymentCounter.countDown();
+      componentDeployed.complete(null);
     }
   }
 

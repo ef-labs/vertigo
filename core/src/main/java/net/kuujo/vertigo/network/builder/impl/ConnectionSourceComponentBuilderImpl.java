@@ -103,7 +103,9 @@ public class ConnectionSourceComponentBuilderImpl implements ConnectionSourceCom
   @Override
   public ConnectionSourceComponentBuilder port(String port) {
     connection.getSource().setPort(port);
-    network.component(connection.getSource().getComponent()).output().port(port);
+    if (!connection.getSource().getIsNetwork()) {
+      network.component(connection.getSource().getComponent()).output().port(port);
+    }
     return this;
   }
 

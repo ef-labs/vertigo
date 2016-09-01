@@ -51,15 +51,15 @@ public class ConnectionTargetBuilderImpl implements ConnectionTargetBuilder {
   }
 
 
-  @Override
-  public ConnectionTargetComponentBuilder network() {
-    List<ConnectionConfig> newConnections = new ArrayList<>();
-    for (ConnectionConfig connection : connections) {
-      newConnections.add(network.network.createConnection(new ConnectionConfigImpl()
-          .setSource(connection.getSource())
-          .setTarget(new TargetConfigImpl().setIsNetwork(true))));
-    }
-    return new ConnectionTargetComponentBuilderImpl(network, null, newConnections);
-  }
+//  @Override
+//  public ConnectionTargetComponentBuilder network() {
+//    List<ConnectionConfig> newConnections = new ArrayList<>();
+//    for (ConnectionConfig connection : connections) {
+//      newConnections.add(network.network.createConnection(new ConnectionConfigImpl()
+//          .setSource(connection.getSource())
+//          .setTarget(new TargetConfigImpl().setIsNetwork(true))));
+//    }
+//    return new ConnectionTargetComponentBuilderImpl(network, null, newConnections);
+//  }
 
 }

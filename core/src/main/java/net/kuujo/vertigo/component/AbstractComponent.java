@@ -29,6 +29,8 @@ import net.kuujo.vertigo.instance.OutputCollector;
 import net.kuujo.vertigo.spi.ComponentInstanceFactory;
 import net.kuujo.vertigo.instance.ComponentInstance;
 
+import java.util.List;
+
 /**
  * Abstract Java component.
  *
@@ -87,6 +89,13 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
     });
 
   }
+
+  /**
+   * TODO: stuff
+   * @param names
+   */
+  protected void component(List<String> names){
+  };
 
   /**
    * Stop the verticle.<p>

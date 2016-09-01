@@ -21,23 +21,25 @@ import net.kuujo.vertigo.network.builder.NetworkBuilder;
 import net.kuujo.vertigo.reference.NetworkReference;
 import org.junit.Test;
 
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Network_Input_Output_Test extends VertigoTestBase {
+
+  static String address = UUID.randomUUID().toString();
 
   @Override
   protected NetworkConfig createNetwork() {
     NetworkBuilder builder = NetworkConfig.builder();
     builder
-        .component("start").identifier(AutoForwardingComponent.class.getName());
+        .component("start").identifier(EventBusForwardingComponent.class.getName())
+        .config(EventBusForwardingComponent.config(address));
 
     builder
-        .connect().network()
+        .connect()
+        .network().port("in")
         .to("start").port("in");
-
-    builder
-        .connect("start").port("done")
-        .to().network();
 
     return builder.build();
   }
@@ -45,21 +47,20 @@ public class Network_Input_Output_Test extends VertigoTestBase {
   @Test
   public void inputOutputTest() {
     NetworkReference network = getNetworkReference();
-    AtomicInteger networkCounter = new AtomicInteger();
 
-    network.output()
-        .handler(message -> {
-          logger().info("Received network output: " + message.body());
-          networkCounter.incrementAndGet();
-          message.ack();
+    vertx
+        .eventBus()
+        .consumer(address)
+        .handler(event -> {
+          logger().info("Received output: " + event.body());
+          testComplete();
         });
 
     network
         .input()
+        .port("in")
         .send("Word", result -> {
           logger().info("Send completed.");
-          assertEquals(1, networkCounter.intValue());
-          testComplete();
         });
 
     await();

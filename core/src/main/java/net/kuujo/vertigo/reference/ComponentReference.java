@@ -32,11 +32,11 @@ public interface ComponentReference {
    */
   InputReference input();
 
-  /**
-   * Returns a reference to the component's output.
-   *
-   * @return A reference to the component's output.
-   */
-  OutputReference output();
+//  /**
+//   * Returns a reference to the component's output.
+//   *
+//   * @return A reference to the component's output.
+//   */
+//  OutputReference output();
 
 }

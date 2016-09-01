@@ -16,18 +16,24 @@ package net.kuujo.vertigo.integration;
  * limitations under the License.
  */
 
+import io.vertx.core.json.JsonObject;
 import net.kuujo.vertigo.network.builder.NetworkBuilder;
 import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.network.builder.NetworkBuilder;
 import net.kuujo.vertigo.reference.NetworkReference;
 import org.junit.Test;
 
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Forward_Sync_Ack_Chain_Test extends VertigoTestBase {
 
+  public static String address = UUID.randomUUID().toString();
+
   @Override
   protected NetworkConfig createNetwork() {
+
     NetworkBuilder builder = NetworkConfig.builder();
     builder
         .component("start").identifier(AutoForwardingComponent.class.getName())
@@ -35,9 +41,11 @@ public class Forward_Sync_Ack_Chain_Test extends VertigoTestBase {
         .component("first-2").identifier(AutoForwardingComponent.class.getName())
         .component("second-1").identifier(AutoForwardingComponent.class.getName())
         .component("second-2").identifier(AutoForwardingComponent.class.getName())
-        .component("final").identifier(AutoForwardingComponent.class.getName());
+        .component("final").identifier(EventBusForwardingComponent.class.getName())
+        .config(EventBusForwardingComponent.config(address));
 
-    builder.connect().network()
+    builder.connect()
+        .network().port("in")
         .to("start").port("in");
 
     builder.connect("start").port("out")
@@ -59,42 +67,37 @@ public class Forward_Sync_Ack_Chain_Test extends VertigoTestBase {
         .and("second-2").port("out")
         .to("final").port("in");
 
-    builder
-        .connect("final").port("done")
-        .to().network();
-
     return builder.build();
   }
 
   @Test
   public void test() {
     AtomicInteger networkCounter = new AtomicInteger();
-//    AtomicInteger componentCounter = new AtomicInteger();
+    CompletableFuture<Void> receivedEnough = new CompletableFuture<>();
 
-    NetworkReference network = getNetworkReference();
-
-    network.output()
-        .handler(message -> {
-          networkCounter.incrementAndGet();
-          message.ack();
+    vertx
+        .eventBus()
+        .consumer(address)
+        .handler(event -> {
+          int count = networkCounter.incrementAndGet();
+          logger().info("Received " + event.body() + ", count = " + count);
+          if (count >= 4) {
+            receivedEnough.complete(VOID);
+          }
         });
 
-    // TODO: Should this even be supported? May require additional config flag for port to be "external" = send to specific external address?
-    // Output port is otherwise not included in the message, so the recipient (ref class) cannot listen to network output and filter there.
-//    network.component("final")
-//        .output()
-//        .port("done")
-//        .handler(event -> {
-//          componentCounter.incrementAndGet();
-//          event.ack();
-//        });
-
+    NetworkReference network = getNetworkReference();
     network
         .input()
+        .port("in")
         .send("Word", result -> {
-          assertEquals(4, networkCounter.intValue());
-//          assertEquals(4, componentCounter.intValue());
-          testComplete();
+          receivedEnough.whenComplete((aVoid, throwable) -> {
+            // Wait some to make sure there are no stray event bus messages
+            vertx.setTimer(50, id -> {
+              assertEquals(4, networkCounter.intValue());
+              testComplete();
+            });
+          });
         });
 
     await();

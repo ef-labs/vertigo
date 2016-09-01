@@ -16,6 +16,8 @@ package net.kuujo.vertigo.integration;
  * limitations under the License.
  */
 
+import net.kuujo.vertigo.component.AbstractComponent;
+import net.kuujo.vertigo.instance.InputCollector;
 import net.kuujo.vertigo.network.builder.NetworkBuilder;
 import net.kuujo.vertigo.component.MessageHandlerComponent;
 import net.kuujo.vertigo.network.NetworkConfig;
@@ -23,12 +25,11 @@ import net.kuujo.vertigo.message.VertigoMessage;
 import net.kuujo.vertigo.reference.NetworkReference;
 import org.junit.Test;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CompletableFuture;
 
 public class Forward_Async_Ack_Test extends VertigoTestBase {
 
-  static CountDownLatch targetReceivedLatch;
+  static CompletableFuture<Void> targetReceived;
 
   @Override
   protected NetworkConfig createNetwork() {
@@ -51,19 +52,19 @@ public class Forward_Async_Ack_Test extends VertigoTestBase {
   @Test
   public void async_test() throws InterruptedException {
     NetworkReference network = getNetworkReference();
-    targetReceivedLatch = new CountDownLatch(1);
-    CountDownLatch sendCompleteLatch = new CountDownLatch(1);
+    targetReceived = new CompletableFuture<>();
+    CompletableFuture<Void> sendCompleted = new CompletableFuture<>();
 
     network
         .component("A").input().port("in")
         .send("Word", message -> {
           logger().info("Send acked");
-          sendCompleteLatch.countDown();
-          assertEquals(1, targetReceivedLatch.getCount());
+          sendCompleted.complete(null);
+          assertFalse(targetReceived.isDone());
         });
 
-    boolean result = sendCompleteLatch.await(10, TimeUnit.SECONDS);
-    assertTrue(result);
+    sendCompleted.join();
+    testComplete();
 
   }
 
@@ -83,13 +84,17 @@ public class Forward_Async_Ack_Test extends VertigoTestBase {
 
   public static class TargetComponent extends MessageHandlerComponent<String> {
 
-    @Override
+//    void registerInputPort(String[] names) {
+//      input.<String>port("in")
+//          .handler(this::handle);
+//    }
+
     public void handle(VertigoMessage<String> event) {
       logger().info("Target received " + event.body());
       vertx.setTimer(100, id ->
       {
         logger().info("Target acking");
-        targetReceivedLatch.countDown();
+        targetReceived.complete(null);
         event.ack();
       });
     }
