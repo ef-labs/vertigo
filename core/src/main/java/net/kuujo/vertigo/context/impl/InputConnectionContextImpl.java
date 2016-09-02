@@ -63,17 +63,17 @@ public class InputConnectionContextImpl extends BaseConnectionContextImpl<InputC
       return this;
     }
 
-    @Override
-    public Builder setOrdered(boolean ordered) {
-      connection.ordered = ordered;
-      return this;
-    }
+//    @Override
+//    public Builder setOrdered(boolean ordered) {
+//      connection.ordered = ordered;
+//      return this;
+//    }
 
-    @Override
-    public Builder setAtLeastOnce(boolean atLeastOnce) {
-      connection.atLeastOnce = atLeastOnce;
-      return this;
-    }
+//    @Override
+//    public Builder setAtLeastOnce(boolean atLeastOnce) {
+//      connection.atLeastOnce = atLeastOnce;
+//      return this;
+//    }
 
     @Override
     public Builder setPort(InputPortContext port) {

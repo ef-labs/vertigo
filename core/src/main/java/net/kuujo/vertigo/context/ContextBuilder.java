@@ -69,9 +69,9 @@ public final class ContextBuilder {
       component.setConfig(componentConfig.getConfig());
       component.setWorker(componentConfig.isWorker());
       component.setMultiThreaded(componentConfig.isMultiThreaded());
-      component.setStateful(componentConfig.isStateful());
+//      component.setStateful(componentConfig.isStateful());
       component.setReplicas(componentConfig.getReplicas());
-      component.setResources(componentConfig.getResources());
+//      component.setResources(componentConfig.getResources());
 
       ComponentContext cc = component.build();
 

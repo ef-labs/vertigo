@@ -15,6 +15,7 @@
  */
 package net.kuujo.vertigo.context.impl;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import io.vertx.core.json.JsonObject;
 import net.kuujo.vertigo.context.ComponentContext;
 import net.kuujo.vertigo.context.InputContext;
@@ -32,6 +33,7 @@ import java.util.Set;
  *
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class ComponentContextImpl extends BaseContextImpl<ComponentContext> implements ComponentContext {
   private String id;
   private String address;
@@ -39,12 +41,12 @@ public class ComponentContextImpl extends BaseContextImpl<ComponentContext> impl
   private JsonObject config;
   private boolean worker;
   private boolean multiThreaded;
-  private boolean stateful;
+//  private boolean stateful;
   private int replicas;
   private InputContext input;
   private OutputContext output;
-  private Set<String> resources = new HashSet<>();
-  private NetworkContext network;
+//  private Set<String> resources = new HashSet<>();
+//  private NetworkContext network;
 
   @Override
   public String name() {
@@ -76,10 +78,10 @@ public class ComponentContextImpl extends BaseContextImpl<ComponentContext> impl
     return multiThreaded;
   }
 
-  @Override
-  public boolean stateful() {
-    return stateful;
-  }
+//  @Override
+//  public boolean stateful() {
+//    return stateful;
+//  }
 
   @Override
   public int replicas() {
@@ -96,15 +98,15 @@ public class ComponentContextImpl extends BaseContextImpl<ComponentContext> impl
     return output;
   }
 
-  @Override
-  public Set<String> resources() {
-    return resources;
-  }
+//  @Override
+//  public Set<String> resources() {
+//    return resources;
+//  }
 
-  @Override
-  public NetworkContext network() {
-    return network;
-  }
+//  @Override
+//  public NetworkContext network() {
+//    return network;
+//  }
 
   /**
    * Component context builder.
@@ -158,11 +160,11 @@ public class ComponentContextImpl extends BaseContextImpl<ComponentContext> impl
       return this;
     }
 
-    @Override
-    public ComponentContext.Builder setStateful(boolean isStateful) {
-      component.stateful = isStateful;
-      return this;
-    }
+//    @Override
+//    public ComponentContext.Builder setStateful(boolean isStateful) {
+//      component.stateful = isStateful;
+//      return this;
+//    }
 
     @Override
     public ComponentContext.Builder setReplicas(int replicas) {
@@ -182,36 +184,36 @@ public class ComponentContextImpl extends BaseContextImpl<ComponentContext> impl
       return this;
     }
 
-    @Override
-    public Builder addResource(String resource) {
-      component.resources.add(resource);
-      return this;
-    }
+//    @Override
+//    public Builder addResource(String resource) {
+//      component.resources.add(resource);
+//      return this;
+//    }
 
-    @Override
-    public Builder removeResource(String resource) {
-      component.resources.remove(resource);
-      return this;
-    }
+//    @Override
+//    public Builder removeResource(String resource) {
+//      component.resources.remove(resource);
+//      return this;
+//    }
 
-    @Override
-    public Builder setResources(String... resources) {
-      component.resources = new HashSet<>(Arrays.asList(resources));
-      return this;
-    }
+//    @Override
+//    public Builder setResources(String... resources) {
+//      component.resources = new HashSet<>(Arrays.asList(resources));
+//      return this;
+//    }
 
-    @Override
-    public Builder setResources(Collection<String> resources) {
-      component.resources = new HashSet<>(resources);
-      return this;
-    }
+//    @Override
+//    public Builder setResources(Collection<String> resources) {
+//      component.resources = new HashSet<>(resources);
+//      return this;
+//    }
 
-    @Override
-    public Builder setNetwork(NetworkContext network) {
-      Args.checkNotNull(network, "network cannot be null");
-      component.network = network;
-      return this;
-    }
+//    @Override
+//    public Builder setNetwork(NetworkContext network) {
+//      Args.checkNotNull(network, "network cannot be null");
+//      component.network = network;
+//      return this;
+//    }
 
     /**
      * Checks all fields in the constructed component.

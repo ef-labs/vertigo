@@ -29,8 +29,8 @@ import net.kuujo.vertigo.context.PortContext;
 public abstract class BaseConnectionContextImpl<T extends ConnectionContext<T, U>, U extends PortContext<U, T>> extends BaseContextImpl<T> implements ConnectionContext<T,  U> {
   protected SourceContext source;
   protected TargetContext target;
-  protected boolean ordered;
-  protected boolean atLeastOnce;
+//  protected boolean ordered;
+//  protected boolean atLeastOnce;
   protected long sendTimeout;
   protected U port;
 
@@ -44,15 +44,15 @@ public abstract class BaseConnectionContextImpl<T extends ConnectionContext<T, U
     return target;
   }
 
-  @Override
-  public boolean ordered() {
-    return ordered;
-  }
-
-  @Override
-  public boolean atLeastOnce() {
-    return atLeastOnce;
-  }
+//  @Override
+//  public boolean ordered() {
+//    return ordered;
+//  }
+//
+//  @Override
+//  public boolean atLeastOnce() {
+//    return atLeastOnce;
+//  }
 
   @Override
   public long sendTimeout() {

@@ -100,12 +100,12 @@ public interface ComponentContext extends TypeContext<ComponentContext> {
    */
   boolean multiThreaded();
 
-  /**
-   * Returns a boolean indicating whether the component is stateful.
-   *
-   * @return Indicates whether the component is stateful.
-   */
-  boolean stateful();
+//  /**
+//   * Returns a boolean indicating whether the component is stateful.
+//   *
+//   * @return Indicates whether the component is stateful.
+//   */
+//  boolean stateful();
 
   /**
    * Returns the number of component replicas.
@@ -114,12 +114,12 @@ public interface ComponentContext extends TypeContext<ComponentContext> {
    */
   int replicas();
 
-  /**
-   * Returns the component resources.
-   *
-   * @return The component resources.
-   */
-  Set<String> resources();
+//  /**
+//   * Returns the component resources.
+//   *
+//   * @return The component resources.
+//   */
+//  Set<String> resources();
 
   /**
    * Returns the component input context.
@@ -135,12 +135,12 @@ public interface ComponentContext extends TypeContext<ComponentContext> {
    */
   OutputContext output();
 
-  /**
-   * Returns the parent network context.
-   * 
-   * @return The parent network context.
-   */
-  NetworkContext network();
+//  /**
+//   * Returns the parent network context.
+//   *
+//   * @return The parent network context.
+//   */
+//  NetworkContext network();
 
   /**
    * Component context builder.
@@ -195,13 +195,13 @@ public interface ComponentContext extends TypeContext<ComponentContext> {
      */
     Builder setMultiThreaded(boolean isMultiThreaded);
 
-    /**
-     * Sets whether the component is stateful.
-     *
-     * @param isStateful Whether the component is stateful.
-     * @return The component context builder.
-     */
-    Builder setStateful(boolean isStateful);
+//    /**
+//     * Sets whether the component is stateful.
+//     *
+//     * @param isStateful Whether the component is stateful.
+//     * @return The component context builder.
+//     */
+//    Builder setStateful(boolean isStateful);
 
     /**
      * Sets the number of component replicas.
@@ -227,45 +227,45 @@ public interface ComponentContext extends TypeContext<ComponentContext> {
      */
     Builder setOutput(OutputContext output);
 
-    /**
-     * Adds a resource to the component.
-     *
-     * @param resource The resource to add.
-     * @return The component context builder.
-     */
-    Builder addResource(String resource);
+//    /**
+//     * Adds a resource to the component.
+//     *
+//     * @param resource The resource to add.
+//     * @return The component context builder.
+//     */
+//    Builder addResource(String resource);
 
-    /**
-     * Removes a resource from the component.
-     *
-     * @param resource The resource to remove.
-     * @return The component context builder.
-     */
-    Builder removeResource(String resource);
+//    /**
+//     * Removes a resource from the component.
+//     *
+//     * @param resource The resource to remove.
+//     * @return The component context builder.
+//     */
+//    Builder removeResource(String resource);
+//
+//    /**
+//     * Sets the component resources.
+//     *
+//     * @param resources The component resources.
+//     * @return The component context builder.
+//     */
+//    Builder setResources(String... resources);
 
-    /**
-     * Sets the component resources.
-     *
-     * @param resources The component resources.
-     * @return The component context builder.
-     */
-    Builder setResources(String... resources);
+//    /**
+//     * Sets the component resources.
+//     *
+//     * @param resources The component resources.
+//     * @return The component context builder.
+//     */
+//    Builder setResources(Collection<String> resources);
 
-    /**
-     * Sets the component resources.
-     *
-     * @param resources The component resources.
-     * @return The component context builder.
-     */
-    Builder setResources(Collection<String> resources);
-
-    /**
-     * Sets the parent network context.
-     *
-     * @param network The parent network context.
-     * @return The component context builder.
-     */
-    Builder setNetwork(NetworkContext network);
+//    /**
+//     * Sets the parent network context.
+//     *
+//     * @param network The parent network context.
+//     * @return The component context builder.
+//     */
+//    Builder setNetwork(NetworkContext network);
   }
 
 }
