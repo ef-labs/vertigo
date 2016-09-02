@@ -144,7 +144,9 @@ public class ComponentInstanceImpl implements ComponentInstance, Handler<Message
 
   @Override
   public void stop() {
-    stop(null);
+    if (consumer != null) {
+      consumer.unregister();
+    }
   }
 
   @Override

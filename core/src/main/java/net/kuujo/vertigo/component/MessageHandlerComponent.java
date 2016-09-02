@@ -59,7 +59,7 @@ public abstract class MessageHandlerComponent<T> extends AbstractComponent imple
   }
 
   @Override
-  protected void initComponent() {
+  protected void initComponent(Future<Void> initFuture) throws Exception {
 
     // Register all input ports automatically
     input()
@@ -69,6 +69,8 @@ public abstract class MessageHandlerComponent<T> extends AbstractComponent imple
               .<T>port(port.name())
               .handler(this::safeHandle);
         });
+
+    super.initComponent(initFuture);
 
   }
 

@@ -126,15 +126,19 @@ public abstract class VertigoTestBase extends VertxTestBase {
     }
 
     @Override
-    public void start() throws Exception {
-      super.start();
-      forwardingAddress = this.context().config().getString("target");
+    protected void initComponent() {
+
+      forwardingAddress = context()
+          .config()
+          .getString("target");
+
       if (forwardingAddress == null) {
         throw new VertigoException(String.format("%s %s is missing a configuration value for 'target'",
             this.getClass().getName(),
             this.name()
         ));
       }
+
     }
 
     @Override

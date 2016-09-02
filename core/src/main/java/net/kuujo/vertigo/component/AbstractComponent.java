@@ -18,18 +18,10 @@ package net.kuujo.vertigo.component;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.ServiceHelper;
-import io.vertx.core.json.JsonObject;
-import net.kuujo.vertigo.deployment.DeploymentManager;
-import net.kuujo.vertigo.VertigoException;
-import net.kuujo.vertigo.VertigoOptions;
-import net.kuujo.vertigo.context.ComponentContext;
+import io.vertx.core.VertxException;
 import net.kuujo.vertigo.context.NetworkContext;
-import net.kuujo.vertigo.instance.InputCollector;
-import net.kuujo.vertigo.instance.OutputCollector;
-import net.kuujo.vertigo.spi.ComponentInstanceFactory;
+import net.kuujo.vertigo.spi.ComponentInstanceProvider;
 import net.kuujo.vertigo.instance.ComponentInstance;
-
-import java.util.List;
 
 /**
  * Abstract Java component.
@@ -38,14 +30,14 @@ import java.util.List;
  */
 public abstract class AbstractComponent extends AbstractVerticle implements Component {
 
+  static ComponentInstanceProvider instanceProvider = ServiceHelper.loadFactory(ComponentInstanceProvider.class);
+
   private ComponentInstance component;
-  private NetworkContext network;
 
   /**
    * Start the verticle.<p>
    * This is called by Vert.x when the verticle instance is deployed. Don't call it yourself.<p>
-   * If your verticle does things in it's startup which take some time then you can override this method
-   * and call the startFuture some time later when start up is completed.
+   * It is recommended that you override initComponent instead, where the component is already initialized.
    *
    * @param startFuture a future which should be called when verticle start-up is completed.
    * @throws Exception
@@ -53,49 +45,58 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
   @Override
   public void start(Future<Void> startFuture) throws Exception {
 
-    DeploymentManager manager = DeploymentManager.manager(vertx, new VertigoOptions());
+    Future<ComponentInstance> componentFuture = Future.<ComponentInstance>future()
+        .setHandler(componentInstanceAsyncResult -> {
+          if (componentInstanceAsyncResult.succeeded()) {
+            this.component = componentInstanceAsyncResult.result();
 
-    // TODO: How are you supposed to create ComponentInstance?  From NetworkContext?
-    JsonObject config = config();
-    String id = config.getString("vertigo_component_id");
-    String networkId = config.getString("vertigo_network_id");
+            Future<Void> initFuture = Future.<Void>future()
+                .setHandler(initResult -> {
+                  if (initResult.succeeded()) {
+                    try {
+                      super.start(startFuture);
+                    } catch (Exception e) {
+                      // Start threw an exception
+                      this.component.stop();
+                      startFuture.fail(e);
+                    }
+                  } else {
+                    // InitComponent failed
+                    this.component.stop();
+                    startFuture.fail(initResult.cause());
+                  }
+                });
 
-    manager.getNetwork(networkId, result -> {
-      if (result.succeeded()) {
-        network = result.result();
-
-        ComponentContext cc = network.component(id);
-        if (cc == null) {
-          startFuture.fail(new VertigoException("ComponentContext " + id + " does not exist in the network"));
-          return;
-        }
-
-        ComponentInstanceFactory factory = ServiceHelper.loadFactory(ComponentInstanceFactory.class);
-        component = factory.createComponentInstance(vertx, cc);
-        component.start(result2 -> {
-          if (result2.succeeded()) {
             try {
-              start();
-              initComponent();
-              startFuture.complete();
+              initComponent(initFuture);
             } catch (Exception e) {
+              this.component.stop();
               startFuture.fail(e);
             }
+
           } else {
-            startFuture.fail(result2.cause());
+            // Component creation failed
+            startFuture.fail(componentInstanceAsyncResult.cause());
           }
         });
-      } else {
-        startFuture.fail(result.cause());
-      }
-    });
+
+    // Create the component instance
+    instanceProvider.createInstance(vertx, config(), componentFuture);
 
   }
 
   /**
    * Override this method to register input port handlers and other initialization work.
    */
-  protected void initComponent(){
+  protected void initComponent(Future<Void> initFuture) throws Exception {
+    initComponent();
+    initFuture.complete();
+  };
+
+  /**
+   * Override this method to register input port handlers and other initialization work.
+   */
+  protected void initComponent() throws Exception {
   };
 
   /**
