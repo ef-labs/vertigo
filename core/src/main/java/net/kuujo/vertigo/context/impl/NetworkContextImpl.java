@@ -16,6 +16,7 @@
 
 package net.kuujo.vertigo.context.impl;
 
+import io.vertx.core.json.JsonObject;
 import net.kuujo.vertigo.context.ComponentContext;
 import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.context.NetworkContext;
@@ -70,6 +71,11 @@ public class NetworkContextImpl extends BaseContextImpl<NetworkContext> implemen
   @Override
   public ComponentContext component(String id) {
     return components.get(id);
+  }
+
+  @Override
+  public JsonObject toJson() {
+    throw new UnsupportedOperationException();
   }
 
   /**
@@ -154,6 +160,11 @@ public class NetworkContextImpl extends BaseContextImpl<NetworkContext> implemen
       Args.checkNotNull(network.version, "version cannot be null");
       Args.checkNotNull(network.config, "configuration cannot be null");
       Args.checkNotNull(network.components, "components cannot be null");
+    }
+
+    @Override
+    public Builder update(JsonObject config) {
+      throw new UnsupportedOperationException();
     }
 
     @Override

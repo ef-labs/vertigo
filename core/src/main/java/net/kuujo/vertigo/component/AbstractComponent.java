@@ -18,10 +18,8 @@ package net.kuujo.vertigo.component;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.ServiceHelper;
-import io.vertx.core.VertxException;
-import net.kuujo.vertigo.context.NetworkContext;
-import net.kuujo.vertigo.spi.ComponentInstanceProvider;
 import net.kuujo.vertigo.instance.ComponentInstance;
+import net.kuujo.vertigo.spi.ComponentInstanceProvider;
 
 /**
  * Abstract Java component.
@@ -45,8 +43,11 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
   @Override
   public void start(Future<Void> startFuture) throws Exception {
 
-    Future<ComponentInstance> componentFuture = Future.<ComponentInstance>future()
-        .setHandler(componentInstanceAsyncResult -> {
+    // Create the component instance
+    instanceProvider.registerAndGet(
+        vertx,
+        config(),
+        componentInstanceAsyncResult -> {
           if (componentInstanceAsyncResult.succeeded()) {
             this.component = componentInstanceAsyncResult.result();
 
@@ -79,9 +80,6 @@ public abstract class AbstractComponent extends AbstractVerticle implements Comp
             startFuture.fail(componentInstanceAsyncResult.cause());
           }
         });
-
-    // Create the component instance
-    instanceProvider.createInstance(vertx, config(), componentFuture);
 
   }
 

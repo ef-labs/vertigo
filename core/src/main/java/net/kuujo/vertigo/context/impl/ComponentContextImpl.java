@@ -17,10 +17,8 @@ package net.kuujo.vertigo.context.impl;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import io.vertx.core.json.JsonObject;
-import net.kuujo.vertigo.context.ComponentContext;
-import net.kuujo.vertigo.context.InputContext;
-import net.kuujo.vertigo.context.OutputContext;
-import net.kuujo.vertigo.context.NetworkContext;
+import net.kuujo.vertigo.context.*;
+import net.kuujo.vertigo.instance.InputCollector;
 import net.kuujo.vertigo.util.Args;
 
 import java.util.Arrays;
@@ -107,6 +105,20 @@ public class ComponentContextImpl extends BaseContextImpl<ComponentContext> impl
 //  public NetworkContext network() {
 //    return network;
 //  }
+
+  @Override
+  public JsonObject toJson() {
+    return new JsonObject()
+        .put("id", id)
+        .put("address", address)
+        .put("main", main)
+        .put("config", config)
+        .put("worker", worker)
+        .put("multiThreader", multiThreaded)
+        .put("replicas", replicas)
+        .put("input", input.toJson())
+        .put("output", output.toJson());
+  }
 
   /**
    * Component context builder.
@@ -228,6 +240,30 @@ public class ComponentContextImpl extends BaseContextImpl<ComponentContext> impl
       checkFields();
       return component;
     }
+
+    @Override
+    public Builder update(JsonObject json) {
+      component.id = json.getString("id");
+      component.address = json.getString("address");
+      component.main = json.getString("main");
+      component.config = json.getJsonObject("config");
+      component.worker = json.getBoolean("worker");
+      component.multiThreaded = json.getBoolean("multiThreader");
+      component.replicas = json.getInteger("replicas");
+      component.input = InputContext
+          .builder()
+          .setComponent(component)
+          .update(json.getJsonObject("input"))
+          .build();
+      component.output = OutputContext
+          .builder()
+          .setComponent(component)
+          .update(json.getJsonObject("output"))
+          .build();
+      return this;
+    }
+
+
   }
 
 }

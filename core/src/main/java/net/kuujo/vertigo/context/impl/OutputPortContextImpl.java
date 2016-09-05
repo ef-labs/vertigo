@@ -17,9 +17,14 @@
 package net.kuujo.vertigo.context.impl;
 
 import io.vertx.core.eventbus.MessageCodec;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import net.kuujo.vertigo.VertigoException;
 import net.kuujo.vertigo.context.OutputContext;
 import net.kuujo.vertigo.context.OutputConnectionContext;
 import net.kuujo.vertigo.context.OutputPortContext;
+import net.kuujo.vertigo.context.PortContext;
+import net.kuujo.vertigo.instance.OutputConnection;
 import net.kuujo.vertigo.util.Args;
 
 import java.util.ArrayList;
@@ -31,12 +36,63 @@ import java.util.Collection;
  *
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
-public class OutputPortContextImpl extends BasePortContextImpl<OutputPortContext, OutputConnectionContext> implements OutputPortContext {
+public class OutputPortContextImpl extends BaseContextImpl<OutputPortContext> implements OutputPortContext {
   private OutputContext output;
+
+  protected String name;
+  protected Class<?> type;
+  protected Class<? extends MessageCodec> codec;
+  //  protected boolean persistent;
+  protected Collection<OutputConnectionContext> connections = new ArrayList<>();
 
   @Override
   public OutputContext output() {
     return output;
+  }
+
+  @Override
+  public String name() {
+    return name;
+  }
+
+  @Override
+  public Class<?> type() {
+    return type;
+  }
+
+  @Override
+  public Class<? extends MessageCodec> codec() {
+    return codec;
+  }
+
+  @Override
+  public Collection<OutputConnectionContext> connections() {
+    return connections;
+  }
+
+  @Override
+  public JsonObject toJson() {
+    JsonArray connectionJson = new JsonArray();
+    connections.forEach(connection -> connectionJson.add(connection.toJson()));
+
+    JsonObject json = new JsonObject()
+        .put("name", name)
+        .put("connections", connectionJson);
+
+    if (type != null && type != Object.class) {
+      json.put("type", type.toString());
+    }
+
+    if (codec != null) {
+      json.put("codec", codec.toString());
+    }
+
+//    if (persistent) {
+//      json.put("persistent", persistent);
+//    }
+
+    return json;
+
   }
 
   /**
@@ -51,6 +107,12 @@ public class OutputPortContextImpl extends BasePortContextImpl<OutputPortContext
 
     public Builder(OutputPortContextImpl port) {
       this.port = port != null ? port : new OutputPortContextImpl();
+    }
+
+    public Builder setOutput(OutputContext output) {
+      Args.checkNotNull(output, "output cannot be null");
+      port.output = output;
+      return this;
     }
 
     @Override
@@ -72,49 +134,71 @@ public class OutputPortContextImpl extends BasePortContextImpl<OutputPortContext
       return this;
     }
 
-    @Override
-    public Builder setPersistent(boolean persistent) {
-      port.persistent = persistent;
-      return this;
-    }
+//    @Override
+//    public A setPersistent(boolean persistent) {
+//      port.persistent = persistent;
+//      return this;
+//    }
 
     @Override
-    public Builder addConnection(OutputConnectionContext connection) {
+    public OutputPortContext.Builder addConnection(OutputConnectionContext connection) {
       Args.checkNotNull(connection, "connection cannot be null");
       port.connections.add(connection);
       return this;
     }
 
     @Override
-    public Builder removeConnection(OutputConnectionContext connection) {
+    public OutputPortContext.Builder removeConnection(OutputConnectionContext connection) {
       Args.checkNotNull(connection, "connection cannot be null");
       port.connections.remove(connection);
       return this;
     }
 
     @Override
-    public Builder setConnections(OutputConnectionContext... connections) {
+    public OutputPortContext.Builder setConnections(OutputConnectionContext... connections) {
       port.connections = new ArrayList<>(Arrays.asList(connections));
       return this;
     }
 
     @Override
-    public Builder setConnections(Collection<OutputConnectionContext> connections) {
+    public OutputPortContext.Builder setConnections(Collection<OutputConnectionContext> connections) {
       Args.checkNotNull(connections, "connections cannot be null");
       port.connections = new ArrayList<>(connections);
       return this;
     }
 
     @Override
-    public Builder setOutput(OutputContext output) {
-      Args.checkNotNull(output, "output cannot be null");
-      port.output = output;
-      return this;
+    public OutputPortContextImpl build() {
+      return port;
     }
 
     @Override
-    public OutputPortContextImpl build() {
-      return port;
+    public Builder update(JsonObject json) {
+      port.name = json.getString("name");
+      try {
+        String typeName = json.getString("type");
+        port.type = typeName != null
+            ? Class.forName(json.getString("type"))
+            : Object.class;
+        String codecName = json.getString("codec");
+        port.codec = codecName != null
+            ? (Class<? extends MessageCodec>) Class.forName(codecName)
+            : null;
+      } catch (ClassNotFoundException e) {
+        throw new VertigoException(e.getMessage(), e);
+      }
+//    persistent = json.getBoolean("persistent");
+      json.getJsonArray("connections")
+          .forEach(o -> {
+            OutputConnectionContext connection = OutputConnectionContext
+                .builder()
+                .setPort(port)
+                .update((JsonObject)o)
+                .build();
+            port.connections.add(connection);
+          });
+
+      return this;
     }
   }
 

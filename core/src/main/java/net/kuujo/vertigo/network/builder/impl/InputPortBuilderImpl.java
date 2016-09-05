@@ -107,17 +107,17 @@ public class InputPortBuilderImpl implements InputPortBuilder {
     return this;
   }
 
-  @Override
-  public InputPortBuilder persistent() {
-    port.setPersistent(true);
-    return this;
-  }
+//  @Override
+//  public InputPortBuilder persistent() {
+//    port.setPersistent(true);
+//    return this;
+//  }
 
-  @Override
-  public InputPortBuilder persistent(boolean persistent) {
-    port.setPersistent(persistent);
-    return this;
-  }
+//  @Override
+//  public InputPortBuilder persistent(boolean persistent) {
+//    port.setPersistent(persistent);
+//    return this;
+//  }
 
   @Override
   public InputBuilder input() {

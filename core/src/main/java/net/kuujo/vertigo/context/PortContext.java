@@ -47,12 +47,12 @@ public interface PortContext<T extends PortContext<T, U>, U extends ConnectionCo
    */
   Class<? extends MessageCodec> codec();
 
-  /**
-   * Returns whether the port is persistent.
-   *
-   * @return Whether the port is persistent.
-   */
-  boolean persistent();
+//  /**
+//   * Returns whether the port is persistent.
+//   *
+//   * @return Whether the port is persistent.
+//   */
+//  boolean persistent();
 
   /**
    * Returns a collection of port connections.
@@ -93,13 +93,13 @@ public interface PortContext<T extends PortContext<T, U>, U extends ConnectionCo
      */
     T setCodec(Class<? extends MessageCodec> codec);
 
-    /**
-     * Sets whether the port is persistent.
-     *
-     * @param persistent Whether the port is persistent.
-     * @return The port context builder.
-     */
-    T setPersistent(boolean persistent);
+//    /**
+//     * Sets whether the port is persistent.
+//     *
+//     * @param persistent Whether the port is persistent.
+//     * @return The port context builder.
+//     */
+//    T setPersistent(boolean persistent);
 
     /**
      * Adds a connection to the port.

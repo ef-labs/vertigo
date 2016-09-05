@@ -40,20 +40,20 @@ public interface PortBuilder<T extends PortBuilder<T>> {
    */
   T codec(Class<? extends MessageCodec> codec);
 
-  /**
-   * Sets the port as persistent.
-   *
-   * @return The port builder.
-   */
-  T persistent();
+//  /**
+//   * Sets the port as persistent.
+//   *
+//   * @return The port builder.
+//   */
+//  T persistent();
 
-  /**
-   * Sets whether the port is persistent.
-   *
-   * @param persistent Whether the port is persistent.
-   * @return The port builder.
-   */
-  T persistent(boolean persistent);
+//  /**
+//   * Sets whether the port is persistent.
+//   *
+//   * @param persistent Whether the port is persistent.
+//   * @return The port builder.
+//   */
+//  T persistent(boolean persistent);
 
   /**
    * Returns the component input builder.

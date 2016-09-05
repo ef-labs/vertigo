@@ -1,1 +1,1 @@
-net.kuujo.vertigo.instance.impl.ComponentInstanceProviderImpl
+net.kuujo.vertigo.deployment.impl.ConfigComponentContextManager

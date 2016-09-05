@@ -18,7 +18,6 @@ package net.kuujo.vertigo.deployment.impl;
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
-import io.vertx.core.spi.VerticleFactory;
 import net.kuujo.vertigo.deployment.DeploymentManager;
 import net.kuujo.vertigo.VertigoException;
 import net.kuujo.vertigo.context.ComponentContext;
@@ -65,8 +64,8 @@ public class LocalDeploymentManager implements DeploymentManager {
     for (ComponentContext component : network.components()) {
 
       JsonObject config = new JsonObject()
-          .put("vertigo_component_id", component.name())
-          .put("vertigo_network_id", network.name());
+          .put("vertigo_component_context", component.toJson());
+
       if (component.config() != null) {
         config.mergeIn(component.config());
       }

@@ -86,7 +86,7 @@ public final class ContextBuilder {
             .setName(port.getName())
             .setType(port.getType())
             .setCodec(port.getCodec())
-            .setPersistent(port.isPersistent())
+//            .setPersistent(port.isPersistent())
             .setInput(input.build())
             .build());
       }
@@ -103,7 +103,7 @@ public final class ContextBuilder {
             .setName(port.getName())
             .setType(port.getType())
             .setCodec(port.getCodec())
-            .setPersistent(port.isPersistent())
+//            .setPersistent(port.isPersistent())
             .setOutput(output.build())
             .build());
       }

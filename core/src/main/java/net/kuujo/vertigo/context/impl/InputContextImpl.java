@@ -16,9 +16,11 @@
 
 package net.kuujo.vertigo.context.impl;
 
+import io.vertx.core.json.JsonObject;
 import net.kuujo.vertigo.context.ComponentContext;
 import net.kuujo.vertigo.context.InputContext;
 import net.kuujo.vertigo.context.InputPortContext;
+import net.kuujo.vertigo.context.OutputPortContext;
 import net.kuujo.vertigo.util.Args;
 
 import java.util.Collection;
@@ -47,6 +49,16 @@ public class InputContextImpl extends BaseContextImpl<InputContext> implements I
   @Override
   public InputPortContext port(String name) {
     return ports.get(name);
+  }
+
+
+  @Override
+  public JsonObject toJson() {
+    JsonObject json = new JsonObject();
+    ports.forEach((key, port) -> {
+      json.put(key, port.toJson());
+    });
+    return json;
   }
 
   /**
@@ -106,6 +118,19 @@ public class InputContextImpl extends BaseContextImpl<InputContext> implements I
     public Builder setComponent(ComponentContext component) {
       Args.checkNotNull(component, "component cannot be null");
       input.component = component;
+      return this;
+    }
+
+    @Override
+    public Builder update(JsonObject config) {
+      config.forEach(value -> {
+        InputPortContext port = InputPortContext
+            .builder()
+            .setInput(input)
+            .update((JsonObject)value.getValue())
+            .build();
+        input.ports.put(value.getKey(), port);
+      });
       return this;
     }
 

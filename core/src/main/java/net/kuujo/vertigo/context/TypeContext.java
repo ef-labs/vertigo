@@ -15,6 +15,7 @@
  */
 package net.kuujo.vertigo.context;
 
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.Shareable;
 
 /**
@@ -33,6 +34,13 @@ public interface TypeContext<T extends TypeContext<T>> extends Shareable {
   String toString(boolean formatted);
 
   /**
+   * Returns a JSON representation of the configuration.
+   *
+   * @return A JSON object representation of the configuration.
+   */
+  JsonObject toJson();
+
+  /**
    * Type context builder.
    *
    * @param <T> The type built by the builder.
@@ -45,6 +53,14 @@ public interface TypeContext<T extends TypeContext<T>> extends Shareable {
      * @return The built type context instance.
      */
     U build();
+
+    /**
+     * Applies a JSON configuration to the configuration.
+     *
+     * @param json The JSON configuration to apply.
+     */
+    Builder<T, U> update(JsonObject json);
+
 
   }
 

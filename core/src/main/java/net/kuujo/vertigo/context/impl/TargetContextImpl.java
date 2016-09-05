@@ -15,7 +15,9 @@
  */
 package net.kuujo.vertigo.context.impl;
 
+import io.vertx.core.json.JsonObject;
 import net.kuujo.vertigo.context.TargetContext;
+import net.kuujo.vertigo.context.TypeContext;
 import net.kuujo.vertigo.util.Args;
 
 /**
@@ -41,6 +43,14 @@ public class TargetContextImpl extends BaseContextImpl<TargetContext> implements
   @Override
   public String address() {
     return address;
+  }
+
+  @Override
+  public JsonObject toJson() {
+    return new JsonObject()
+        .put("component", component)
+        .put("port", port)
+        .put("address", address);
   }
 
   /**
@@ -76,7 +86,15 @@ public class TargetContextImpl extends BaseContextImpl<TargetContext> implements
     }
 
     @Override
-    public TargetContextImpl build() {
+    public TypeContext.Builder<TargetContext.Builder, TargetContext> update(JsonObject json) {
+      target.component = json.getString("component");
+      target.port = json.getString("port");
+      target.address = json.getString("address");
+      return this;
+    }
+
+    @Override
+    public TargetContext build() {
       return target;
     }
   }

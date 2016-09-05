@@ -16,10 +16,12 @@
 
 package net.kuujo.vertigo.context.impl;
 
+import io.vertx.core.json.JsonObject;
 import net.kuujo.vertigo.context.OutputConnectionContext;
 import net.kuujo.vertigo.context.SourceContext;
 import net.kuujo.vertigo.context.TargetContext;
 import net.kuujo.vertigo.context.OutputPortContext;
+import net.kuujo.vertigo.instance.OutputPort;
 import net.kuujo.vertigo.util.Args;
 
 /**
@@ -27,8 +29,57 @@ import net.kuujo.vertigo.util.Args;
  *
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
-public class OutputConnectionContextImpl extends BaseConnectionContextImpl<OutputConnectionContext, OutputPortContext> implements OutputConnectionContext {
+public class OutputConnectionContextImpl implements OutputConnectionContext {
 
+  protected SourceContext source;
+  protected TargetContext target;
+  //  protected boolean ordered;
+//  protected boolean atLeastOnce;
+  protected long sendTimeout;
+  protected OutputPortContext port;
+
+  @Override
+  public SourceContext source() {
+    return source;
+  }
+
+  @Override
+  public TargetContext target() {
+    return target;
+  }
+
+//  @Override
+//  public boolean ordered() {
+//    return ordered;
+//  }
+//
+//  @Override
+//  public boolean atLeastOnce() {
+//    return atLeastOnce;
+//  }
+
+  @Override
+  public long sendTimeout() {
+    return sendTimeout;
+  }
+
+  @Override
+  public OutputPortContext port() {
+    return port;
+  }
+
+  @Override
+  public String toString(boolean formatted) {
+    return toString();
+  }
+
+  @Override
+  public JsonObject toJson() {
+    return new JsonObject()
+        .put("source", source.toJson())
+        .put("target", target.toJson())
+        .put("sendTimeout", sendTimeout);
+  }
   /**
    * Output connection context builder.
    */
@@ -79,6 +130,18 @@ public class OutputConnectionContextImpl extends BaseConnectionContextImpl<Outpu
     @Override
     public OutputConnectionContext.Builder setSendTimeout(long timeout) {
       connection.sendTimeout = timeout;
+      return this;
+    }
+
+    @Override
+    public OutputConnectionContext.Builder update(JsonObject json) {
+      connection.source = SourceContext.builder()
+          .update(json.getJsonObject("source"))
+          .build();
+      connection.target = TargetContext.builder()
+          .update(json.getJsonObject("target"))
+          .build();
+      connection.sendTimeout = json.getLong("sendTimeout");
       return this;
     }
 
