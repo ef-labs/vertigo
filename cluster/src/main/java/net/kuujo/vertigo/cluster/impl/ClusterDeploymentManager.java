@@ -20,6 +20,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import net.kuujo.vertigo.deployment.DeploymentManager;
 import net.kuujo.vertigo.context.NetworkContext;
+import net.kuujo.vertigo.reference.NetworkReference;
 
 /**
  * Cluster based Vertigo context manager.
@@ -47,6 +48,11 @@ public class ClusterDeploymentManager implements DeploymentManager {
 
   @Override
   public DeploymentManager undeployNetwork(NetworkContext network, Handler<AsyncResult<Void>> doneHandler) {
+    return this;
+  }
+
+  @Override
+  public DeploymentManager getNetworkReference(String id, Handler<AsyncResult<NetworkReference>> doneHandler) {
     return this;
   }
 

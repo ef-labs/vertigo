@@ -3,11 +3,17 @@
   "components": {
     "A": {
       "name": "A",
-      "identifier": "com.englishtown.vertx.platform.school.core.vertigo.EventEmitter"
+      "identifier": "com.englishtown.vertx.platform.school.core.vertigo.EventEmitter",
+      "output": {
+        "out": { }
+      }
     },
     "B": {
       "name": "B",
-      "identifier": "net.kuujo.vertigo.integration.Execute_Ack_NoHandler_Test$TargetComponent"
+      "identifier": "net.kuujo.vertigo.integration.Execute_Ack_NoHandler_Test$TargetComponent",
+      "input": {
+        "in": { }
+      }
     }
   },
   "connections": [

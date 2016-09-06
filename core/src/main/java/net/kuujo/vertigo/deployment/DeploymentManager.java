@@ -21,6 +21,7 @@ import io.vertx.core.ServiceHelper;
 import io.vertx.core.Vertx;
 import net.kuujo.vertigo.VertigoOptions;
 import net.kuujo.vertigo.context.NetworkContext;
+import net.kuujo.vertigo.reference.NetworkReference;
 import net.kuujo.vertigo.spi.DeploymentManagerFactory;
 
 /**
@@ -67,6 +68,14 @@ public interface DeploymentManager {
    * @return The context manager.
    */
   DeploymentManager undeployNetwork(NetworkContext network, Handler<AsyncResult<Void>> doneHandler);
+
+  /**
+   * Gets a network reference (which allows sending messages to it).
+   * @param id The network context ID.
+   * @param doneHandler An asynchronous handler to be called once the network reference has been loaded.
+   * @return The network reference.
+   */
+  DeploymentManager getNetworkReference(String id, Handler<AsyncResult<NetworkReference>> doneHandler);
 
   static DeploymentManagerFactory factory = ServiceHelper.loadFactory(DeploymentManagerFactory.class);
 

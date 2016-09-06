@@ -1,26 +1,59 @@
 package net.kuujo.vertigo.reference.impl;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import net.kuujo.vertigo.context.NetworkContext;
 import net.kuujo.vertigo.reference.InputPortReference;
 import net.kuujo.vertigo.reference.InputReference;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by Magnus.Koch on 8/31/2016.
  */
 public class NetworkInputReferenceImpl implements InputReference {
-  //
+
+    private final static Logger logger = LoggerFactory.getLogger(NetworkInputReferenceImpl.class);
+
     private final Vertx vertx;
     private final NetworkContext context;
+    private final Map<String, InputPortReference> ports;
 
   public NetworkInputReferenceImpl(Vertx vertx, NetworkContext context) {
     this.vertx = vertx;
     this.context = context;
+    ports = context.config()
+        .getConnections()
+        .stream()
+        .filter(connectionConfig -> connectionConfig.getSource().getIsNetwork())
+        .collect(Collectors.toConcurrentMap(
+            c -> c.getSource().getPort(),
+            d -> new NetworkInputPortReference(vertx, context, d.getSource().getPort())));
   }
 
   @Override
   public <T> InputPortReference<T> port(String name) {
-    return new NetworkInputPortReference<T>(vertx, context, name);
+    InputPortReference port = ports.get(name);
+    if (port == null) {
+      port = new NetworkInputPortReference(vertx, context, "name");
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            String.format(
+                "Dynamically created output port %s on network %s. The port has no connections.",
+                name,
+                context.name()));
+      }
+    }
+    return port;
+  }
+
+  @Override
+  public List<InputPortReference> ports() {
+    return new ArrayList<>(ports.values());
   }
 
   //  private final Map<String, List<String>> addresses = new HashMap<>();

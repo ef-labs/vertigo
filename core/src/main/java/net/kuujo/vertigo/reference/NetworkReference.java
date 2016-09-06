@@ -49,4 +49,10 @@ public interface NetworkReference {
    */
   <T> InputReference input();
 
+  /**
+   * Returns the name of the network
+   * @return The name.
+   */
+  String name();
+
 }

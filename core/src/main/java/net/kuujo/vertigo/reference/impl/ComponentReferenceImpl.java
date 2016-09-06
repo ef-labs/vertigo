@@ -37,7 +37,7 @@ public class ComponentReferenceImpl implements ComponentReference {
 
   @Override
   public InputReference input() {
-    return new InputReferenceImpl(vertx, context.address());
+    return new InputReferenceImpl(vertx, context.address(), context.input());
   }
 
 //  @Override

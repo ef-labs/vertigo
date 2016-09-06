@@ -80,6 +80,76 @@ public class NetworkSerializationTest {
   }
 
   @Test
+  public void networkBuilder_Serialize_Deserialize_Network_Test() {
+
+    // Build the network using "shorthand" flow syntax
+    NetworkBuilder builder = NetworkConfig.builder("network-1");
+
+    builder.component("receiver")
+        .identifier(STUB_IDENTIFIER)
+        .input();
+
+    builder.connect()
+        .network()
+        .port("network_in")
+        .to("receiver")
+        .port("in");
+
+    // Verify the result
+    JsonObject json = builder.build().toJson();
+
+    NetworkConfig network = NetworkConfig.network(json);
+
+    ComponentConfig receiver = network.getComponent("receiver");
+    assertNotNull(receiver);
+    assertEquals("receiver", receiver.getName());
+    assertNotNull(receiver.getInput().getPort("in"));
+
+    assertEquals(1, network.getConnections().size());
+    ConnectionConfig connection = network.getConnections().stream().findFirst().get();
+    assertNotNull(connection.getSource());
+    assertEquals(null, connection.getSource().getComponent());
+    assertEquals(true, connection.getSource().getIsNetwork());
+    assertEquals("network_in", connection.getSource().getPort());
+    assertNotNull(connection.getTarget());
+    assertEquals("receiver", connection.getTarget().getComponent());
+    assertEquals("in", connection.getTarget().getPort());
+  }
+
+  @Test
+  public void networkBuilder_Deserialize_Test() {
+
+    // LoSad file
+    InputStream networkStream = this.getClass().getClassLoader().getResourceAsStream("sample-network.json");
+    String networkString = new Scanner(networkStream, "UTF-8").useDelimiter("\\A").next();
+    JsonObject networkJson = new JsonObject(networkString);
+
+    // Build the network
+    NetworkConfig network = NetworkConfig.network(networkJson);
+
+    // Verify the result
+    ComponentConfig sender = network.getComponent("A");
+    assertNotNull(sender);
+    assertEquals("A", sender.getName());
+    assertNotNull(sender.getOutput().getPort("out"));
+
+    ComponentConfig receiver = network.getComponent("B");
+    assertNotNull(receiver);
+    assertEquals("B", receiver.getName());
+    assertNotNull(receiver.getInput().getPort("in"));
+
+    assertEquals(1, network.getConnections().size());
+    ConnectionConfig connection = network.getConnections().stream().findFirst().get();
+    assertNotNull(connection.getSource());
+    assertEquals("A", connection.getSource().getComponent());
+    assertEquals("out", connection.getSource().getPort());
+    assertNotNull(connection.getTarget());
+    assertEquals("B", connection.getTarget().getComponent());
+    assertEquals("in", connection.getTarget().getPort());
+
+  }
+
+  @Test
   public void networkBuilder_Deserialize_Simplified_Test() {
 
     // LoSad file

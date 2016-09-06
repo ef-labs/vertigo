@@ -63,11 +63,11 @@ import net.kuujo.vertigo.network.EndpointConfig;
     JsonObject json = new JsonObject();
     if (component != null) {
       json.put(ENDPOINT_COMPONENT, component);
-      json.put(ENDPOINT_PORT, port);
     }
     if (isNetwork) {
       json.put(ENDPOINT_IS_NETWORK, true);
     }
+    json.put(ENDPOINT_PORT, port);
     return json;
   }
 

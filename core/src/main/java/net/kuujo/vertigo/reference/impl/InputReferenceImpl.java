@@ -16,8 +16,17 @@
 package net.kuujo.vertigo.reference.impl;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
+import net.kuujo.vertigo.context.InputContext;
+import net.kuujo.vertigo.context.PortContext;
 import net.kuujo.vertigo.reference.InputReference;
 import net.kuujo.vertigo.reference.InputPortReference;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Input reference implementation.
@@ -25,17 +34,45 @@ import net.kuujo.vertigo.reference.InputPortReference;
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
 public class InputReferenceImpl implements InputReference {
+
+  private static final Logger logger = LoggerFactory.getLogger(InputReferenceImpl.class);
+
   private final Vertx vertx;
   private final String address;
+  private final Map<String, InputPortReference> ports;
 
-  public InputReferenceImpl(Vertx vertx, String address) {
+  public InputReferenceImpl(Vertx vertx, String address, InputContext input) {
     this.vertx = vertx;
     this.address = address;
+    this.ports = input.ports()
+        .stream()
+        .collect(Collectors
+            .toConcurrentMap(
+                PortContext::name,
+                port -> new InputPortReferenceImpl(vertx, address, port.name())));
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public <T> InputPortReference<T> port(String name) {
-    return new InputPortReferenceImpl<>(vertx, address, name);
+    InputPortReference port = ports.get(name);
+    if (port == null) {
+      port = new InputPortReferenceImpl<>(vertx, address, name);
+      ports.put(name, port);
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            String.format(
+                "Dynamically created output port %s on component %s at address %s. The port has no connections.",
+                name,
+                address));
+      }
+    }
+    return port;
+  }
+
+  @Override
+  public List<InputPortReference> ports() {
+    return new ArrayList<>(ports.values());
   }
 
 }

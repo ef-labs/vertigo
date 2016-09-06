@@ -38,6 +38,11 @@ public class NetworkReferenceImpl implements NetworkReference {
     return new ComponentReferenceImpl(vertx, context.component(id));
   }
 
+  @Override
+  public String name() {
+    return context.name();
+  }
+
 //  @Override
 //  public <T> NetworkOutputReference<T> output() {
 //    return new NetworkOutputReferenceImpl<>(vertx, context);

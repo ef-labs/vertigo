@@ -166,7 +166,22 @@ public class NetworkImpl implements NetworkConfig {
     JsonArray connections = network.getJsonArray(NETWORK_CONNECTIONS);
     if (connections != null) {
       for (Object connection : connections) {
-        this.connections.add(NetworkConfig.connection((JsonObject) connection));
+        ConnectionConfig connectionConfig = NetworkConfig.connection((JsonObject) connection);
+        SourceConfig source = connectionConfig.getSource();
+        if (!source.getIsNetwork()) {
+          OutputConfig output = this.getComponent(connectionConfig.getSource().getComponent()).getOutput();
+          if (output.getPort(source.getPort()) == null) {
+            output.addPort(source.getPort());
+          }
+        }
+        TargetConfig target = connectionConfig.getTarget();
+        if (!target.getIsNetwork()) {
+          InputConfig input = this.getComponent(connectionConfig.getTarget().getComponent()).getInput();
+          if (input.getPort(target.getPort()) == null) {
+            input.addPort(target.getPort());
+          }
+        }
+        this.connections.add(connectionConfig);
       }
     }
   }

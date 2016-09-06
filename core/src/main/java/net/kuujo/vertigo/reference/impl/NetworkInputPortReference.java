@@ -4,6 +4,8 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import net.kuujo.vertigo.context.ComponentContext;
 import net.kuujo.vertigo.context.NetworkContext;
 import net.kuujo.vertigo.network.ConnectionConfig;
@@ -21,6 +23,8 @@ public class NetworkInputPortReference<T> implements InputPortReference<T> {
   private final Vertx vertx;
   private final String name;
   private final List<InputPortReferenceImpl<Object>> ports;
+
+  private static final Logger logger = LoggerFactory.getLogger(NetworkInputPortReference.class);
 
   public NetworkInputPortReference(Vertx vertx, NetworkContext context, String name) {
 
@@ -41,11 +45,22 @@ public class NetworkInputPortReference<T> implements InputPortReference<T> {
         })
         .collect(Collectors.toList());
 
+    if (ports.size() == 0) {
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            String.format(
+                "Dynamically created input port %s on network %s. The port has no connections.",
+                name,
+                context.name()
+            ));
+      }
+    }
+
   }
 
   @Override
   public String name() {
-    return name();
+    return name;
   }
 
   @Override

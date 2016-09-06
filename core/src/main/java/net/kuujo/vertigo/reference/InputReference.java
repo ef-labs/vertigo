@@ -17,6 +17,8 @@ package net.kuujo.vertigo.reference;
 
 import io.vertx.codegen.annotations.VertxGen;
 
+import java.util.List;
+
 /**
  * Reference to component input.
  *
@@ -33,5 +35,12 @@ public interface InputReference {
    * @return The input port reference.
    */
   <T> InputPortReference<T> port(String name);
+
+  /**
+   * Returns all port references.
+   *
+   * @return The input port references.
+   */
+  List<InputPortReference> ports();
 
 }

@@ -37,7 +37,7 @@ public interface EndpointConfig<T extends EndpointConfig<T>> extends TypeConfig 
   /**
    * <code>port</code> indicates the endpoint port.
    */
-  public static final String ENDPOINT_IS_NETWORK = "isNetwork";
+  public static final String ENDPOINT_IS_NETWORK = "network";
 
   /**
    * Returns the endpoint component.

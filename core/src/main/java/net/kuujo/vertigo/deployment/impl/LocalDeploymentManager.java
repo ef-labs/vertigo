@@ -22,6 +22,8 @@ import net.kuujo.vertigo.deployment.DeploymentManager;
 import net.kuujo.vertigo.VertigoException;
 import net.kuujo.vertigo.context.ComponentContext;
 import net.kuujo.vertigo.context.NetworkContext;
+import net.kuujo.vertigo.reference.NetworkReference;
+import net.kuujo.vertigo.reference.impl.NetworkReferenceImpl;
 import net.kuujo.vertigo.util.CountingCompletionHandler;
 
 /**
@@ -106,6 +108,22 @@ public class LocalDeploymentManager implements DeploymentManager {
       }
     }
     return this;
+  }
+
+  @Override
+  public DeploymentManager getNetworkReference(String id, Handler<AsyncResult<NetworkReference>> doneHandler) {
+    return getNetwork(id, result -> {
+      if (result.succeeded()) {
+        try {
+          NetworkReferenceImpl ref = new NetworkReferenceImpl(vertx, result.result());
+          doneHandler.handle(Future.succeededFuture(ref));
+        } catch (Throwable throwable) {
+          doneHandler.handle(Future.failedFuture(throwable));
+        }
+      } else {
+        doneHandler.handle(Future.failedFuture(result.cause()));
+      }
+    });
   }
 
 }

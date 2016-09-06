@@ -20,6 +20,9 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.MultiMap;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.ReplyException;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
+import net.kuujo.vertigo.VertigoException;
 import net.kuujo.vertigo.message.VertigoMessage;
 
 /**
@@ -33,6 +36,8 @@ public class VertigoMessageImpl<T> implements VertigoMessage<T> {
   private T body;
   private MultiMap headers;
   private boolean acked;
+
+  private static final Logger logger = LoggerFactory.getLogger(VertigoMessage.class);
 
   public VertigoMessageImpl(String id, Message<T> message) {
     this.id = id;
@@ -66,14 +71,18 @@ public class VertigoMessageImpl<T> implements VertigoMessage<T> {
 
   @Override
   public void fail(Throwable cause) {
-    // TODO: Log cause?
     if (!acked) {
       if (cause instanceof ReplyException) {
         ReplyException exception = (ReplyException) cause;
         message.fail(exception.failureCode(), exception.getMessage());
       }
+      else if (cause != null) {
+        message.fail(-1, cause.getClass().getSimpleName() + ": " + cause.getMessage());
+//        logger.error(cause.getMessage(), cause);
+      }
       else {
-        message.fail(-1, cause == null ? "Unknown error" : cause.getMessage());
+        message.fail(-1, "Unknown error.");
+//        logger.error(new VertigoException("Unknown error."));
       }
       acked = true;
     }

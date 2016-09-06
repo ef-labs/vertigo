@@ -17,6 +17,7 @@ package net.kuujo.vertigo.reference.impl;
 
 import io.vertx.core.*;
 import io.vertx.core.eventbus.DeliveryOptions;
+import io.vertx.core.http.CaseInsensitiveHeaders;
 import net.kuujo.vertigo.reference.InputPortReference;
 
 /**
@@ -42,38 +43,51 @@ public class InputPortReferenceImpl<T> implements InputPortReference<T> {
 
   @Override
   public InputPortReference<T> send(T message) {
-    vertx.eventBus().send(address, message, new DeliveryOptions().addHeader("port", name));
+    vertx.eventBus()
+        .send(address, message, getDeliveryOptions(null));
     return this;
   }
 
   @Override
   public InputPortReference<T> send(T message, MultiMap headers) {
-    vertx.eventBus().send(address, message, new DeliveryOptions().setHeaders(headers.add("port", name)));
+    vertx.eventBus()
+        .send(address, message, getDeliveryOptions(headers));
     return this;
   }
 
   @Override
   public InputPortReference<T> send(T message, Handler<AsyncResult<Void>> ackHandler) {
-    vertx.eventBus().send(address, message, new DeliveryOptions().addHeader("port", name), result -> {
-      if (result.succeeded()) {
-        Future.<Void>succeededFuture().setHandler(ackHandler);
-      } else {
-        Future.<Void>failedFuture(result.cause()).setHandler(ackHandler);
-      }
-    });
+    vertx.eventBus()
+        .send(address, message, getDeliveryOptions(null), result -> {
+          if (result.succeeded()) {
+            Future.<Void>succeededFuture().setHandler(ackHandler);
+          } else {
+            Future.<Void>failedFuture(result.cause()).setHandler(ackHandler);
+          }
+        });
     return this;
   }
 
   @Override
   public InputPortReference<T> send(T message, MultiMap headers, Handler<AsyncResult<Void>> ackHandler) {
-    vertx.eventBus().send(address, message, new DeliveryOptions().setHeaders(headers.add("port", name)), result -> {
-      if (result.succeeded()) {
-        Future.<Void>succeededFuture().setHandler(ackHandler);
-      } else {
-        Future.<Void>failedFuture(result.cause()).setHandler(ackHandler);
-      }
-    });
+    vertx.eventBus()
+        .send(address, message, getDeliveryOptions(headers), result -> {
+          if (result.succeeded()) {
+            Future.<Void>succeededFuture().setHandler(ackHandler);
+          } else {
+            Future.<Void>failedFuture(result.cause()).setHandler(ackHandler);
+          }
+        });
     return this;
+  }
+
+  private DeliveryOptions getDeliveryOptions(MultiMap headers) {
+    DeliveryOptions deliveryOptions = new DeliveryOptions();
+    if (headers != null) {
+      deliveryOptions.setHeaders(headers);
+    }
+    deliveryOptions.addHeader("port", name);
+    return deliveryOptions;
   }
 
 }
