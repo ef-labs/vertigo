@@ -30,9 +30,11 @@ public class NetworkInputReferenceImpl implements InputReference {
         .getConnections()
         .stream()
         .filter(connectionConfig -> connectionConfig.getSource().getIsNetwork())
+        .map(connectionConfig -> connectionConfig.getSource().getPort() )
+        .distinct()
         .collect(Collectors.toConcurrentMap(
-            c -> c.getSource().getPort(),
-            d -> new NetworkInputPortReference(vertx, context, d.getSource().getPort())));
+            port -> port,
+            port -> new NetworkInputPortReference(vertx, context, port)));
   }
 
   @Override
