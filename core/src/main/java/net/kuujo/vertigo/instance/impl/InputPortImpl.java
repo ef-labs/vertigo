@@ -1,0 +1,140 @@
+/*
+ * Copyright 2014 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package net.kuujo.vertigo.instance.impl;
+
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
+import net.kuujo.vertigo.spi.ComponentInstanceFactory;
+import net.kuujo.vertigo.instance.ControllableInput;
+import net.kuujo.vertigo.message.VertigoMessage;
+import net.kuujo.vertigo.instance.InputConnection;
+import net.kuujo.vertigo.context.InputConnectionContext;
+import net.kuujo.vertigo.instance.InputPort;
+import net.kuujo.vertigo.context.InputPortContext;
+import net.kuujo.vertigo.util.TaskRunner;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Input port implementation.
+ *
+ * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
+ */
+public class InputPortImpl<T> implements InputPort<T>, ControllableInput<InputPort<T>, T>, Handler<Message<T>> {
+
+  protected static final String ID_HEADER = "name";
+
+  private static final Logger log = LoggerFactory.getLogger(InputPortImpl.class);
+  protected final Vertx vertx;
+  protected InputPortContext context;
+  protected final Map<String, InputConnection<T>> connections = new HashMap<>();
+  private final TaskRunner tasks = new TaskRunner();
+  @SuppressWarnings("rawtypes")
+  private Handler<VertigoMessage<T>> messageHandler;
+  private boolean open;
+  private boolean paused;
+  private InputConnection<T> stubConnection;
+
+  public InputPortImpl(Vertx vertx, InputPortContext context, ComponentInstanceFactory factory) {
+    this.vertx = vertx;
+    this.context = context;
+    init(factory);
+  }
+
+  /**
+   * Initializes the output connections.
+   * @param factory
+   */
+  private void init(ComponentInstanceFactory factory) {
+    for (InputConnectionContext connection : context.connections()) {
+      connections.put(connection.target().address(), factory.<T>createInputConnection(vertx, connection));
+    }
+    stubConnection = factory.<T>createExternalInputConnection(vertx, context);
+  }
+
+  @Override
+  public String name() {
+    return context.name();
+  }
+
+  @Override
+  public InputPort<T> checkpoint() {
+    return this;
+  }
+
+  @Override
+  public InputPort<T> replay() {
+    return this;
+  }
+
+  @Override
+  public void handle(Message<T> message) {
+    String source = message.headers().get("source");
+    if (source != null) {
+      InputConnection<T> connection = connections.get(source);
+      if (connection != null) {
+        connection.handle(message);
+      }
+    }
+    else {
+      if (stubConnection != null) {
+        stubConnection.handle(message);
+      }
+    }
+  }
+
+  @Override
+  public InputPort<T> pause() {
+    paused = true;
+    for (InputConnection connection : connections.values()) {
+      connection.pause();
+    }
+    return this;
+  }
+
+  @Override
+  public InputPort<T> resume() {
+    paused = false;
+    for (InputConnection connection : connections.values()) {
+      connection.resume();
+    }
+    return this;
+  }
+
+  @Override
+  public InputPort<T> handler(final Handler<VertigoMessage<T>> handler) {
+    if (open && handler == null) {
+      throw new IllegalStateException("cannot unset handler on locked port");
+    }
+    this.messageHandler = handler;
+    for (InputConnection<T> connection : connections.values()) {
+      connection.handler(messageHandler);
+    }
+    stubConnection.handler(handler);
+    return this;
+  }
+
+  @Override
+  public String toString() {
+    return context.toString();
+  }
+
+}

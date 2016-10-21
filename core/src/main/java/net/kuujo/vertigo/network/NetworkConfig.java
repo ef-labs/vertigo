@@ -15,84 +15,200 @@
  */
 package net.kuujo.vertigo.network;
 
+import io.vertx.codegen.annotations.Fluent;
+import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.json.JsonObject;
+import net.kuujo.vertigo.network.builder.NetworkBuilder;
+import net.kuujo.vertigo.network.builder.impl.NetworkBuilderImpl;
+import net.kuujo.vertigo.network.impl.ComponentConfigImpl;
+import net.kuujo.vertigo.network.impl.ConnectionConfigImpl;
+import net.kuujo.vertigo.network.impl.NetworkImpl;
+import net.kuujo.vertigo.spi.ComponentResolver;
+import net.kuujo.vertigo.spi.NetworkResolver;
+import net.kuujo.vertigo.util.Resolvers;
+
 import java.util.Collection;
-import java.util.List;
-
-import net.kuujo.vertigo.Config;
-import net.kuujo.vertigo.component.ComponentConfig;
-import net.kuujo.vertigo.component.ModuleConfig;
-import net.kuujo.vertigo.component.VerticleConfig;
-import net.kuujo.vertigo.io.connection.ConnectionConfig;
-import net.kuujo.vertigo.io.selector.Selector;
-import net.kuujo.vertigo.network.impl.DefaultNetworkConfig;
-
-import org.vertx.java.core.json.JsonObject;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * Network configuration.<p>
- *
- * The network configuration defines a collection of components
- * (Vert.x modules and verticles) that can be connected together in
- * a meaningful way.
+ * Vertigo network.
  *
  * @author <a href="http://github.com/kuujo">Jordan Halterman</a>
  */
-@JsonTypeInfo(
-  use=JsonTypeInfo.Id.CLASS,
-  include=JsonTypeInfo.As.PROPERTY,
-  property="type",
-  defaultImpl=DefaultNetworkConfig.class
-)
-public interface NetworkConfig extends Config<NetworkConfig> {
+@VertxGen
+public interface NetworkConfig extends TypeConfig {
 
   /**
    * <code>name</code> is a string indicating the unique network name. This is the
    * address at which the network will monitor network components. This field is required.
    */
-  public static final String NETWORK_NAME = "name";
+  static final String NETWORK_NAME = "name";
 
   /**
    * <code>components</code> is an object defining network component configurations. Each
    * item in the object must be keyed by the unique component address, with each item
-   * being an object containing the component configuration. See the {@link ComponentConfig}
-   * class for component configuration options.
+   * being an object containing the component configuration. See the
+   * {@link ComponentConfig} interface for configuration options.
    */
-  public static final String NETWORK_COMPONENTS = "components";
+  static final String NETWORK_COMPONENTS = "components";
 
   /**
    * <code>connections</code> is an array defining network connection configurations. Each
    * item in the array must be an object defining a <code>source</code> and <code>target</code>
    * configuration.
    */
-  public static final String NETWORK_CONNECTIONS = "connections";
+  static final String NETWORK_CONNECTIONS = "connections";
 
   /**
-   * Returns the network name.<p>
+   * Constructs a new network object.
    *
-   * The network's name should be unique within a given cluster.
-   * 
-   * @return The network name.
+   * @return A new uniquely identified network configuration.
+   */
+  static NetworkConfig network() {
+    return Resolvers.resolve(new NetworkImpl(), NetworkResolver.class);
+  }
+
+  /**
+   * Constructs a network object from file-based configuration.
+   *
+   * @param network The network configuration name.
+   * @return The constructed network object.
+   */
+  static NetworkConfig network(String network) {
+    return Resolvers.resolve(new NetworkImpl(network), NetworkResolver.class);
+  }
+
+  /**
+   * Constructs a network object from a JSON configuration.
+   *
+   * @param network The JSON network configuration.
+   * @return The constructed network object.
+   */
+  static NetworkConfig network(JsonObject network) {
+    return Resolvers.resolve(new NetworkImpl(network), NetworkResolver.class);
+  }
+
+  /**
+   * Constructs a network object from a JSON configuration.
+   *
+   * @param network The JSON network configuration.
+   * @return The constructed network object.
+   */
+  static NetworkConfig network(NetworkConfig network) {
+    return Resolvers.resolve(network, NetworkResolver.class);
+  }
+
+  /**
+   * Constructs a component object from file-based configuration.
+   *
+   * @param component The component configuration name.
+   * @return The constructed component configuration.
+   */
+  static ComponentConfig component(String component) {
+    return Resolvers.resolve(new ComponentConfigImpl(component), ComponentResolver.class);
+  }
+
+  /**
+   * Constructs a component object from a JSON configuration.
+   *
+   * @param component The JSON component configuration.
+   * @return The constructed component configuration.
+   */
+  static ComponentConfig component(JsonObject component) {
+    return Resolvers.resolve(new ComponentConfigImpl(component), ComponentResolver.class);
+  }
+
+  /**
+   * Constructs a component object from a JSON configuration.
+   *
+   * @param component The JSON component configuration.
+   * @return The constructed component configuration.
+   */
+  static ComponentConfig component(ComponentConfig component) {
+    return Resolvers.resolve(component, ComponentResolver.class);
+  }
+
+  /**
+   * Constructs a connection configuration from JSON configuration.
+   *
+   * @param output The source component's output port.
+   * @param input The target component's input port.
+   * @return The constructed connection configuration.
+   */
+  static ConnectionConfig connection(OutputPortConfig output, InputPortConfig input) {
+    return new ConnectionConfigImpl(output, input);
+  }
+
+  /**
+   * Constructs a connection configuration from JSON configuration.
+   *
+   * @param connection The JSON connection configuration.
+   * @return The constructed connection configuration.
+   */
+  static ConnectionConfig connection(JsonObject connection) {
+    return new ConnectionConfigImpl(connection);
+  }
+
+  /**
+   * Constructs a connection configuration from JSON configuration.
+   *
+   * @param connection The JSON connection configuration.
+   * @return The constructed connection configuration.
+   */
+  static ConnectionConfig connection(ConnectionConfig connection) {
+    return connection;
+  }
+
+  /**
+   * Returns a new network builder.
+   *
+   * @return A new network builder.
+   */
+  static NetworkBuilder builder() {
+    return new NetworkBuilderImpl();
+  }
+
+  /**
+   * Returns a new network builder.
+   *
+   * @param name The unique network name.
+   * @return The network builder.
+   */
+  static NetworkBuilder builder(String name) {
+    return new NetworkBuilderImpl(name);
+  }
+
+  /**
+   * Returns the unique network name.
+   *
+   * @return The unique network name.
    */
   String getName();
 
   /**
+   * Sets the unique network name.
+   *
+   * @param name The unique network name.
+   * @return The network configuration.
+   */
+  @Fluent
+  NetworkConfig setName(String name);
+
+  /**
    * Gets a list of network components.
-   * 
+   *
    * @return A list of network components.
    */
-  List<ComponentConfig<?>> getComponents();
+  Collection<ComponentConfig> getComponents();
 
   /**
    * Gets a component by name.
-   * 
+   *
    * @param name The component name.
-   * @return The component configuration.
-   * @throws IllegalArgumentException If the given component address does not exist within
+   * @return The component info.
+   * @throws IllegalArgumentException If the given component name does not exist within
    *           the network.
    */
-  <T extends ComponentConfig<?>> T getComponent(String name);
+  ComponentConfig getComponent(String name);
 
   /**
    * Returns a boolean indicating whether the network has a component.
@@ -104,253 +220,35 @@ public interface NetworkConfig extends Config<NetworkConfig> {
 
   /**
    * Adds a component to the network.
-   * 
-   * @param component The component to add.
-   * @return The added component configuration.
+   *
+   * @param name The component name.
+   * @return The component info.
    */
-  @SuppressWarnings("rawtypes")
-  <T extends ComponentConfig> T addComponent(T component);
+  ComponentConfig addComponent(String name);
 
   /**
-   * Adds a module or verticle component to the network.<p>
+   * Adds a component to the network.
    *
-   * The type of component that's added to the network will be determined
-   * based on Vert.x module naming standards. If the module/main is a
-   * valid module identifier then a module component will be added, otherwise
-   * a verticle component will be added.
-   * 
-   * @param name The component name. This will be used as the basis for internal
-   *          component addresses.
-   * @param moduleOrMain The component module name or verticle main.
-   * @return The new component configuration.
-   * @throws IllegalArgumentException If the module name is not a valid module identifier.
+   * @param component The component info.
+   * @return The component info.
    */
-  <T extends ComponentConfig<T>> T addComponent(String name, String moduleOrMain);
-
-  /**
-   * Adds a module or verticle component to the network.<p>
-   *
-   * The type of component that's added to the network will be determined
-   * based on Vert.x module naming standards. If the module/main is a
-   * valid module identifier then a module component will be added, otherwise
-   * a verticle component will be added.
-   * 
-   * @param name The component name. This will be used as the basis for internal
-   *          component addresses.
-   * @param moduleOrMain The component module name or verticle main.
-   * @param config The component configuration. This configuration will be made
-   *          available as the verticle configuration within deployed module instances.
-   * @return The new component configuration.
-   * @throws IllegalArgumentException If the module name is not a valid module identifier.
-   */
-  <T extends ComponentConfig<T>> T addComponent(String name, String moduleOrMain, JsonObject config);
-
-  /**
-   * Adds a module or verticle component to the network.<p>
-   *
-   * The type of component that's added to the network will be determined
-   * based on Vert.x module naming standards. If the module/main is a
-   * valid module identifier then a module component will be added, otherwise
-   * a verticle component will be added.
-   * 
-   * @param name The component name. This will be used as the basis for internal
-   *          component addresses.
-   * @param moduleOrMain The component module name or verticle main.
-   * @param instances The number of module instances. If multiple instances are
-   *          defined, groupings will be used to determine how messages are distributed
-   *          between multiple component instances.
-   * @return The new component configuration.
-   * @throws IllegalArgumentException If the module name is not a valid module identifier.
-   */
-  <T extends ComponentConfig<T>> T addComponent(String name, String moduleOrMain, int instances);
-
-  /**
-   * Adds a module or verticle component to the network.<p>
-   *
-   * The type of component that's added to the network will be determined
-   * based on Vert.x module naming standards. If the module/main is a
-   * valid module identifier then a module component will be added, otherwise
-   * a verticle component will be added.
-   * 
-   * @param name The component name. This will be used as the basis for internal
-   *          component addresses.
-   * @param moduleOrMain The component module name or verticle main.
-   * @param config The component configuration. This configuration will be made
-   *          available as the verticle configuration within deployed module instances.
-   * @param instances The number of component instances. If multiple instances are
-   *          defined, groupings will be used to determine how messages are distributed
-   *          between multiple component instances.
-   * @return The new component configuration.
-   */
-  <T extends ComponentConfig<T>> T addComponent(String name, String moduleOrMain, JsonObject config, int instances);
-
-  /**
-   * Removes a component from the network.
-   *
-   * @param component The component to remove.
-   * @return The removed component configuration.
-   */
-  <T extends ComponentConfig<T>> T removeComponent(T component);
+  ComponentConfig addComponent(ComponentConfig component);
 
   /**
    * Removes a component from the network.
    *
    * @param name The component name.
-   * @return The removed component configuration.
+   * @return The component info.
    */
-  <T extends ComponentConfig<T>> T removeComponent(String name);
+  ComponentConfig removeComponent(String name);
 
   /**
-   * Adds a module to the network.
-   * 
-   * @param module The module to add.
-   * @return The added module component configuration.
-   */
-  ModuleConfig addModule(ModuleConfig module);
-
-  /**
-   * Adds a module to the network.
-   * 
-   * @param name The component name. This will be used as the basis for internal
-   *          component addresses.
-   * @param moduleName The module name.
-   * @return The new module configuration.
-   * @throws IllegalArgumentException If the module name is not a valid module identifier.
-   */
-  ModuleConfig addModule(String name, String moduleName);
-
-  /**
-   * Adds a module to the network.
-   * 
-   * @param name The component name. This will be used as the basis for internal
-   *          component addresses.
-   * @param moduleName The module name.
-   * @param config The module configuration. This configuration will be made
-   *          available as the verticle configuration within deployed module instances.
-   * @return The new module configuration.
-   * @throws IllegalArgumentException If the module name is not a valid module identifier.
-   */
-  ModuleConfig addModule(String name, String moduleName, JsonObject config);
-
-  /**
-   * Adds a module to the network.
-   * 
-   * @param name The component name. This will be used as the basis for internal
-   *          component addresses.
-   * @param moduleName The module name.
-   * @param instances The number of module instances. If multiple instances are
-   *          defined, groupings will be used to determine how messages are distributed
-   *          between multiple component instances.
-   * @return The new module configuration.
-   * @throws IllegalArgumentException If the module name is not a valid module identifier.
-   */
-  ModuleConfig addModule(String name, String moduleName, int instances);
-
-  /**
-   * Adds a module to the network.
-   * 
-   * @param name The component name. This will be used as the basis for internal
-   *          component addresses.
-   * @param moduleName The module name.
-   * @param config The module configuration. This configuration will be made
-   *          available as the verticle configuration within deployed module instances.
-   * @param instances The number of module instances. If multiple instances are
-   *          defined, groupings will be used to determine how messages are distributed
-   *          between multiple component instances.
-   * @return The new module configuration.
-   * @throws IllegalArgumentException If the module name is not a valid module identifier.
-   */
-  ModuleConfig addModule(String name, String moduleName, JsonObject config, int instances);
-
-  /**
-   * Removes a module from the network.
+   * Removes a component from the network.
    *
-   * @param module The module component.
-   * @return The removed module configuration.
+   * @param component The component info.
+   * @return The component info.
    */
-  ModuleConfig removeModule(ModuleConfig module);
-
-  /**
-   * Removes a module from the network.
-   *
-   * @param name The module component name.
-   * @return The removed module configuration.
-   */
-  ModuleConfig removeModule(String name);
-
-  /**
-   * Adds a verticle to the network.
-   * 
-   * @param verticle The verticle to add.
-   * @return The added verticle component configuration.
-   */
-  VerticleConfig addVerticle(VerticleConfig verticle);
-
-  /**
-   * Adds a verticle to the network.
-   * 
-   * @param name The component name. This will be used as the basis for internal
-   *          component addresses.
-   * @param main The verticle main.
-   * @return The new verticle configuration.
-   */
-  VerticleConfig addVerticle(String name, String main);
-
-  /**
-   * Adds a verticle to the network.
-   * 
-   * @param name The component name. This will be used as the basis for internal
-   *          component addresses.
-   * @param main The verticle main.
-   * @param config The verticle configuration. This configuration will be made
-   *          available as the verticle configuration within deployed module instances.
-   * @return The new verticle configuration.
-   */
-  VerticleConfig addVerticle(String name, String main, JsonObject config);
-
-  /**
-   * Adds a verticle to the network.
-   * 
-   * @param name The component name. This will be used as the basis for internal
-   *          component addresses.
-   * @param main The verticle main.
-   * @param instances The number of verticle instances. If multiple instances are
-   *          defined, groupings will be used to determine how messages are distributed
-   *          between multiple component instances.
-   * @return The new verticle configuration.
-   */
-  VerticleConfig addVerticle(String name, String main, int instances);
-
-  /**
-   * Adds a verticle to the network.
-   * 
-   * @param name The component name. This will be used as the basis for internal
-   *          component addresses.
-   * @param main The verticle main.
-   * @param config The verticle configuration. This configuration will be made
-   *          available as the verticle configuration within deployed module instances.
-   * @param instances The number of verticle instances. If multiple instances are
-   *          defined, groupings will be used to determine how messages are distributed
-   *          between multiple component instances.
-   * @return The new verticle configuration.
-   */
-  VerticleConfig addVerticle(String name, String main, JsonObject config, int instances);
-
-  /**
-   * Removes a verticle configuration from the network.
-   *
-   * @param verticle The verticle component.
-   * @return The removed verticle configuration.
-   */
-  VerticleConfig removeVerticle(VerticleConfig verticle);
-
-  /**
-   * Removes a verticle configuration from the network.
-   *
-   * @param name The verticle component name.
-   * @return The removed verticle configuration.
-   */
-  VerticleConfig removeVerticle(String name);
+  ComponentConfig removeComponent(ComponentConfig component);
 
   /**
    * Returns a collection of network connections.
@@ -362,79 +260,26 @@ public interface NetworkConfig extends Config<NetworkConfig> {
   /**
    * Creates a connection between two components.
    *
-   * @param connection The new connection.
-   * @return The connection instance.
+   * @param connection The new connection options.
+   * @return The connection info.
    */
   ConnectionConfig createConnection(ConnectionConfig connection);
 
   /**
    * Creates a connection between two components.
    *
-   * @param source The source component.
-   * @param target The target component.
-   * @return A new connection instance.
+   * @param output The source component's output port.
+   * @param input The target component's input port.
+   * @return The connection info.
    */
-  ConnectionConfig createConnection(String source, String target);
-
-  /**
-   * Creates a connection between two components.
-   *
-   * @param source The source component.
-   * @param target The target component.
-   * @param selector The connection selector.
-   * @return A new connection instance.
-   */
-  ConnectionConfig createConnection(String source, String target, Selector selector);
-
-  /**
-   * Creates a connection between two components.
-   *
-   * @param source The source component.
-   * @param out The source output port.
-   * @param target The target component.
-   * @param in The target output port.
-   * @return A new connection instance.
-   */
-  ConnectionConfig createConnection(String source, String out, String target, String in);
-
-  /**
-   * Creates a connection between two components.
-   *
-   * @param source The source component.
-   * @param out The source output port.
-   * @param target The target component.
-   * @param in The target output port.
-   * @param selector The connection selector.
-   * @return A new connection instance.
-   */
-  ConnectionConfig createConnection(String source, String out, String target, String in, Selector selector);
+  ConnectionConfig createConnection(OutputPortConfig output, InputPortConfig input);
 
   /**
    * Destroys a connection between two components.
    *
    * @param connection The connection to destroy.
-   * @return The network configuration.
+   * @return The connection info.
    */
-  NetworkConfig destroyConnection(ConnectionConfig connection);
-
-  /**
-   * Destroys a connection between two components.
-   *
-   * @param source The source component name and port.
-   * @param target The target component name and port.
-   * @return The network configuration.
-   */
-  NetworkConfig destroyConnection(String source, String target);
-
-  /**
-   * Destroys a connection between two components.
-   *
-   * @param source The source component name.
-   * @param out The source component out port.
-   * @param target The target component name.
-   * @param in The target component in port.
-   * @return The network configuration.
-   */
-  NetworkConfig destroyConnection(String source, String out, String target, String in);
+  ConnectionConfig destroyConnection(ConnectionConfig connection);
 
 }

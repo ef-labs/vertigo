@@ -15,8 +15,8 @@
  */
 package net.kuujo.vertigo.util;
 
-import org.vertx.java.core.logging.Logger;
-import org.vertx.java.core.logging.impl.LoggerFactory;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 
 /**
  * A running task.

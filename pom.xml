@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>net.kuujo</groupId>
+  <groupId>io.eflabs.vertigo</groupId>
   <artifactId>vertigo-parent</artifactId>
   <packaging>pom</packaging>
-  <version>0.7.0-RC4-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>Vertigo</name>
-  <description>A distributed event processing framework for Vert.x.</description>
-  <url>http://github.com/kuujo/vertigo</url>
+  <description>A fault-tolerant distributed event processing framework for Vert.x.</description>
+  <url>http://github.com/ef-labs/vertigo</url>
   <inceptionYear>2013</inceptionYear>
 
   <parent>
@@ -19,24 +19,22 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <vertx.pullInDeps>false</vertx.pullInDeps>
-    <vertx.createFatJar>false</vertx.createFatJar>
-    <module.name>${project.groupId}~${project.artifactId}~${project.version}</module.name>
-    <mods.directory>target/mods</mods.directory>
 
-    <vertx.version>2.1</vertx.version>
-    <vertx.testtools.version>2.0.3-final</vertx.testtools.version>
-    <junit.version>4.11</junit.version>
+    <vertx.version>3.3.2</vertx.version>
+    <junit.version>4.12</junit.version>
 
     <maven.compiler.plugin.version>3.0</maven.compiler.plugin.version>
     <maven.resources.plugin.version>2.6</maven.resources.plugin.version>
     <maven.clean.plugin.version>2.5</maven.clean.plugin.version>
-    <maven.vertx.plugin.version>2.0.6-final</maven.vertx.plugin.version>
     <maven.surefire.plugin.version>2.14</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>2.14</maven.failsafe.plugin.version>
     <maven.surefire.report.plugin.version>2.14</maven.surefire.report.plugin.version>
-    <maven.javadoc.plugin.version>2.9</maven.javadoc.plugin.version>
+    <maven.javadoc.plugin.version>2.10.1</maven.javadoc.plugin.version>
     <maven.dependency.plugin.version>2.7</maven.dependency.plugin.version>
+    <maven.jgitflow.plugin.version>1.0-m5.1</maven.jgitflow.plugin.version>
+    <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
+    <maven.jar.plugin.version>3.0.2</maven.jar.plugin.version>
+    <maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
   </properties>
 
   <licenses>
@@ -55,21 +53,21 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git@github.com:kuujo/vertigo.git</connection>
-    <developerConnection>scm:git:git@github.com:kuujo/vertigo.git</developerConnection>
-    <url>git@github.com:kuujo/vertigo.git</url>
+    <connection>scm:git:git@github.com:ef-labs/vertigo.git</connection>
+    <developerConnection>scm:git:git@github.com:ef-labs/vertigo.git</developerConnection>
+    <url>git@github.com:ef-labs/vertigo.git</url>
   </scm>
 
   <issueManagement>
     <system>GitHub</system>
-    <url>http://github.com/kuujo/vertigo/issues</url>
+    <url>http://github.com/ef-labs/vertigo/issues</url>
   </issueManagement>
 
   <modules>
     <module>core</module>
     <module>cluster</module>
-    <module>deployer</module>
-    <module>util</module>
+    <module>config</module>
+    <module>examples</module>
   </modules>
 
   <repositories>
@@ -84,30 +82,25 @@
       <groupId>io.vertx</groupId>
       <artifactId>vertx-core</artifactId>
       <version>${vertx.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
-      <artifactId>vertx-platform</artifactId>
+      <artifactId>vertx-codegen</artifactId>
       <version>${vertx.version}</version>
-      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
+
     <dependency>
       <groupId>io.vertx</groupId>
-      <artifactId>vertx-hazelcast</artifactId>
+      <artifactId>vertx-core</artifactId>
       <version>${vertx.version}</version>
-      <scope>provided</scope>
+      <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>testtools</artifactId>
-      <version>${vertx.testtools.version}</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -115,96 +108,13 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>io.vertx</groupId>
-        <artifactId>vertx-maven-plugin</artifactId>
-        <version>${maven.vertx.plugin.version}</version>
-        <dependencies>
-          <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-platform</artifactId>
-            <version>${vertx.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-core</artifactId>
-            <version>${vertx.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-hazelcast</artifactId>
-            <version>${vertx.version}</version>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <id>PullInDeps</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>pullInDeps</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven.compiler.plugin.version}</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>${maven.resources.plugin.version}</version>
-        <executions>
-          <execution>
-            <id>copy-mod-to-target</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <overwrite>true</overwrite>
-              <outputDirectory>${mods.directory}/${module.name}</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>target/classes</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>${maven.dependency.plugin.version}</version>
-        <executions>
-          <execution>
-            <id>copy-mod-dependencies-to-target</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${mods.directory}/${module.name}/lib</outputDirectory>
-              <includeScope>runtime</includeScope>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-mod-dependencies-to-target-dependencies</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>target/dependencies</outputDirectory>
-              <includeScope>runtime</includeScope>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -221,12 +131,6 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>${maven.failsafe.plugin.version}</version>
         <configuration>
-          <systemProperties>
-            <property>
-              <name>vertx.mods</name>
-              <value>${mods.directory}</value>
-            </property>
-          </systemProperties>
           <includes>
             <include>**/integration/**/*Test*</include>
           </includes>
@@ -261,6 +165,26 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>external.atlassian.jgitflow</groupId>
+        <artifactId>jgitflow-maven-plugin</artifactId>
+        <version>${maven.jgitflow.plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>${maven.gpg.plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven.jar.plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>${maven.deploy.plugin.version}</version>
+      </plugin>
     </plugins>
   </build>
   <reporting>
@@ -282,6 +206,32 @@
   </reporting>
 
   <profiles>
+    <profile>
+      <id>oss-release</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>release</id>
       <build>
@@ -314,8 +264,8 @@
             <version>${maven.javadoc.plugin.version}</version>
             <configuration>
               <show>public</show>
-              <excludePackageNames>net.kuujo.vertigo.network.manager:net.kuujo.vertigo.util:net.kuujo.vertigo.cluster.manager:net.kuujo.vertigo.io.stream:net.kuujo.vertigo.io.connection:net.kuujo.vertigo.platform:*.impl.*</excludePackageNames>
-              <reportOutputDirectory>docs/0.7.0</reportOutputDirectory>
+              <excludePackageNames>*.impl.*</excludePackageNames>
+              <reportOutputDirectory>docs/1.0.0</reportOutputDirectory>
               <destDir>java</destDir>
               <aggregate>true</aggregate>
             </configuration>
@@ -337,6 +287,19 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>ef</id>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>etown-nexus-snapshots</id>
+          <url>https://nexus-bos.englishtown.com/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+          <id>etown-nexus-releases</id>
+          <url>https://nexus-bos.englishtown.com/content/repositories/releases</url>
+        </repository>
+      </distributionManagement>
     </profile>
   </profiles>
 </project>

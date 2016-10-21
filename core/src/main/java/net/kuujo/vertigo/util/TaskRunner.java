@@ -15,10 +15,10 @@
  */
 package net.kuujo.vertigo.util;
 
+import io.vertx.core.Handler;
+
 import java.util.ArrayDeque;
 import java.util.Queue;
-
-import org.vertx.java.core.Handler;
 
 /**
  * Runs handlers sequentially to prevent race conditions in asynchronous coordination.

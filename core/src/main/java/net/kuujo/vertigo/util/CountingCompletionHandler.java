@@ -15,9 +15,9 @@
  */
 package net.kuujo.vertigo.util;
 
-import org.vertx.java.core.AsyncResult;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.impl.DefaultFutureResult;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
 
 /**
  * A copy of the Vert.x core counting completion handler for handling
@@ -34,6 +34,11 @@ public class CountingCompletionHandler<T> implements Handler<AsyncResult<T>> {
 
   public CountingCompletionHandler(int required) {
     this.required = required;
+  }
+
+  public CountingCompletionHandler(int required, Handler<AsyncResult<T>> handler) {
+    this.required = required;
+    this.doneHandler = handler;
   }
 
   @Override
@@ -61,7 +66,7 @@ public class CountingCompletionHandler<T> implements Handler<AsyncResult<T>> {
   public void fail(Throwable t) {
     if (!failed) {
       if (doneHandler != null) {
-        doneHandler.handle(new DefaultFutureResult<T>(t));
+        doneHandler.handle(Future.failedFuture(t));
       } else {
         cause = t;
       }
@@ -86,10 +91,10 @@ public class CountingCompletionHandler<T> implements Handler<AsyncResult<T>> {
   private void checkDone() {
     if (doneHandler != null) {
       if (cause != null) {
-        doneHandler.handle(new DefaultFutureResult<T>(cause));
+        doneHandler.handle(Future.failedFuture(cause));
       } else {
         if (count == required) {
-          doneHandler.handle(new DefaultFutureResult<T>((T) null));
+          doneHandler.handle(Future.succeededFuture());
         }
       }
     }

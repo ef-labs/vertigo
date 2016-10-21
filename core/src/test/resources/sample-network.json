@@ -1,0 +1,31 @@
+{
+  "name": "test-network",
+  "components": {
+    "A": {
+      "name": "A",
+      "identifier": "com.englishtown.vertx.platform.school.core.vertigo.EventEmitter",
+      "output": {
+        "out": { }
+      }
+    },
+    "B": {
+      "name": "B",
+      "identifier": "net.kuujo.vertigo.integration.Execute_Ack_NoHandler_Test$TargetComponent",
+      "input": {
+        "in": { }
+      }
+    }
+  },
+  "connections": [
+    {
+      "source": {
+        "component": "A",
+        "port": "out"
+      },
+      "target": {
+        "component": "B",
+        "port": "in"
+      }
+    }
+  ]
+}

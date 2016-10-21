@@ -15,9 +15,6 @@
  */
 package net.kuujo.vertigo.util;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 /**
  * Validation utilities.
  *
@@ -30,10 +27,11 @@ public final class Args {
    *
    * @param value The value to check.
    */
-  public static void checkNull(Object value) {
+  public static <T> T checkNull(T value) {
     if (value != null) {
       throw new IllegalArgumentException();
     }
+    return null;
   }
 
   /**
@@ -43,10 +41,11 @@ public final class Args {
    * @param message An exception message.
    * @param args Exception message arguments.
    */
-  public static void checkNull(Object value, String message, Object... args) {
+  public static <T> T checkNull(T value, String message, Object... args) {
     if (value != null) {
       throw new IllegalArgumentException(String.format(message, args));
     }
+    return null;
   }
 
   /**
@@ -54,10 +53,11 @@ public final class Args {
    *
    * @param value The value to check.
    */
-  public static void checkNotNull(Object value) {
+  public static <T> T checkNotNull(T value) {
     if (value == null) {
       throw new NullPointerException();
     }
+    return value;
   }
 
   /**
@@ -67,90 +67,59 @@ public final class Args {
    * @param message An exception message.
    * @param args Exception message arguments.
    */
-  public static void checkNotNull(Object value, String message, Object... args) {
+  public static <T> T checkNotNull(T value, String message, Object... args) {
     if (value == null) {
       throw new NullPointerException(String.format(message, args));
     }
+    return value;
   }
 
   /**
    * Validates that an argument is positive.
    *
-   * @param value The value to check.
+   * @param number The value to check.
    */
-  public static void checkPositive(int number) {
+  public static int checkPositive(int number) {
     if (number < 0) {
+      throw new IllegalArgumentException();
+    }
+    return number;
+  }
+
+  /**
+   * Validates that an argument is positive.
+   *
+   * @param number The value to check.
+   * @param message An exception message.
+   * @param args Exception message arguments.
+   */
+  public static int checkPositive(int number, String message, Object... args) {
+    if (number < 0) {
+      throw new IllegalArgumentException(String.format(message, args));
+    }
+    return number;
+  }
+
+  /**
+   * Checks an arbitrary condition.
+   *
+   * @param check The condition result.
+   */
+  public static void check(boolean check) {
+    if (!check) {
       throw new IllegalArgumentException();
     }
   }
 
   /**
-   * Validates that an argument is positive.
+   * Checks an arbitrary condition.
    *
-   * @param value The value to check.
+   * @param check The condition result.
    * @param message An exception message.
    * @param args Exception message arguments.
    */
-  public static void checkPositive(int number, String message, Object... args) {
-    if (number < 0) {
-      throw new IllegalArgumentException(String.format(message, args));
-    }
-  }
-
-  /**
-   * Validates that an argument is a valid URI.
-   *
-   * @param uri The value to check.
-   */
-  public static void checkUri(String uri) {
-    try {
-      new URI(uri);
-    } catch (URISyntaxException e) {
-      throw new IllegalArgumentException(e);
-    }
-  }
-
-  /**
-   * Validates that an argument is a valid URI.
-   *
-   * @param uri The value to check.
-   * @param message An exception message.
-   * @param args Exception message arguments.
-   */
-  public static void checkUri(String uri, String message, Object... args) {
-    try {
-      new URI(uri);
-    } catch (URISyntaxException e) {
-      throw new IllegalArgumentException(String.format(message, args), e);
-    }
-  }
-
-  /**
-   * Validates that an argument is a valid URI scheme.
-   *
-   * @param scheme The value to check.
-   */
-  public static void checkUriScheme(String scheme) {
-    String uri = String.format("%s://null", scheme);
-    try {
-      new URI(uri);
-    } catch (URISyntaxException e) {
-      throw new IllegalArgumentException(e);
-    }
-  }
-
-  /**
-   * Validates that an argument is a valid URI scheme.
-   *
-   * @param scheme The value to check.
-   * @param message An exception message.
-   * @param args Exception message arguments.
-   */
-  public static void checkUriScheme(String scheme, String message, Object... args) {
-    String uri = String.format("%s://null", scheme);
-    try {
-      new URI(uri);
-    } catch (URISyntaxException e) {
+  public static void check(boolean check, String message, Object... args) {
+    if (!check) {
       throw new IllegalArgumentException(String.format(message, args));
     }
   }
