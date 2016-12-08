@@ -17,9 +17,8 @@ package net.kuujo.vertigo.network.impl;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import net.kuujo.vertigo.NetworkFormatException;
 import net.kuujo.vertigo.network.*;
-import net.kuujo.vertigo.network.NetworkConfig;
-import net.kuujo.vertigo.util.Args;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -156,7 +155,10 @@ public class NetworkImpl implements NetworkConfig {
 
   @Override
   public void update(JsonObject network) {
-    this.name = Args.checkNotNull(network.getString(NETWORK_NAME));
+    this.name = network.getString(NETWORK_NAME);
+    if(this.name == null) {
+      throw new NetworkFormatException("Network name is mandatory!");
+    }
     JsonObject components = network.getJsonObject(NETWORK_COMPONENTS);
     if (components != null) {
       for (String name : components.fieldNames()) {
@@ -169,14 +171,30 @@ public class NetworkImpl implements NetworkConfig {
         ConnectionConfig connectionConfig = NetworkConfig.connection((JsonObject) connection);
         SourceConfig source = connectionConfig.getSource();
         if (!source.getIsNetwork()) {
-          OutputConfig output = this.getComponent(connectionConfig.getSource().getComponent()).getOutput();
+          String componentName = connectionConfig.getSource().getComponent();
+          if (componentName == null) {
+            throw new NetworkFormatException("A connection source does not specify a component!");
+          }
+          ComponentConfig component = this.getComponent(componentName);
+          if (component == null) {
+            throw new NetworkFormatException("No component with name " + componentName + " was found while trying to create source vertigo connection!");
+          }
+          OutputConfig output = component.getOutput();
           if (output.getPort(source.getPort()) == null) {
             output.addPort(source.getPort());
           }
         }
         TargetConfig target = connectionConfig.getTarget();
         if (!target.getIsNetwork()) {
-          InputConfig input = this.getComponent(connectionConfig.getTarget().getComponent()).getInput();
+          String componentName = connectionConfig.getTarget().getComponent();
+          if (componentName == null) {
+            throw new NetworkFormatException("A connection target does not specify a component!");
+          }
+          ComponentConfig component = this.getComponent(componentName);
+          if (component == null) {
+            throw new NetworkFormatException("No target component with name " + componentName + " was found while trying to create target vertigo connection!");
+          }
+          InputConfig input = component.getInput();
           if (input.getPort(target.getPort()) == null) {
             input.addPort(target.getPort());
           }

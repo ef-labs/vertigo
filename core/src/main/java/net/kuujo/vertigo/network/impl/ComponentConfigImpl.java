@@ -17,9 +17,8 @@ package net.kuujo.vertigo.network.impl;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import net.kuujo.vertigo.NetworkFormatException;
 import net.kuujo.vertigo.network.*;
-import net.kuujo.vertigo.network.NetworkConfig;
-import net.kuujo.vertigo.util.Args;
 
 import java.util.*;
 
@@ -215,7 +214,10 @@ public class ComponentConfigImpl implements ComponentConfig {
       this.name = component.getString(COMPONENT_NAME, UUID.randomUUID().toString());
     }
     if (this.identifier == null) {
-      this.identifier = Args.checkNotNull(component.getString(COMPONENT_IDENTIFIER));
+      this.identifier = component.getString(COMPONENT_IDENTIFIER);
+      if (this.identifier == null) {
+        throw new NetworkFormatException("Component " + this.name + " did not specify an identifier!");
+      }
     }
     if (component.containsKey(COMPONENT_CONFIG)) {
       this.config = component.getJsonObject(COMPONENT_CONFIG);
