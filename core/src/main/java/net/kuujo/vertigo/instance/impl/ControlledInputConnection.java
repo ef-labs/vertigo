@@ -136,7 +136,7 @@ public class ControlledInputConnection<T> implements InputConnection<T>, Handler
     // last message that we received in order. This will allow it to
     // purge messages we've already received from its queue.
     if (log.isDebugEnabled()) {
-      log.debug(String.format("%s - Acking messages up to: %d", this, lastReceived));
+      log.debug("{} - Acking messages up to: {}", this, lastReceived);
     }
     eventBus.send(outAddress, null, new DeliveryOptions()
       .addHeader(ACTION_HEADER, ACK_ACTION)
@@ -152,7 +152,7 @@ public class ControlledInputConnection<T> implements InputConnection<T>, Handler
     // This will cause the other side of the connection to resend messages
     // in order from that point on.
     if (log.isDebugEnabled()) {
-      log.debug(String.format("%s - Received a message out of order: %d", this, lastReceived));
+      log.debug("{} - Received a message out of order: {}", this, lastReceived);
     }
     eventBus.send(outAddress, null, new DeliveryOptions()
       .addHeader(ACTION_HEADER, FAIL_ACTION)
@@ -164,7 +164,7 @@ public class ControlledInputConnection<T> implements InputConnection<T>, Handler
   public InputConnection<T> pause() {
     if (!paused) {
       paused = true;
-      log.debug(String.format("%s - Pausing connection: %s", this, context.source()));
+      log.debug("{} - Pausing connection: {}", this, context.source());
       eventBus.send(outAddress, null, new DeliveryOptions()
         .addHeader(ACTION_HEADER, PAUSE_ACTION)
         .addHeader(INDEX_HEADER, String.valueOf(lastReceived)));
@@ -176,7 +176,7 @@ public class ControlledInputConnection<T> implements InputConnection<T>, Handler
   public InputConnection<T> resume() {
     if (paused) {
       paused = false;
-      log.debug(String.format("%s - Resuming connection: %s", this, context.source()));
+      log.debug("{} - Resuming connection: {}", this, context.source());
       eventBus.send(outAddress, null, new DeliveryOptions()
         .addHeader(ACTION_HEADER, RESUME_ACTION)
         .addHeader(INDEX_HEADER, String.valueOf(lastReceived)));
@@ -200,7 +200,7 @@ public class ControlledInputConnection<T> implements InputConnection<T>, Handler
       VertigoMessage<T> vertigoMessage = messageFactory.<T>createVertigoMessage(id, message);
 
       if (log.isDebugEnabled()) {
-        log.debug(String.format("%s - Received: Message[name=%s, value=%s]", this, id, message));
+        log.debug("{} - Received: Message[name={}, value={}]", this, id, message);
       }
       messageHandler.handle(vertigoMessage);
     }
