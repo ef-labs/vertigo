@@ -216,7 +216,7 @@ public class ComponentConfigImpl implements ComponentConfig {
     if (this.identifier == null) {
       this.identifier = component.getString(COMPONENT_IDENTIFIER);
       if (this.identifier == null) {
-        throw new NetworkFormatException("Component " + this.name + " did not specify an identifier!");
+        throw new NetworkFormatException("Component " + this.name + " did not specify an identifier.");
       }
     }
     if (component.containsKey(COMPONENT_CONFIG)) {
