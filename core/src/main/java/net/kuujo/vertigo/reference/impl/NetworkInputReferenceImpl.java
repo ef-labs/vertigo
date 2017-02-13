@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
  */
 public class NetworkInputReferenceImpl implements InputReference {
 
-    private final static Logger logger = LoggerFactory.getLogger(NetworkInputReferenceImpl.class);
+  private final static Logger logger = LoggerFactory.getLogger(NetworkInputReferenceImpl.class);
 
-    private final Vertx vertx;
-    private final NetworkContext context;
-    private final Map<String, InputPortReference> ports;
+  private final Vertx vertx;
+  private final NetworkContext context;
+  private final Map<String, InputPortReference> ports;
 
   public NetworkInputReferenceImpl(Vertx vertx, NetworkContext context) {
     this.vertx = vertx;
@@ -30,7 +30,7 @@ public class NetworkInputReferenceImpl implements InputReference {
         .getConnections()
         .stream()
         .filter(connectionConfig -> connectionConfig.getSource().getIsNetwork())
-        .map(connectionConfig -> connectionConfig.getSource().getPort() )
+        .map(connectionConfig -> connectionConfig.getSource().getPort())
         .distinct()
         .collect(Collectors.toConcurrentMap(
             port -> port,
@@ -42,13 +42,10 @@ public class NetworkInputReferenceImpl implements InputReference {
     InputPortReference port = ports.get(name);
     if (port == null) {
       port = new NetworkInputPortReference(vertx, context, "name");
-      if (logger.isInfoEnabled()) {
-        logger.info(
-            String.format(
-                "Dynamically created output port %s on network %s. The port has no connections.",
-                name,
-                context.name()));
-      }
+      logger.info(
+          "Dynamically created output port {} on network {}. The port has no connections.",
+          name,
+          context.name());
     }
     return port;
   }

@@ -20,8 +20,8 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import net.kuujo.vertigo.context.InputContext;
 import net.kuujo.vertigo.context.PortContext;
-import net.kuujo.vertigo.reference.InputReference;
 import net.kuujo.vertigo.reference.InputPortReference;
+import net.kuujo.vertigo.reference.InputReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,13 +59,10 @@ public class InputReferenceImpl implements InputReference {
     if (port == null) {
       port = new InputPortReferenceImpl<>(vertx, address, name);
       ports.put(name, port);
-      if (logger.isInfoEnabled()) {
-        logger.info(
-            String.format(
-                "Dynamically created output port %s on component %s at address %s. The port has no connections.",
-                name,
-                address));
-      }
+      logger.info(
+          "Dynamically created input port {} at address {}. The port has no connections.",
+          name,
+          address);
     }
     return port;
   }
