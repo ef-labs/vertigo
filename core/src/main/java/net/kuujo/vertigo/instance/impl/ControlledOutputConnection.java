@@ -118,7 +118,7 @@ public class ControlledOutputConnection<T> implements OutputConnection<T>, Handl
   protected void checkFull() {
     if (!full && messages.size() >= maxQueueSize) {
       full = true;
-      log.debug(String.format("%s - Connection to %s is full", this, context.target()));
+      log.debug("{} - Connection to {} is full", this, context.target());
     }
   }
 
@@ -128,7 +128,7 @@ public class ControlledOutputConnection<T> implements OutputConnection<T>, Handl
   protected void checkDrain() {
     if (full && !paused && messages.size() < maxQueueSize / 2) {
       full = false;
-      log.debug(String.format("%s - Connection to %s is drained", this, context.target()));
+      log.debug("{} - Connection to {} is drained", this, context.target());
       if (drainHandler != null) {
         drainHandler.handle((Void)null);
       }
@@ -142,7 +142,7 @@ public class ControlledOutputConnection<T> implements OutputConnection<T>, Handl
     // The other side of the connection has sent a message indicating which
     // messages it has seen. We can clear any messages before the indicated ID.
     if (log.isDebugEnabled()) {
-      log.debug(String.format("%s - Received ack for messages up to %d, removing all previous messages from memory", this, id));
+      log.debug("{} - Received ack for messages up to {}, removing all previous messages from memory", this, id);
     }
     if (messages.containsKey(id)) {
       messages.headMap(id, true).clear();
@@ -157,7 +157,7 @@ public class ControlledOutputConnection<T> implements OutputConnection<T>, Handl
    */
   protected void doFail(long id) {
     if (log.isDebugEnabled()) {
-      log.debug(String.format("%s - Received resend request for messages starting at %d", this, id));
+      log.debug("{} - Received resend request for messages starting at {}", this, id);
     }
 
     // Ack all the entries before the given ID.
@@ -174,7 +174,7 @@ public class ControlledOutputConnection<T> implements OutputConnection<T>, Handl
    * Handles a connection pause.
    */
   protected void doPause(long id) {
-    log.debug(String.format("%s - Paused connection to %s", this, context.target()));
+    log.debug("{} - Paused connection to {}", this, context.target());
     paused = true;
   }
 
@@ -183,7 +183,7 @@ public class ControlledOutputConnection<T> implements OutputConnection<T>, Handl
    */
   protected void doResume(long id) {
     if (paused) {
-      log.debug(String.format("%s - Resumed connection to %s", this, context.target()));
+      log.debug("{} - Resumed connection to {}", this, context.target());
       paused = false;
       checkDrain();
     }
@@ -225,7 +225,7 @@ public class ControlledOutputConnection<T> implements OutputConnection<T>, Handl
       }
 
       if (log.isDebugEnabled()) {
-        log.debug(String.format("%s - Send: Message[name=%s, message=%s]", this, id, message));
+        log.debug("{} - Send: Message[name={}, message={}]", this, id, message);
       }
 
       if (ackHandler != null) {

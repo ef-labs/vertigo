@@ -88,7 +88,7 @@ public abstract class AbstractOutputConnection<T> implements OutputConnection<T>
 
   protected OutputConnection<T> doSend(Payload payload) {
     if (logger.isDebugEnabled()) {
-      logger.debug("%s - Send: Message[name=%s, message=%s]", this, payload.getId(), payload.getMessage());
+      logger.debug("{} - Send: Message[name={}, message={}]", this, payload.getId(), payload.getMessage());
     }
 
     if (payload.getAckHandler() != null) {

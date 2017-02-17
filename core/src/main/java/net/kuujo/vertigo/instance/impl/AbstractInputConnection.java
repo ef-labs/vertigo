@@ -62,7 +62,7 @@ public abstract class AbstractInputConnection<T> implements InputConnection<T>, 
         id = UUID.randomUUID().toString();
       }
       VertigoMessage<T> vertigoMessage = messageFactory.<T>createVertigoMessage(id, message);
-      logger.debug("%s - Received: Message[name=%s, value=%s]", this, id, message);
+      logger.debug("{} - Received: Message[name={}, value={}]", this, id, message);
       doVertigoMessage(vertigoMessage);
     }
   }

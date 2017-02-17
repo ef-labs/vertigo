@@ -6,9 +6,7 @@ import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import net.kuujo.vertigo.context.ComponentContext;
 import net.kuujo.vertigo.context.NetworkContext;
-import net.kuujo.vertigo.network.ConnectionConfig;
 import net.kuujo.vertigo.reference.InputPortReference;
 import net.kuujo.vertigo.util.AckAggregator;
 
@@ -46,14 +44,10 @@ public class NetworkInputPortReference<T> implements InputPortReference<T> {
         .collect(Collectors.toList());
 
     if (ports.size() == 0) {
-      if (logger.isInfoEnabled()) {
-        logger.info(
-            String.format(
-                "Dynamically created input port %s on network %s. The port has no connections.",
-                name,
-                context.name()
-            ));
-      }
+      logger.info(
+          "Dynamically created input port {} on network {}. The port has no connections.",
+          name,
+          context.name());
     }
 
   }

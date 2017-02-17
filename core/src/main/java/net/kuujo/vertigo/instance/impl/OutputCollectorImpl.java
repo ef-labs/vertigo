@@ -20,11 +20,11 @@ import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import net.kuujo.vertigo.spi.ComponentInstanceFactory;
-import net.kuujo.vertigo.instance.OutputCollector;
 import net.kuujo.vertigo.context.OutputContext;
-import net.kuujo.vertigo.instance.OutputPort;
 import net.kuujo.vertigo.context.OutputPortContext;
+import net.kuujo.vertigo.instance.OutputCollector;
+import net.kuujo.vertigo.instance.OutputPort;
+import net.kuujo.vertigo.spi.ComponentInstanceFactory;
 
 import java.util.*;
 
@@ -50,6 +50,7 @@ public class OutputCollectorImpl implements OutputCollector, Handler<Message<Obj
 
   /**
    * Initializes the output.
+   *
    * @param factory
    */
   private void init(ComponentInstanceFactory factory) {
@@ -93,14 +94,11 @@ public class OutputCollectorImpl implements OutputCollector, Handler<Message<Obj
           .setName(name)
           .build();
       ports.put(name, factory.createOutputPort(vertx, portContext));
-      if (logger.isInfoEnabled()) {
-        logger.info(
-            String.format(
-                "Dynamically created output port %s on component %s at address %s. The port has no connections.",
-                name,
-                context.component().name(),
-                context.component().address()));
-      }
+      logger.info(
+          "Dynamically created output port {} on component {} at address {}. The port has no connections.",
+          name,
+          context.component().name(),
+          context.component().address());
     }
     return ports.get(name);
   }
