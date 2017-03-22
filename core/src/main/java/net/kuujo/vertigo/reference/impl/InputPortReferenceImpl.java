@@ -17,7 +17,6 @@ package net.kuujo.vertigo.reference.impl;
 
 import io.vertx.core.*;
 import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.core.http.CaseInsensitiveHeaders;
 import net.kuujo.vertigo.reference.InputPortReference;
 
 /**
@@ -29,10 +28,18 @@ public class InputPortReferenceImpl<T> implements InputPortReference<T> {
   private final Vertx vertx;
   private final String address;
   private final String name;
+  private long timeout;
 
   public InputPortReferenceImpl(Vertx vertx, String address, String name) {
     this.vertx = vertx;
     this.address = address;
+    this.name = name;
+  }
+
+  public InputPortReferenceImpl(Vertx vertx, String address, long timeout, String name) {
+    this.vertx = vertx;
+    this.address = address;
+    this.timeout = timeout;
     this.name = name;
   }
 
@@ -85,6 +92,9 @@ public class InputPortReferenceImpl<T> implements InputPortReference<T> {
     DeliveryOptions deliveryOptions = new DeliveryOptions();
     if (headers != null) {
       deliveryOptions.setHeaders(headers);
+    }
+    if (timeout > 0) {
+      deliveryOptions.setSendTimeout(timeout);
     }
     deliveryOptions.addHeader("port", name);
     return deliveryOptions;
