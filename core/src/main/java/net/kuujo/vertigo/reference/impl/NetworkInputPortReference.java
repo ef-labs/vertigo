@@ -39,7 +39,7 @@ public class NetworkInputPortReference<T> implements InputPortReference<T> {
           String address = context
               .component(connection.getTarget().getComponent())
               .address();
-          return new InputPortReferenceImpl<>(vertx, address, connection.getSendTimeout(), connection.getTarget().getPort());
+          return new InputPortReferenceImpl<>(vertx, address, connection.getTarget().getPort(), connection.getSendTimeout());
         })
         .collect(Collectors.toList());
 

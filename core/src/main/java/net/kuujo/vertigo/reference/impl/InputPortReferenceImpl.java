@@ -31,12 +31,10 @@ public class InputPortReferenceImpl<T> implements InputPortReference<T> {
   private long timeout;
 
   public InputPortReferenceImpl(Vertx vertx, String address, String name) {
-    this.vertx = vertx;
-    this.address = address;
-    this.name = name;
+    this(vertx, address, name, -1);
   }
 
-  public InputPortReferenceImpl(Vertx vertx, String address, long timeout, String name) {
+  public InputPortReferenceImpl(Vertx vertx, String address, String name, long timeout) {
     this.vertx = vertx;
     this.address = address;
     this.timeout = timeout;
