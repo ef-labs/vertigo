@@ -73,7 +73,7 @@ public abstract class AbstractOutputConnection<T> implements OutputConnection<T>
    * @param ackHandler a handler for the request response
    * @return a reference to this object
    */
-  protected OutputConnection<T> trySend(Object message, MultiMap headers, Handler<AsyncResult<Void>> ackHandler) {
+  protected <V> OutputConnection<T> trySend(Object message, MultiMap headers, Handler<AsyncResult<V>> ackHandler) {
     Payload payload = createPayload(message, headers, ackHandler);
     if (!isPaused()) {
       doSend(payload);
@@ -94,7 +94,7 @@ public abstract class AbstractOutputConnection<T> implements OutputConnection<T>
     if (payload.getAckHandler() != null) {
       eventBus.send(context.target().address(), payload.getMessage(), payload.getOptions(), r -> {
         if (r.succeeded()) {
-          payload.getAckHandler().handle(Future.succeededFuture());
+          payload.getAckHandler().handle(Future.succeededFuture(r.result().body()));
         } else {
           payload.getAckHandler().handle(Future.failedFuture(r.cause()));
         }
@@ -106,7 +106,7 @@ public abstract class AbstractOutputConnection<T> implements OutputConnection<T>
     return this;
   }
 
-  protected Payload createPayload(Object message, MultiMap headers, Handler<AsyncResult<Void>> ackHandler) {
+  protected <V> Payload createPayload(Object message, MultiMap headers, Handler<AsyncResult<V>> ackHandler) {
     String id = UUID.randomUUID().toString();
 
     // Set up the message headers.
@@ -143,12 +143,12 @@ public abstract class AbstractOutputConnection<T> implements OutputConnection<T>
   }
 
   @Override
-  public OutputConnection<T> send(T message, Handler<AsyncResult<Void>> ackHandler) {
+  public <V> OutputConnection<T> send(T message, Handler<AsyncResult<V>> ackHandler) {
     return trySend(message, null, ackHandler);
   }
 
   @Override
-  public OutputConnection<T> send(T message, MultiMap headers, Handler<AsyncResult<Void>> ackHandler) {
+  public <V> OutputConnection<T> send(T message, MultiMap headers, Handler<AsyncResult<V>> ackHandler) {
     return trySend(message, headers, ackHandler);
   }
 
@@ -157,13 +157,13 @@ public abstract class AbstractOutputConnection<T> implements OutputConnection<T>
     return context.toString();
   }
 
-  protected static class Payload {
+  protected static class Payload<V> {
 
     private String id;
     private MultiMap headers;
     private DeliveryOptions options;
     private Object message;
-    private Handler<AsyncResult<Void>> ackHandler;
+    private Handler<AsyncResult<V>> ackHandler;
 
     public Payload setId(String id) {
       this.id = id;
@@ -196,7 +196,7 @@ public abstract class AbstractOutputConnection<T> implements OutputConnection<T>
       return message;
     }
 
-    public Handler<AsyncResult<Void>> getAckHandler() {
+    public Handler<AsyncResult<V>> getAckHandler() {
       return ackHandler;
     }
 
@@ -205,7 +205,7 @@ public abstract class AbstractOutputConnection<T> implements OutputConnection<T>
       return this;
     }
 
-    public Payload setAckHandler(Handler<AsyncResult<Void>> ackHandler) {
+    public Payload setAckHandler(Handler<AsyncResult<V>> ackHandler) {
       this.ackHandler = ackHandler;
       return this;
     }

@@ -20,9 +20,6 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.MultiMap;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.ReplyException;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
-import net.kuujo.vertigo.VertigoException;
 import net.kuujo.vertigo.message.VertigoMessage;
 
 /**
@@ -36,8 +33,6 @@ public class VertigoMessageImpl<T> implements VertigoMessage<T> {
   private T body;
   private MultiMap headers;
   private boolean acked;
-
-  private static final Logger logger = LoggerFactory.getLogger(VertigoMessage.class);
 
   public VertigoMessageImpl(String id, Message<T> message) {
     this.id = id;
@@ -62,11 +57,16 @@ public class VertigoMessageImpl<T> implements VertigoMessage<T> {
   }
 
   @Override
-  public void ack() {
+  public void ack(Object reply) {
     if (!acked) {
       acked = true;
-      message.reply(null);
+      message.reply(reply);
     }
+  }
+
+  @Override
+  public boolean acked() {
+    return acked;
   }
 
   @Override
@@ -89,9 +89,9 @@ public class VertigoMessageImpl<T> implements VertigoMessage<T> {
   }
 
   @Override
-  public void handle(AsyncResult<Void> result) {
+  public <V> void handle(AsyncResult<V> result) {
     if (result.succeeded()) {
-      ack();
+      ack(result.result());
     } else {
       fail(result.cause());
     }

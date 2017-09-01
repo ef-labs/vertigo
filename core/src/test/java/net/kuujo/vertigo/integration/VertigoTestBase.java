@@ -97,7 +97,7 @@ public abstract class VertigoTestBase extends VertxTestBase {
 
       if (output().ports().size() > 0) {
 
-        CountingCompletionHandler<Void> counter = new CountingCompletionHandler<Void>(output().ports().size())
+        CountingCompletionHandler<?> counter = new CountingCompletionHandler<Void>(output().ports().size())
             .setHandler(message::handle);
 
         output()

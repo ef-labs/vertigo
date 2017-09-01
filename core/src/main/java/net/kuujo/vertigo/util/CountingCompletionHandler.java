@@ -31,6 +31,7 @@ public class CountingCompletionHandler<T> implements Handler<AsyncResult<T>> {
   private Handler<AsyncResult<T>> doneHandler;
   private Throwable cause;
   private boolean failed;
+  private T result;
 
   public CountingCompletionHandler(int required) {
     this.required = required;
@@ -46,7 +47,7 @@ public class CountingCompletionHandler<T> implements Handler<AsyncResult<T>> {
     if (result.failed()) {
       fail(result.cause());
     } else {
-      succeed();
+      succeed(result.result());
     }
   }
 
@@ -54,6 +55,17 @@ public class CountingCompletionHandler<T> implements Handler<AsyncResult<T>> {
    * Indicates that a call succeeded.
    */
   public void succeed() {
+    succeed(null);
+  }
+
+  /**
+   * Indicates that a call succeeded.
+   */
+  public void succeed(T result) {
+    // Keep the last non-null result
+    if (result != null) {
+      this.result = result;
+    }
     count++;
     checkDone();
   }
@@ -94,7 +106,7 @@ public class CountingCompletionHandler<T> implements Handler<AsyncResult<T>> {
         doneHandler.handle(Future.failedFuture(cause));
       } else {
         if (count == required) {
-          doneHandler.handle(Future.succeededFuture());
+          doneHandler.handle(Future.succeededFuture(result));
         }
       }
     }

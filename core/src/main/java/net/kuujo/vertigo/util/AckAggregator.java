@@ -15,20 +15,10 @@
  */
 package net.kuujo.vertigo.util;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import net.kuujo.vertigo.message.VertigoMessage;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
 /**
  * Purely for syntactic sugar when handling branching in vertigo components.
  *
  * @author <a href="http://github.com/ef-labs">Magnus Koch</a>
  */
-public class AckAggregator extends IncrementalCompletionHandler<Void> {
+public class AckAggregator<T> extends IncrementalCompletionHandler<T> {
 }

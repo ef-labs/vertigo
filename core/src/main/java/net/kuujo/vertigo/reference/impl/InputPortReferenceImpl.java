@@ -61,26 +61,26 @@ public class InputPortReferenceImpl<T> implements InputPortReference<T> {
   }
 
   @Override
-  public InputPortReference<T> send(T message, Handler<AsyncResult<Void>> ackHandler) {
+  public <V> InputPortReference<T> send(T message, Handler<AsyncResult<V>> ackHandler) {
     vertx.eventBus()
-        .send(address, message, getDeliveryOptions(null), result -> {
+        .<V>send(address, message, getDeliveryOptions(null), result -> {
           if (result.succeeded()) {
-            Future.<Void>succeededFuture().setHandler(ackHandler);
+            Future.succeededFuture(result.result().body()).setHandler(ackHandler);
           } else {
-            Future.<Void>failedFuture(result.cause()).setHandler(ackHandler);
+            Future.<V>failedFuture(result.cause()).setHandler(ackHandler);
           }
         });
     return this;
   }
 
   @Override
-  public InputPortReference<T> send(T message, MultiMap headers, Handler<AsyncResult<Void>> ackHandler) {
+  public <V> InputPortReference<T> send(T message, MultiMap headers, Handler<AsyncResult<V>> ackHandler) {
     vertx.eventBus()
-        .send(address, message, getDeliveryOptions(headers), result -> {
+        .<V>send(address, message, getDeliveryOptions(headers), result -> {
           if (result.succeeded()) {
-            Future.<Void>succeededFuture().setHandler(ackHandler);
+            Future.succeededFuture(result.result().body()).setHandler(ackHandler);
           } else {
-            Future.<Void>failedFuture(result.cause()).setHandler(ackHandler);
+            Future.<V>failedFuture(result.cause()).setHandler(ackHandler);
           }
         });
     return this;

@@ -150,8 +150,8 @@ public class OutputPortImpl<T> implements OutputPort<T>, ControllableOutput<Outp
   }
 
   @Override
-  public OutputPort<T> send(T message, Handler<AsyncResult<Void>> ackHandler) {
-    CountingCompletionHandler<Void> counter = new CountingCompletionHandler<>(connections.size());
+  public <V> OutputPort<T> send(T message, Handler<AsyncResult<V>> ackHandler) {
+    CountingCompletionHandler<V> counter = new CountingCompletionHandler<>(connections.size());
     counter.setHandler(ackHandler);
     for (OutputConnection<T> connection : connections.values()) {
       connection.send(message, counter);
@@ -160,8 +160,8 @@ public class OutputPortImpl<T> implements OutputPort<T>, ControllableOutput<Outp
   }
 
   @Override
-  public OutputPort<T> send(T message, MultiMap headers, Handler<AsyncResult<Void>> ackHandler) {
-    CountingCompletionHandler<Void> counter = new CountingCompletionHandler<>(connections.size());
+  public <V> OutputPort<T> send(T message, MultiMap headers, Handler<AsyncResult<V>> ackHandler) {
+    CountingCompletionHandler<V> counter = new CountingCompletionHandler<>(connections.size());
     counter.setHandler(ackHandler);
     for (OutputConnection<T> connection : connections.values()) {
       connection.send(message, headers, counter);

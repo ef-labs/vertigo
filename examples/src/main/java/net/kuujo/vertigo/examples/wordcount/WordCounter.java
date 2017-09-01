@@ -24,7 +24,7 @@ public class WordCounter extends MessageHandlerComponent<String> {
           .send(resultAddress, count);
 
     }
-    message.ack();
+    message.ack(count);
   }
 
 }

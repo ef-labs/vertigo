@@ -83,6 +83,7 @@ public class WordCountTest extends VertxTestBase {
 
           // Wait a bit to allow event bus to drain
           vertx.setTimer(50, id -> {
+            assertEquals(8, event.result());
             assertEquals(8, highestCount.get());
             logger.info("Test complete: " + highestCount.get());
             testComplete();

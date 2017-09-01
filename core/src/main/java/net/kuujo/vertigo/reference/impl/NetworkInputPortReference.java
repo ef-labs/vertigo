@@ -70,16 +70,16 @@ public class NetworkInputPortReference<T> implements InputPortReference<T> {
   }
 
   @Override
-  public InputPortReference<T> send(T message, Handler<AsyncResult<Void>> ackHandler) {
-    AckAggregator acks = new AckAggregator();
+  public <V> InputPortReference<T> send(T message, Handler<AsyncResult<V>> ackHandler) {
+    AckAggregator<V> acks = new AckAggregator();
     ports.forEach(port -> port.send(message, acks.increment()));
     acks.completed(ackHandler);
     return this;
   }
 
   @Override
-  public InputPortReference<T> send(T message, MultiMap headers, Handler<AsyncResult<Void>> ackHandler) {
-    AckAggregator acks = new AckAggregator();
+  public <V> InputPortReference<T> send(T message, MultiMap headers, Handler<AsyncResult<V>> ackHandler) {
+    AckAggregator<V> acks = new AckAggregator<>();
     ports.forEach(port -> port.send(message, headers, acks.increment()));
     acks.completed(ackHandler);
     return this;

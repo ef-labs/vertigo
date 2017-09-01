@@ -52,7 +52,20 @@ public interface VertigoMessage<T> {
   /**
    * Acks the message.
    */
-  void ack();
+  default void ack() {
+    ack(null);
+  }
+
+  /**
+   * Acks the message with a reply.
+   */
+  void ack(Object reply);
+
+  /**
+   * Whether the message has already been acknowledged
+   * @return
+   */
+  boolean acked();
 
   /**
    * Fails the message.
@@ -62,6 +75,6 @@ public interface VertigoMessage<T> {
   /**
    * Convenience handler for automatically acking or failing chained sends.
    */
-  void handle(AsyncResult<Void> result);
+  <V> void handle(AsyncResult<V> result);
 
 }

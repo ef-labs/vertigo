@@ -31,6 +31,7 @@ public class IncrementalCompletionHandler<T> {
   private Throwable cause;
   private boolean failed;
   private boolean complete;
+  private T result;
 
   public IncrementalCompletionHandler() {
   }
@@ -45,6 +46,10 @@ public class IncrementalCompletionHandler<T> {
     required++;
     return event -> {
       if (event.succeeded()) {
+        // Keep the last non-null result
+        if (event.result() != null) {
+          this.result = event.result();
+        }
         count++;
         checkDone();
       } else {
@@ -96,7 +101,7 @@ public class IncrementalCompletionHandler<T> {
       doneHandler.handle(Future.failedFuture(cause));
       doneHandler = null;
     } else if (complete && count == required) {
-      doneHandler.handle(Future.succeededFuture());
+      doneHandler.handle(Future.succeededFuture(result));
       doneHandler = null;
     }
   }

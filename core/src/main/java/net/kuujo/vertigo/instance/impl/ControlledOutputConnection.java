@@ -192,7 +192,7 @@ public class ControlledOutputConnection<T> implements OutputConnection<T>, Handl
   /**
    * Sends a message.
    */
-  protected OutputConnection<T> doSend(Object message, MultiMap headers, Handler<AsyncResult<Void>> ackHandler) {
+  protected <V> OutputConnection<T> doSend(Object message, MultiMap headers, Handler<AsyncResult<V>> ackHandler) {
     if (!paused) {
       // Generate a unique ID and monotonically increasing index for the message.
       String id = UUID.randomUUID().toString();
@@ -231,9 +231,9 @@ public class ControlledOutputConnection<T> implements OutputConnection<T>, Handl
       if (ackHandler != null) {
         eventBus.send(context.target().address(), message, options, r -> {
           if (r.succeeded()) {
-            ackHandler.handle(Future.<Void>succeededFuture());
+            ackHandler.handle(Future.succeededFuture());
           } else {
-            ackHandler.handle(Future.<Void>failedFuture(r.cause()));
+            ackHandler.handle(Future.failedFuture(r.cause()));
           }
         });
       } else {
@@ -255,12 +255,12 @@ public class ControlledOutputConnection<T> implements OutputConnection<T>, Handl
   }
 
   @Override
-  public OutputConnection<T> send(T message, Handler<AsyncResult<Void>> ackHandler) {
+  public <V> OutputConnection<T> send(T message, Handler<AsyncResult<V>> ackHandler) {
     return doSend(message, null, ackHandler);
   }
 
   @Override
-  public OutputConnection<T> send(T message, MultiMap headers, Handler<AsyncResult<Void>> ackHandler) {
+  public <V> OutputConnection<T> send(T message, MultiMap headers, Handler<AsyncResult<V>> ackHandler) {
     return doSend(message, headers, ackHandler);
   }
 

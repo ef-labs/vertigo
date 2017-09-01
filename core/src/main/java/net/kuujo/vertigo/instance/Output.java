@@ -53,7 +53,7 @@ public interface Output<T extends Output<T, U>, U> {
    * @param ackHandler An asynchronous handler to be called when the message is acked.
    * @return The output partition.
    */
-  T send(U message, Handler<AsyncResult<Void>> ackHandler);
+  <V> T send(U message, Handler<AsyncResult<V>> ackHandler);
 
   /**
    * Sends a message on the output.
@@ -63,6 +63,6 @@ public interface Output<T extends Output<T, U>, U> {
    * @param ackHandler An asynchronous handler to be called when the message is acked.
    * @return The output partition.
    */
-  T send(U message, MultiMap headers, Handler<AsyncResult<Void>> ackHandler);
+  <V> T send(U message, MultiMap headers, Handler<AsyncResult<V>> ackHandler);
 
 }

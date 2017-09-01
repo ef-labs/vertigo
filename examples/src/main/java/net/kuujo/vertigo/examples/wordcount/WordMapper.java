@@ -18,7 +18,7 @@ public class WordMapper extends MessageHandlerComponent<String> {
     String[] words = input.split(" ");
 
     // Forward words individually, and ack when they are all completed
-    AckAggregator acks = new AckAggregator();
+    AckAggregator<Integer> acks = new AckAggregator<>();
     for (String word : words) {
       output().port("words").send(word, acks.increment());
     }
